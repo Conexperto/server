@@ -121,3 +121,7 @@ Push your app to Heroku.
 ```
 git push heroku master
 ```
+=======
+# Dino API
+
+>>>>>>> a23e8fa1ec50411755daf757ed6c28f7d4600360
