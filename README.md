@@ -16,7 +16,7 @@ In order to run this container you'll need docker installed.
 
 Clone the repository and move to the project directory.
 ```sh
-git clone 
+git clone git@gitlab.com:conexperto/dino-api.git
 cd api
 ```
 
