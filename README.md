@@ -101,7 +101,7 @@ In file database.conf be all variables envionment to db.
 	├── docker-compose.yml			# Configuration that is applied to each container started for that service.
 	├── Dockerfile 					# Contains all the commands for image of container api.
 	├── README.md 					# Readme of a lifetime.
-	└── heroku.yml					# 
+	└── heroku.yml					# Config for deploy on heroku.
 
 ## Deploy
 
