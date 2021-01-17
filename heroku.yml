@@ -1,0 +1,16 @@
+setup:
+    addons:
+        - plan: heroku-postgresql
+          as: db
+build: 
+    docker: 
+        web: Dockerfile 
+release:
+    image: web
+    command:
+        - python3 manage.py db init
+        - python3 manage.py db migrate
+        - python3 manage.py db upgrade
+run:
+    web: gunicorn 'wsgi:create_wsgi()' --log-file -
+
