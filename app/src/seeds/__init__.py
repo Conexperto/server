@@ -1,1 +1,1 @@
-from .seed import Seed
+from .test import TestSeed

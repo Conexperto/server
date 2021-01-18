@@ -41,3 +41,10 @@ def login_required(func):
 @login_required
 def index():
     return jsonify(g.user);
+
+
+@router.route('/', methods=['POST'])
+def register():
+    return jsonify(request.json);
+
+

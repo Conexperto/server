@@ -1,2 +1,2 @@
-from .deal import Deal
-from .user import User
+from .auth import AuthModel
+from .test import TestModel
