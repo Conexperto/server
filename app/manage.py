@@ -18,7 +18,6 @@ manager = Manager(api)
 # Command of flask migrate
 manager.add_command('db', MigrateCommand)
 
-
 # Comamnd of seed 
 manager.add_command('seed', TestSeed())
 
