@@ -16,6 +16,10 @@ def create_api(env):
     JSONSerializable(api)
 
     CORS(api, resources=r'*', origins=r'*', methods=r'*', allow_headers=r'*', expose_headers=r'*')
+    
+    with api.app_context():
+        db.init_app(api)
+        #db.create_all()
 
     from src.blueprints.admin import auth_admin
     from src.blueprints import auth
@@ -35,9 +39,5 @@ def create_api(env):
     @api.route('/instructions')
     def instructions():
         return render_template('instructions.html')
-
-    with api.app_context():
-        db.init_app(api)
-        #db.create_all()
 
     return api
