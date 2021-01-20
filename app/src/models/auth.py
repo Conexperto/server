@@ -4,7 +4,7 @@ from src.firebase import web_sdk
 
 
 
-class AuthModel():
+class Auth():
 
     def __init__(self):
         pass
@@ -30,11 +30,11 @@ class AuthModel():
                     'providerData': [
                         {
                             'uid': provider.uid,
-                            'display_name': provider.display_name,
+                            'displayName': provider.display_name,
                             'email': provider.email,
-                            'phone_number': provider.phone_number,
-                            'photo_url': provider.photo_url,
-                            'provider_id': provider.provider_id
+                            'phoneNumber': provider.phone_number,
+                            'photoURL': provider.photo_url,
+                            'providerId': provider.provider_id
                         } for provider in user_record.provider_data
                     ],
                     'customClaims': user_record.custom_claims,
