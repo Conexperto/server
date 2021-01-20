@@ -1,11 +1,11 @@
-from src.models.admin import AuthAdminModel
+from src.models import AuthAdmin
 
 
 
 class AuthAdminService():
 
     def __init__(self):
-        self.__auth = AuthAdminModel()
+        self.__auth = AuthAdmin()
 
 
     def authentication(self, id_token):
