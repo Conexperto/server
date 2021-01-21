@@ -4,7 +4,7 @@ from flask_migrate import Migrate, MigrateCommand
 
 from config import Config
 from src.api import create_api, db
-from src.seeds import TestSeed
+from seed import SeedCommand
 
 #assert os.system('service postgresql status') == 0, 'Not postgresql daemon running.'
 
@@ -19,7 +19,7 @@ manager = Manager(api)
 manager.add_command('db', MigrateCommand)
 
 # Comamnd of seed 
-manager.add_command('seed', TestSeed())
+manager.add_command('seed', SeedCommand())
 
 if __name__ == "__main__":
     manager.run()
