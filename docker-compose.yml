@@ -1,7 +1,7 @@
 version: "3"
 services: 
     db: 
-        image: postgres:13
+        image: postgres:13-alpine
         env_file: db.conf
         ports: 
             - "5432:5432"
