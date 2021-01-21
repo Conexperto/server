@@ -2,13 +2,11 @@ from src.mixins import BaseMixin
 from sqlalchemy import String, Integer, ARRAY
 from sqlalchemy import Column
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from src.db import db
 
 
-Base = declarative_base()
 
-
-class Speciality(BaseMixin, Base):
+class Speciality(BaseMixin, db.Model):
     __tablename__ = 'speciality'
 
     id              = Column(Integer, primary_key=True)
