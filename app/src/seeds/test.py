@@ -1,13 +1,13 @@
-from flask_script import Command
 from faker import Faker
 from src.models import TestModel
 
 faker = Faker() 
 
-class TestSeed(Command, TestModel):
+class TestSeed():
+    __seed__ = 'test'
 
     def __init__(self):
-        self.name = faker.name();  
+        self.__model = TestModel(name=faker.name())  
     
     def run(self):
-        self.save();
+        self.__model.save();
