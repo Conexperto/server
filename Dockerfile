@@ -1,10 +1,10 @@
 FROM python:3
 
-RUN mkdir /srv/app
+RUN mkdir -p /srv/app
 WORKDIR /srv/app
 
 COPY ./app/requirements.txt .
-RUN pip3 install -r requirements.txt 
+RUN pip install -r requirements.txt
 
 COPY ./app .
 
