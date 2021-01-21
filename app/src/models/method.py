@@ -1,14 +1,12 @@
 from src.mixins import BaseMixin
 from sqlalchemy import Column, ForeignKey
-from sqlalchemy import String, Integer, Booelan, ARRAY
+from sqlalchemy import String, Integer, Boolean, ARRAY
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from src.db import db
 
 
-Base = declarative_base()
 
-
-class Method(BaseMixin, Base):
+class Method(BaseMixin, db.Model):
     __tablename__ = 'method'
 
     id              = Column(Integer, primary_key=True)
