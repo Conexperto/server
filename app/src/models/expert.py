@@ -2,20 +2,18 @@ from src.mixins import BaseMixin
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import String, Integer, ARRAY 
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from src.db import db
 
 
-Base = declarative_base()
 
-
-class AssociationSpeciality(BaseMixin, Base):
+class AssociationSpeciality(BaseMixin, db.Model):
     __tablename__ = 'association_expert_to_speciality'
     
     left_id          = Column(Integer, ForeignKey('expert.id'), primary_key=True)
     right_id         = Column(Integer, ForeignKey('speciality.id'), primary_key=True)
 
 
-class AssociationMethod(BaseMixin, Base):
+class AssociationMethod(BaseMixin, db.Model):
     __tablename__ = 'association_expert_to_method'
 
     left_id         = Column(Integer, ForeignKey('expert.id'), primary_key=True)
@@ -23,7 +21,7 @@ class AssociationMethod(BaseMixin, Base):
     link            = Column(String, nullable=False)
 
 
-class Expert(BaseMixin, Base):
+class Expert(BaseMixin, db.Model):
     __tablename__ = 'expert'
 
     id              = Column(Integer, primary_key=True)
