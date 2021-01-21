@@ -1,6 +1,7 @@
 from werkzeug.exceptions import Unauthorized
 from firebase_admin import auth
 from src.firebase import web_sdk
+from .user import User
 
 
 
@@ -16,6 +17,8 @@ class Auth():
 
             if user_record.disabled:
                 raise Unauthorized('Account disabled')
+            
+            
 
             return {
                 'uid': user_record.uid,
