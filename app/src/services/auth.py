@@ -1,4 +1,4 @@
-from src.models import Auth
+from src.models import Auth, User
 
 
 
