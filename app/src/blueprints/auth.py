@@ -75,7 +75,8 @@ def update_field():
     return jsonify(service.response())
 
 # DELETE: /api/v1/auth
-@router.route('/', methods=['DELETE']):
+@router.route('/', methods=['DELETE'])
+def delete_user():
     user = g.user
 
     service = AuthService()
