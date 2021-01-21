@@ -15,8 +15,6 @@ class AuthAdmin():
             user_record = auth.get_user(decoded_token['uid'], app=admin_sdk)
             
             claims = user_record.custom_claims
-            
-            #auth.set_custom_user_claims(decoded_token['uid'], { 'admin': True, 'access_level': 0 }, app=admin_sdk)
 
             if not claims:
                 raise Unauthorized('Úser is not admin')
