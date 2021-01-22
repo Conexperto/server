@@ -13,7 +13,10 @@ class Privilegies(Enum):
     SuperRoot   = 0
     Root        = 1
     Admin       = 2
-    User        = 3
+    User        = 3    
+    
+    def __str__(self):
+        return str(self.value)
 
 
 class Admin(BaseMixin, db.Model):
@@ -28,21 +31,24 @@ class Admin(BaseMixin, db.Model):
     name            = Column(String)
     lastname        = Column(String)
     disabled        = Column(Boolean, default=False)
-    privilegies     = Column(Integer, default=Privilegies.User)
+    privilegies     = Column(Integer, default=Privilegies.User.value)
 
-    def create_user(self):
+    def get_user(self):
+        return auth.get_user(self.uid)
+
+    def create_user(self, password):
         user = auth.create_user(
             email=self.email,
-            passwortd=self.password,
+            password=password,
             display_name=self.display_name, app=admin_sdk)
 
         self.uid = user.uid
 
-    def update_user(self):
+    def update_user(self, password):
         auth.update_user(
                 uid=self.uid,
                 email=self.email,
-                password=self.password,
+                password=password,
                 display_name=self.display_name,
                 phone_number=self.phone_number,
                 photo_url=self.photo_url,
@@ -62,16 +68,16 @@ class Admin(BaseMixin, db.Model):
                 { 'admin': True, 'access_level': self.privilegies }, app=admin_sdk)
 
     def is_super_root(self):
-        return self.privilegies is Privilegies.SuperRoot
+        return self.privilegies == Privilegies.SuperRoot
 
     def is_root(self):
-        return self.privilegies is Privilegies.Root
+        return self.privilegies == Privilegies.Root
 
     def is_admin(self):
-        return self.privilegies is Privilegies.Admin
+        return self.privilegies == Privilegies.Admin
 
     def is_user(self):
-        return self.privilegies is Privilegies.User
+        return self.privilegies == Privilegies.User
 
     def hasAccess(self, access):
         return self.privilegies <= access
