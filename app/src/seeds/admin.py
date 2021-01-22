@@ -1,5 +1,7 @@
 from faker import Faker
-from src.models import Admin 
+from src.models import Admin, Privilegies 
+from firebase_admin import auth
+
 
 faker = Faker() 
 
@@ -8,15 +10,15 @@ class AdminSeed():
 
     def __init__(self):
         self.__model = Admin(
-                display_name=faker.profile()['username'],
-                email=faker.email(),
-                password=faker.password(),
-                phone_number=faker.phone_number(),
+                uid='VaAJS4ag2hgUnDunBEM9Xxf83ZJ2', 
+                display_name='conexpertotesting',
+                email='conexpertotesting@gmail.com',
+                phone_number='+10000000000',
                 photo_url=faker.image_url(),
-                name=faker.first_name(),
-                lastname=faker.last_name(),
-                disabled=False)  
+                name='conexpertotesting',
+                lastname='conxpertotesting',
+                disabled=False,
+                privilegies=Privilegies.SuperRoot.value)  
     
     def run(self):
-        self.__model.create_user()
-        self.__model.save();
+        self.__model.save()
