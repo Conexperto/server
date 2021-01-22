@@ -10,10 +10,11 @@ class Plan(BaseMixin, db.Model):
     __tablename__ = 'plan'
 
     id              = Column(Integer, primary_key=True)
-    user_id         = Column(Integer, ForeignKey("expert.id"))
     duration        = Column(Integer, nullable=False)
     price           = Column(Integer, nullable=False)
     coin            = Column(String, default="USD")
+    expert_id       = Column(Integer, ForeignKey("expert.id"))
+    expert          = relationship("Expert", back_populates="plans")
 
 
 
