@@ -19,7 +19,7 @@ manager = Manager(api)
 manager.add_command('db', MigrateCommand)
 
 # Comamnd of seed 
-manager.add_command('seed', SeedCommand())
+manager.add_command('seed', SeedCommand)
 
 if __name__ == "__main__":
     manager.run()
