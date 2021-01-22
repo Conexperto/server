@@ -1,6 +1,6 @@
 from .auth import Auth
 from .auth_admin import AuthAdmin
-from .admin import Admin
+from .admin import Admin, Privilegies
 from .user import User
 from .expert import Expert
 from .method import Method
