@@ -23,28 +23,28 @@ class User(BaseMixin, db.Model):
     rating_average      = Column(Integer, default=0)
     rating_stars        = Column(ARRAY(Integer), default=[0,0,0,0,0])
     rating_votes        = Column(Integer, default=0)
-    headline            = Column(String)
-    about_me            = Column(String)
+    headline            = Column(String(60))
+    about_me            = Column(String(150))
     session_taken       = Column(Integer, default=0)
     complete_register   = Column(Boolean, default=False) 
     timezone            = Column(Integer, default=0)
     expert              = relationship("Expert", uselist=False, back_populates="user")
     
 
-    def create_user(self):
+    def create_user(self, password):
         user = auth.create_user(
             email=self.email,
-            passwortd=self.password,
+            passwortd=password,
             display_name=self.display_name, app=web_sdk)
 
         self.uid = user.uid
 
 
-    def update_user(self):
+    def update_user(self, password):
         auth.update_user(
                 uid=self.uid,
                 email=self.email,
-                password=self.password,
+                password=password,
                 display_name=self.display_name,
                 phone_number=self.phone_number,
                 photo_url=self.photo_url,
