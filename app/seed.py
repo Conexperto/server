@@ -5,7 +5,7 @@ import inspect
 
 modules = importlib.import_module("src.seeds")
 
-class SeedCommand(Command):
+class __SeedCommand(Command):
 
     option_list = (
         Option('--model', 
@@ -46,7 +46,7 @@ class SeedCommand(Command):
         self.__is_model(model)
         
 
-
+SeedCommand = __SeedCommand()
         
 
 
