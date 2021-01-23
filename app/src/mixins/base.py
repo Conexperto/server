@@ -4,12 +4,11 @@ from .audit import AuditMixin
 
 class BaseMixin(AuditMixin):
     _repr_hide = ['created_at', 'updated_at']
+    
+    def add(self):
+        db.session.add(self)
 
     def save(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def update(self):
         db.session.commit()
 
     def delete(self):
