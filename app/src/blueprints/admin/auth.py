@@ -37,7 +37,7 @@ def login_required(func):
     return wrap
 
 
-@router.route('/', methods=['GET'])
+@router.route('/auth', methods=['GET'])
 @login_required
 def index():
     return jsonify(g.user);
