@@ -15,7 +15,7 @@ def create_api(env):
     api.config.from_object(env)
     JSONSerializable(api)
 
-    CORS(api, resources=r'*', origins=r'*', methods=r'*', allow_headers=r'*', expose_headers=r'*')
+    CORS(api)
     
     with api.app_context():
         db.init_app(api)
