@@ -13,4 +13,5 @@ class PlanSeed():
                 price=randint(0, 20))
 
     def run(self):
+        self.__model.add()
         self.__model.save()

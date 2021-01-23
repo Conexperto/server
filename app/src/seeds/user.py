@@ -21,4 +21,5 @@ class UserSeed():
             complete_register=True)
 
     def run(self):
+        self.__model.add()
         self.__model.save()
