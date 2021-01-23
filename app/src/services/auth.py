@@ -12,8 +12,20 @@ class AuthService():
         return self.__auth.authentication(id_token)
 
     
-    def create_user(self, user, body):
-        pass
+    def create_user(self, body):
+        user_record = self.__auth.create_user(
+                        email=body['email'],
+                        password=body['password'],
+                        display_name=body['display_name'])
+        
+        user = User(uid=user_record.uid,
+                        email=body['email'],
+                        display_name=body['display_name'])
+        
+        user.add()
+        user.save()
+
+        return user
 
     def update_user(self, user, body):
         pass
@@ -24,5 +36,3 @@ class AuthService():
     def delete_user(self, user, body):
         pass
 
-    def response(self):
-        return self.response
