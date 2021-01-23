@@ -17,7 +17,7 @@ def create_wsgi():
     wsgi.config.from_object(env)
     
     # Set cors to wsgi flask app. 
-    CORS(wsgi, resources=r'*', methods=r'*', allow_headers=r'*', expose_headers=r'*')
+    CORS(wsgi)
     
     # Handler Errors HTTP
     def error_handler(err, msg, detail=None):
