@@ -65,7 +65,7 @@ def register():
     service = AuthService()
     user = service.create_user(body)
 
-    return jsonify({'success': True, 'response': user});
+    return jsonify({'success': True});
 
 # PUT: /api/v1/auth
 @router.route('/auth', methods=['PUT'])
