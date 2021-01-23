@@ -10,4 +10,5 @@ class SpecialitySeed():
         self.__model = Speciality(name=faker.job())
 
     def run(self):
+        self.__model.add()
         self.__model.save()

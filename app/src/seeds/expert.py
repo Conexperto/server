@@ -37,4 +37,5 @@ class ExpertSeed():
         self.__model.plans.append(relation_c)
 
     def run(self):
+        self.__model.add()
         self.__model.save()

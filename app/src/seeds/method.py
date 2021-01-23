@@ -10,4 +10,5 @@ class MethodSeed():
         self.__model = Method(name=faker.domain_word())
 
     def run(self):
+        self.__model.add()
         self.__model.save()

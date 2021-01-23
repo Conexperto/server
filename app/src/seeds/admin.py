@@ -21,4 +21,5 @@ class AdminSeed():
                 privilegies=Privilegies.SuperRoot.value)  
     
     def run(self):
+        self.__model.add()
         self.__model.save()
