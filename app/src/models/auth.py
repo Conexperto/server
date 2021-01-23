@@ -12,13 +12,13 @@ class Auth():
 
     def authentication(self, id_token):
         try:
-            decoded_token = auth.verify_id_token(id_token, check_revoked=True, app=web_sdk)
-            user_record = auth.get_user(decoded_token['uid'], app=web_sdk)
+            decoded_token = self.verify_id_token(id_token, check_revoked=True)
+            user_record = self.get_user(decoded_token['uid'])
 
             if user_record.disabled:
                 raise Unauthorized('Account disabled')
             
-            
+            user = User.query.filter_by(uid=user_record.uid).first()
 
             return {
                 'uid': user_record.uid,
@@ -43,9 +43,7 @@ class Auth():
                     'customClaims': user_record.custom_claims,
                     'tokensValidAfterTime': user_record.tokens_valid_after_timestamp
                 },
-                'b': {
-
-                }
+                'b': user
             }
 
         except auth.RevokedIdTokenError as ex:
@@ -55,5 +53,36 @@ class Auth():
         except auth.InvalidIdTokenError as ex:
             raise Unauthorized('Invalid Token!!')
 
+    def get_user(self, uid):
+        return auth.get_user(uid, app=web_sdk)
 
+    def verify_id_token(self, id_token, check_revoked):
+        return auth.verify_id_token(id_token, check_revoked=check_revoked, app=web_sdk)
+
+    def create_user(self, email, password, display_name):
+        user = auth.create_user(
+            email=email,
+            password=password,
+            display_name=display_name, app=web_sdk)
+
+        return user
+
+    def update_user(self, uid, email, password, display_name, phone_number, photo_url, disabled):
+        user = auth.update_user(
+                uid=uid,
+                email=email,
+                password=password,
+                display_name=display_name,
+                phone_number=phone_number,
+                photo_url=photo_url,
+                disabled=disabled, app=web_sdk)
+        
+        return user
+
+    def delete_user(self, uid):
+        auth._delete_user(uid=uid, app=web_sdk)
+
+    def make_claims(self, uid, complete_register):
+        auth.set_custom_user_claims(
+                uid, { 'complete_register': complete_register }, app=web_sdk)
 
