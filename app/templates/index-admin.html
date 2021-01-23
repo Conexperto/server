@@ -13,11 +13,11 @@
 	<form id="login">
 		<div class="form-control">
 			<label for="email"></label>
-			<input type="email" name="email" id="email">
+			<input type="email" name="email" id="email" value="conexpertotesting@gmail.com">
 		</div>
 		<div class="form-control">
 			<label for="password"></label>
-			<input type="password" name="password" id="password">
+			<input type="password" name="password" id="password" value="conexpertotesting2021">
 		</div>
 		<button type="submit">Send</button>
 	</form>
@@ -61,7 +61,7 @@
 
 			firebase.auth().signInWithEmailAndPassword(email, password)
 				.then(user => firebase.auth().currentUser.getIdToken())
-				.then(idToken => token.append(idToken))
+				.then(idToken => token.innerText = idToken)
 				.catch(error => {
 					console.error(error.code, error.message)
 				})
