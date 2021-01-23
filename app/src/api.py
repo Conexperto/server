@@ -24,8 +24,8 @@ def create_api(env):
     from src.blueprints.admin import auth_admin
     from src.blueprints import auth
     
-    api.register_blueprint(auth_admin, url_prefix='/admin/auth')
-    api.register_blueprint(auth, url_prefix='/auth')
+    api.register_blueprint(auth_admin, url_prefix='/admin')
+    api.register_blueprint(auth, url_prefix='/')
     
     
     @api.route('/')
