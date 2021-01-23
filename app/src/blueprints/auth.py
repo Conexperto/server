@@ -53,13 +53,13 @@ def register():
     if not body:
         return BadRequest('Not found data')
    
-    if 'email' in body:
+    if not 'email' in body:
         return BadRequest('Not found email')
 
-    if 'password' in body:
+    if not 'password' in body:
         return BadRequest('Not found password')
 
-    if 'display_name' in body:
+    if not 'display_name' in body:
         return BadRequest('Not found display_name')
 
     service = AuthService()
