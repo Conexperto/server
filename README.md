@@ -33,7 +33,7 @@ Or run this command for start and build container.
 ```sh
 docker-compose up --build
 ```
-then visit <http://localhost:3000/api/v1/>
+then visit <http://localhost:5000/api/v1/>
 
 Initialize migration of database.
 ```sh
