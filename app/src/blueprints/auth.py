@@ -1,6 +1,6 @@
 from flask import Blueprint, g, request, jsonify
 from functools import wraps
-from werkzeug.exceptions import Unauthorized
+from werkzeug.exceptions import Unauthorized, BadRequest
 from src.services import AuthService
 
 
@@ -37,50 +37,76 @@ def login_required(func):
     return wrap
 
 # GET: /api/v1/auth
-@router.route('/', methods=['GET'])
+@router.route('/auth', methods=['GET'])
 @login_required
 def index():
-    return jsonify(g.user);
+    return jsonify({
+        "success": True,
+        "response": g.user
+    });
 
 # POST: /api/v1/auth
-@router.route('/', methods=['POST'])
+@router.route('/auth', methods=['POST'])
 def register():
-    body = request.json
+    body = request.get_json()
+
+    if not body:
+        return BadRequest('Not found data')
+   
+    if 'email' in body:
+        return BadRequest('Not found email')
+
+    if 'password' in body:
+        return BadRequest('Not found password')
+
+    if 'display_name' in body:
+        return BadRequest('Not found display_name')
 
     service = AuthService()
-    service.create_user(body)
+    user = service.create_user(body)
 
-    return jsonify(service.response());
+    return jsonify({'success': True, 'response': user});
 
 # PUT: /api/v1/auth
-@router.route('/', methods=['PUT'])
+@router.route('/auth', methods=['PUT'])
 def update():
-    body = request.json
-    user = g.user
+    body = request.get_json()
+    
+    if not body:
+        return BadRequest('Not found data')
 
     service = AuthService()
-    service.update_user(user, body)
+    user = service.update_user(g.user, body)
 
-    return jsonify(service.response())
+    return jsonify({'success': True, 'response': user})
 
 # PATCH: /api/v1/auth
-@router.route('/', methods=['PATCH'])
+@router.route('/auth', methods=['PATCH'])
 def update_field():
-    body = request.json
-    user = g.user
+    body = request.get_json()
+
+    if not body:
+        return BadRequest('Not found data')
 
     service = AuthService()
-    service.update_field_user(user, body)
+    user = service.update_field_user(g.user, body)
 
-    return jsonify(service.response())
+    return jsonify({'success': True, 'response': user})
 
 # DELETE: /api/v1/auth
-@router.route('/', methods=['DELETE'])
+@router.route('/auth', methods=['DELETE'])
 def delete_user():
-    user = g.user
 
     service = AuthService()
-    service.delete_user(user)
+    service.delete_user(g.user)
 
-    return jsonify(service.response())
+    return jsonify({ 
+        'success': True, 
+        'response': { 
+            'uid': user.uid 
+        }   
+    })
+
+
+
 
