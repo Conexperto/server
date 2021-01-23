@@ -33,39 +33,6 @@ class Admin(BaseMixin, db.Model):
     disabled        = Column(Boolean, default=False)
     privilegies     = Column(Integer, default=Privilegies.User.value)
 
-    def get_user(self):
-        return auth.get_user(self.uid)
-
-    def create_user(self, password):
-        user = auth.create_user(
-            email=self.email,
-            password=password,
-            display_name=self.display_name, app=admin_sdk)
-
-        self.uid = user.uid
-
-    def update_user(self, password):
-        auth.update_user(
-                uid=self.uid,
-                email=self.email,
-                password=password,
-                display_name=self.display_name,
-                phone_number=self.phone_number,
-                photo_url=self.photo_url,
-                disabled=self.disabled, app=admin_sdk)
-
-    def disabled_user(self):
-        auth.update_user(
-                uid=self.uid, 
-                disabled= not self.disabled, app=admin_sdk)
-
-    def delete_user(self):
-        auth.delete_user(uid=self.uid, app=admin_sdk)
-
-    def make_claims(self):
-        auth.set_custom_user_claims(
-                self.uid,
-                { 'admin': True, 'access_level': self.privilegies }, app=admin_sdk)
 
     def is_super_root(self):
         return self.privilegies == Privilegies.SuperRoot
