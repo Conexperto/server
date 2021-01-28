@@ -11,8 +11,6 @@ class AssociationSpeciality(BaseMixin, db.Model):
     
     left_id          = Column(Integer, ForeignKey('expert.id'), primary_key=True)
     right_id         = Column(Integer, ForeignKey('speciality.id'), primary_key=True)
-    expert          = relationship("Expert")
-    speciality      = relationship("Speciality")
 
 class AssociationMethod(BaseMixin, db.Model):
     __tablename__ = 'association_expert_to_method'
@@ -20,8 +18,6 @@ class AssociationMethod(BaseMixin, db.Model):
     left_id         = Column(Integer, ForeignKey('expert.id'), primary_key=True)
     right_id        = Column(Integer, ForeignKey('method.id'), primary_key=True)
     link            = Column(String, nullable=False)
-    expert          = relationship("Expert")
-    method          = relationship("Method")
 
 
 class Expert(BaseMixin, db.Model):
@@ -36,10 +32,6 @@ class Expert(BaseMixin, db.Model):
     link_video      = Column(String)
     session_done    = Column(Integer, default=0)
     user_id         = Column(Integer, ForeignKey('user.id'))
-    user            = relationship("User", uselist=False, back_populates="expert")
-    teachs          = relationship("AssociationSpeciality")
-    methods         = relationship("AssociationMethod")
-    plans           = relationship("Plan", back_populates="expert")
 
 
 
