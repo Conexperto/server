@@ -20,7 +20,5 @@ class Session(BaseMixin, db.Model):
     date_start      = Column(DateTime, nullable=False)
     date_end        = Column(DateTime, nullable=False)
     duration        = Column(Integer, nullable=False)
-    user            = relationship("AssociationUser")
     expert_id       = Column(Integer, ForeignKey('user.id'))
-    expert          = relationship("User")
 

@@ -14,7 +14,6 @@ class Plan(BaseMixin, db.Model):
     price           = Column(Integer, nullable=False)
     coin            = Column(String, default="USD")
     expert_id       = Column(Integer, ForeignKey("expert.id"))
-    expert          = relationship("Expert", back_populates="plans")
 
 
 
