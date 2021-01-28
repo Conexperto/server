@@ -11,10 +11,11 @@ except ImportError as e:
 class JSONEncoder(json.JSONEncoder):
     
     def default(self, o):
-
-        def recursive(p):
+        def recursive(p, o=None):
             result = OrderedDict()
             for k in p.keys():
+                if k in o._repr_hide:
+                    continue
                 result[k] = getattr(o, k);
 
                 if isinstance(result[k], dict):
@@ -25,7 +26,7 @@ class JSONEncoder(json.JSONEncoder):
             return result
 
         if isinstance(o, Model):
-            return dict(recursive(o.__mapper__.c))
+            return dict(recursive(o.__mapper__.c, o))
 
         return flask.json.JSONEncoder.default(self, o)
 
