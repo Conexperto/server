@@ -21,8 +21,7 @@ def create_api(env):
         db.init_app(api)
         #db.create_all()
 
-    from src.blueprints.admin import auth_admin
-    from src.blueprints import auth
+    from src.blueprints import auth, auth_admin
     
     api.register_blueprint(auth_admin, url_prefix='/admin')
     api.register_blueprint(auth, url_prefix='/')
