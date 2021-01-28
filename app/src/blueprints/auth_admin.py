@@ -40,4 +40,4 @@ def login_required(func):
 @router.route('/auth', methods=['GET'])
 @login_required
 def index():
-    return jsonify(g.user);
+    return jsonify(g.user)
