@@ -21,21 +21,34 @@ class ExpertSeed():
                 about_expert=faker.text(150),
                 link_video=faker.image_url(),
                 user_id=user.id)
-        
-        relation_a = AssociationSpeciality()
-        relation_a.speciality = Speciality(name=faker.job())
-        self.__model.teachs.append(relation_a) 
 
+        self.__speciality = Speciality(name=faker.job())
+        self.__speciality.add()
+        self.__speciality.save()
 
-        relation_b = AssociationMethod(link=faker.image_url())
-        relation_b.method = Method(name=faker.domain_word())
-        self.__model.methods.append(relation_b)
-        
-        relation_c = Plan(
-                duration=randint(0, 60),
-                price=randint(0, 20))
-        self.__model.plans.append(relation_c)
+        self.__method = Method(name=faker.domain_word())
+        self.__method.add()
+        self.__method.save()
+
 
     def run(self):
         self.__model.add()
         self.__model.save()
+        self.rel()
+
+    def rel(self):
+        plan = Plan(
+                duration=randint(0, 60),
+                price=randint(0, 20),
+                expert_id=self.__model.id)
+        plan.add() 
+        plan.save()
+        relation_a = AssociationSpeciality(left_id=self.__model.id,
+                                            right_id=self.__speciality.id)
+        relation_b = AssociationMethod(link=faker.image_url(), 
+                                            left_id=self.__model.id, 
+                                            right_id=self.__method.id)
+        relation_a.add()
+        relation_a.save()
+        relation_b.add()
+        relation_b.save()
