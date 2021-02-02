@@ -5,7 +5,7 @@ class Config:
     DEBUG = getenv('FLASK_DEBUG', default=False)
     TESTING = getenv('TESTING', default=False)
     SECRET_KEY = urandom(32)
-        
+
     DB_HOST = getenv('POSTGRES_HOST')
     DB_PORT = getenv('POSTGRES_PORT', 5432)
     DB_NAME = getenv('POSTGRES_DB')
