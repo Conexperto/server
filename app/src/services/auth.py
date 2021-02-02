@@ -41,7 +41,7 @@ class AuthService():
         postgres_user = user['b']
 
         if(postgres_user.display_name != body['display_name']):
-            rirebase_user = firebase_user.update_user(firebase_user.uid,
+            firebase_user = firebase_user.update_user(firebase_user.uid,
                                       firebase_user.email,
                                       firebase_user.password,
                                       body['display_name'],
@@ -50,7 +50,32 @@ class AuthService():
                                       firebase_user.disabled)
 
             postgres_user.display_name = body['display_name']
-            postgres_user.save()
+
+        if(postgres_user.email != body['email']):
+            postgres_user.email = body['email']
+
+        if(postgres_user.phone_number != body['phone_number']):
+            postgres_user.phone_number = body['phone_number']
+
+        if(postgres_user.photo_url != body['photo_url']):
+            postgres_user.photo_url = body['photo_url']
+
+        if(postgres_user.photo_url != body['name']):
+            postgres_user.name = body['name']
+
+        if(postgres_user.lastname != body['lastname']):
+            postgres_user.lastname = body['lastname']
+
+        if(postgres_user.headline != body['headline']):
+            postgres_user.headline = body['headline']
+
+        if(postgres_user.about_me != body['about_me']):
+            postgres_user.about_me = body['about_me']
+
+        if(postgres_user.timezone != body['timezone']):
+            postgres_user.timezone = body['timezone']
+
+        postgres_user.save()
 
         return { 'a': firebase_user, 'b': postgres_user }
 
