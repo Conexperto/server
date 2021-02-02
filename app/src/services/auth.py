@@ -24,18 +24,6 @@ class AuthService():
 
         return user
 
-    def get_userById(self, body):
-        user = User.query.filter_by(id=body['id']).first()
-        return user
-
-    def get_userByUid(self, body):
-        user = User.query.filter_by(uid=body['uid']).first()
-        return user
-
-    def get_userByEmail(self, body):
-        user = User.query.filter_by(email=body['email']).first()
-        return user
-
     def update_user(self, user, body):
         firebase_user = user['a']
         postgres_user = user['b']
