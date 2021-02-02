@@ -51,12 +51,9 @@ class AuthService():
         if(postgres_user.about_me != body['about_me']):
             postgres_user.about_me = body['about_me']
 
-        if(postgres_user.timezone != body['timezone']):
-            postgres_user.timezone = body['timezone']
-
         postgres_user.save()
 
-        return { 'a': firebase_user, 'b': postgres_user }
+        return { 'b': postgres_user }
 
     def update_field_user(self, user, body):
         pass
