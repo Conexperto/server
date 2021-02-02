@@ -39,4 +39,24 @@ def create_api(env):
     def instructions():
         return render_template('instructions.html')
 
+    # Handler Errors HTTP
+    def error_handler(err, msg, detail=None):
+        return jsonify(err=err, msg=msg, detail=detail)
+
+    @api.errorhandler(500)
+    def internal_server_error(e):
+        return error_handler(500, 'Internal server error', str(e))
+
+    @api.errorhandler(400)
+    def bad_request(e):
+        return error_handler(400, 'Bad request', str(e))
+
+    @api.error_handler(401)
+    def unauthorized(e):
+        return error_handler(401, 'Unauthorized', str(e))
+
+    @api.errorhandler(404)
+    def not_found(e):
+        return error_handler(404, 'Not found endpoint', str(e))
+
     return api

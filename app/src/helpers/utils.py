@@ -10,3 +10,5 @@ def dec(i):
 
 def generate_hash():
     return uuid4().hex
+
+

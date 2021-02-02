@@ -1,4 +1,4 @@
-from src.models import Auth, User
+from src.models import Auth, UserRecord, User
 
 class AuthService():
 
@@ -10,7 +10,8 @@ class AuthService():
         return self.__auth.authentication(id_token)
 
     def create_user(self, body):
-        user_record = self.__auth.create_user(
+        
+        user_record = UserRecord.create_user(
                         email=body['email'],
                         password=body['password'],
                         display_name=body['display_name'])
@@ -18,46 +19,52 @@ class AuthService():
         user = User(uid=user_record.uid,
                         email=body['email'],
                         display_name=body['display_name'])
-
         user.add()
         user.save()
 
-        return user
+        return { 
+            'uid': user_record.uid,
+            'a': user_record, 
+            'b': user 
+        }
 
     def update_user(self, user, body):
-        postgres_user = user['b']
+        user_record = user['a']
+        _user = user['b']
+       
+        user_record.serialize(body)
+        user_record.update_user()
 
-        if(postgres_user.display_name != body['display_name']):
-            postgres_user.display_name = body['display_name']
+        _user.serialize(body)
+        _user.save()  
 
-        if(postgres_user.email != body['email']):
-            postgres_user.email = body['email']
-
-        if(postgres_user.phone_number != body['phone_number']):
-            postgres_user.phone_number = body['phone_number']
-
-        if(postgres_user.photo_url != body['photo_url']):
-            postgres_user.photo_url = body['photo_url']
-
-        if(postgres_user.photo_url != body['name']):
-            postgres_user.name = body['name']
-
-        if(postgres_user.lastname != body['lastname']):
-            postgres_user.lastname = body['lastname']
-
-        if(postgres_user.headline != body['headline']):
-            postgres_user.headline = body['headline']
-
-        if(postgres_user.about_me != body['about_me']):
-            postgres_user.about_me = body['about_me']
-
-        postgres_user.save()
-
-        return { 'b': postgres_user }
+        return {
+            'uid': user_record.uid,
+            'a': user_record,
+            'b': _user
+        } 
 
     def update_field_user(self, user, body):
-        pass
+        user_record = user['a']
+        _user = user['b']
+       
+        user_record.serialize(body)
+        user_record.update_user()
 
-    def delete_user(self, user, body):
-        pass
+        _user.serialize(body)
+        _user.save()  
+
+        return {
+            'uid': user_record.uid,
+            'a': user_record,
+            'b': _user
+        } 
+
+    def delete_user(self, user):
+        user_record = user['a']
+        _user = user['b']
+
+        user_record.delete_user()
+        _user.delete()
+        
 
