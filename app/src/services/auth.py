@@ -25,18 +25,9 @@ class AuthService():
         return user
 
     def update_user(self, user, body):
-        firebase_user = user['a']
         postgres_user = user['b']
 
         if(postgres_user.display_name != body['display_name']):
-            firebase_user = firebase_user.update_user(firebase_user.uid,
-                                      firebase_user.email,
-                                      firebase_user.password,
-                                      body['display_name'],
-                                      firebase_user.phone_number,
-                                      firebase_user.photo_url,
-                                      firebase_user.disabled)
-
             postgres_user.display_name = body['display_name']
 
         if(postgres_user.email != body['email']):
