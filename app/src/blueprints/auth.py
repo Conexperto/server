@@ -50,18 +50,6 @@ def index():
 def register():
     body = request.get_json()
 
-    if not body:
-        return BadRequest('Not found data')
-
-    if not 'email' in body:
-        return BadRequest('Not found email')
-
-    if not 'password' in body:
-        return BadRequest('Not found password')
-
-    if not 'display_name' in body:
-        return BadRequest('Not found display_name')
-
     service = AuthService()
     user = service.create_user(body)
 

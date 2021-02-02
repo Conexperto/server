@@ -1,4 +1,4 @@
-from .auth import Auth
+from .auth import Auth, UserRecord
 from .auth_admin import AuthAdmin
 from .admin import Admin, Privilegies
 from .user import User
