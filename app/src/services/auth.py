@@ -37,15 +37,22 @@ class AuthService():
         return user
 
     def update_user(self, user, body):
-        user = user['b']
-        # insert changes 
+        firebase_user = user['a']
+        postgres_user = user['b']
 
-        if(user.display_name != body['display_name']):
-            user.display_name = body['display_name']
+        if(postgres_user.display_name != body['display_name']):
+            rirebase_user = firebase_user.update_user(firebase_user.uid,
+                                      firebase_user.email,
+                                      firebase_user.password,
+                                      body['display_name'],
+                                      firebase_user.phone_number,
+                                      firebase_user.photo_url,
+                                      firebase_user.disabled)
 
-        user.save()
+            postgres_user.display_name = body['display_name']
+            postgres_user.save()
 
-        return user
+        return { 'a': firebase_user, 'b': postgres_user }
 
     def update_field_user(self, user, body):
         pass
