@@ -51,7 +51,7 @@ def create_api(env):
     def bad_request(e):
         return error_handler(400, 'Bad request', str(e))
 
-    @api.error_handler(401)
+    @api.errorhandler(401)
     def unauthorized(e):
         return error_handler(401, 'Unauthorized', str(e))
 
