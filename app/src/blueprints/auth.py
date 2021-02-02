@@ -43,7 +43,7 @@ def index():
     return jsonify({
         "success": True,
         "response": g.user
-    });
+    })
 
 # POST: /api/v1/auth
 @router.route('/auth', methods=['POST'])
@@ -52,7 +52,7 @@ def register():
 
     if not body:
         return BadRequest('Not found data')
-   
+
     if not 'email' in body:
         return BadRequest('Not found email')
 
@@ -69,9 +69,10 @@ def register():
 
 # PUT: /api/v1/auth
 @router.route('/auth', methods=['PUT'])
+@login_required
 def update():
     body = request.get_json()
-    
+
     if not body:
         return BadRequest('Not found data')
 
@@ -82,6 +83,7 @@ def update():
 
 # PATCH: /api/v1/auth
 @router.route('/auth', methods=['PATCH'])
+@login_required
 def update_field():
     body = request.get_json()
 
@@ -100,11 +102,11 @@ def delete_user():
     service = AuthService()
     service.delete_user(g.user)
 
-    return jsonify({ 
-        'success': True, 
-        'response': { 
-            'uid': user.uid 
-        }   
+    return jsonify({
+        'success': True,
+        'response': {
+            'uid': user.uid
+        }
     })
 
 
