@@ -1,13 +1,14 @@
 version: "3"
+
 services: 
     db: 
         image: postgres:13-alpine
-        env_file: db.conf
+        env_file: ./docker/db/db.conf
         ports: 
             - "5432:5432"
     api: 
-        build: .
-        env_file: api.conf
+        build: ./docker/api/Dockerfile
+        env_file: ./docker/api/api.conf
         volumes: 
             - ./app:/srv/app
         ports:
@@ -15,4 +16,9 @@ services:
         depends_on:
             - db
         restart: always
-
+    test:
+        build: ./docker/test/Dockerfile
+        env_file: ./docker/test/test.conf
+        volumes: 
+            - ./test:/srv/test
+            - /srv/test/node_modules
