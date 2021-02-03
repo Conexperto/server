@@ -1,5 +1,5 @@
 from os.path import abspath, join
-from flask import Flask, render_template, g
+from flask import Flask, render_template, g, jsonify
 from flask_cors import CORS
 
 from src.helpers import JSONSerializable
@@ -26,7 +26,6 @@ def create_api(env):
     api.register_blueprint(auth_admin, url_prefix='/admin')
     api.register_blueprint(auth, url_prefix='/')
     
-    
     @api.route('/')
     def index():
         return render_template('index.html')
@@ -41,22 +40,28 @@ def create_api(env):
 
     # Handler Errors HTTP
     def error_handler(err, msg, detail=None):
-        return jsonify(err=err, msg=msg, detail=detail)
+        return jsonify({
+            'success': False,
+            'err': err,
+            'msg': msg, 
+            'detail': str(detail), 
+            'code': detail.response
+            }), err
 
     @api.errorhandler(500)
     def internal_server_error(e):
-        return error_handler(500, 'Internal server error', str(e))
+        return error_handler(500, 'Internal server error', e)
 
     @api.errorhandler(400)
     def bad_request(e):
-        return error_handler(400, 'Bad request', str(e))
+        return error_handler(400, 'Bad request', e)
 
     @api.errorhandler(401)
     def unauthorized(e):
-        return error_handler(401, 'Unauthorized', str(e))
+        return error_handler(401, 'Unauthorized', e)
 
     @api.errorhandler(404)
     def not_found(e):
-        return error_handler(404, 'Not found endpoint', str(e))
+        return error_handler(404, 'Not found endpoint', e)
 
     return api
