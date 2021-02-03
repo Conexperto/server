@@ -1,5 +1,6 @@
 import json
 import flask
+import inspect
 from collections import OrderedDict
 from datetime import datetime
 
@@ -27,6 +28,9 @@ class JSONEncoder(json.JSONEncoder):
 
         if isinstance(o, Model):
             return dict(recursive(o.__mapper__.c, o))
+        
+        if inspect.isclass(type(o)):
+            return dict(o.__dict__)
 
         return flask.json.JSONEncoder.default(self, o)
 
