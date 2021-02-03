@@ -49,11 +49,14 @@ def index():
 @router.route('/auth', methods=['POST'])
 def register():
     body = request.get_json()
+    
+    if not body:
+        return BadRequest('Not found data')
 
     service = AuthService()
     user = service.create_user(body)
 
-    return jsonify({'success': True});
+    return jsonify({'success': True, 'response': user});
 
 # PUT: /api/v1/auth
 @router.route('/auth', methods=['PUT'])
@@ -85,15 +88,15 @@ def update_field():
 
 # DELETE: /api/v1/auth
 @router.route('/auth', methods=['DELETE'])
+@login_required
 def delete_user():
-
     service = AuthService()
     service.delete_user(g.user)
 
     return jsonify({
         'success': True,
         'response': {
-            'uid': user.uid
+            'uid': g.user.uid
         }
     })
 
