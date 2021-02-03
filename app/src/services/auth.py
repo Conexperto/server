@@ -1,5 +1,7 @@
 from src.models import Auth, UserRecord, User
 
+
+
 class AuthService():
 
     def __init__(self):
@@ -10,12 +12,12 @@ class AuthService():
         return self.__auth.authentication(id_token)
 
     def create_user(self, body):
-        
         user_record = UserRecord.create_user(
                         email=body['email'],
                         password=body['password'],
                         display_name=body['display_name'])
-
+        user_record.custom_claims({ 'complete_register': False })
+        
         user = User(uid=user_record.uid,
                         email=body['email'],
                         display_name=body['display_name'])
@@ -34,6 +36,7 @@ class AuthService():
        
         user_record.serialize(body)
         user_record.update_user()
+        user_record.custom_claims({ 'complete_register': True })
 
         _user.serialize(body)
         _user.save()  
