@@ -2,8 +2,6 @@ from src.mixins import BaseMixin
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import String, Integer, Boolean, ARRAY
 from sqlalchemy.orm import relationship
-from firebase_admin import auth
-from src.firebase import admin_sdk
 from enum import Enum
 from src.db import db
 
@@ -28,8 +26,8 @@ class Admin(BaseMixin, db.Model):
     email           = Column(String, unique=True, nullable=False)
     phone_number    = Column(String, unique=True)
     photo_url       = Column(String)
-    name            = Column(String)
-    lastname        = Column(String)
+    name            = Column(String, nullable=False)
+    lastname        = Column(String, nullable=False)
     disabled        = Column(Boolean, default=False)
     privilegies     = Column(Integer, default=Privilegies.User.value)
 
