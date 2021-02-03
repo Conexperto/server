@@ -21,7 +21,7 @@ def get_token():
 
     return token[len(prefix):]
 
-
+# Decorator
 def login_required(func):
     @wraps(func)
     def wrap(*args, **kwargs):
@@ -31,13 +31,71 @@ def login_required(func):
             raise TypeError('The auth decorator needs to token_required decorator')
 
         service = AuthAdminService()
-        g.user = service.authentication(id_token)
+        g.admin = service.authentication(id_token)
         return func(*args, **kwargs)
 
     return wrap
 
-
+# GET: /api/v1/admin/auth
 @router.route('/auth', methods=['GET'])
 @login_required
 def index():
-    return jsonify(g.user)
+    return jsonify({
+            "success": True,
+            "response": g.admin
+        })
+
+# POST: /api/v1/admin/auth
+@router.route('/auth', methods=['POST'])
+def register():
+    body = request.get_json()
+    
+    if not body:
+        return BadRequest('Not found data')
+
+    service = AuthService()
+    user = service.create_user(body)
+
+    return jsonify({'success': True, 'response': user});
+
+# PUT: /api/v1/admin/auth
+@router.route('/auth', methods=['PUT'])
+@login_required
+def update():
+    body = request.get_json()
+
+    if not body:
+        return BadRequest('Not found data')
+
+    service = AuthService()
+    user = service.update_user(g.admin, body)
+
+    return jsonify({'success': True, 'response': user})
+
+# PATCH: /api/v1/admin/auth
+@router.route('/auth', methods=['PATCH'])
+@login_required
+def update_field():
+    body = request.get_json()
+
+    if not body:
+        return BadRequest('Not found data')
+
+    service = AuthService()
+    user = service.update_field_user(g.admin, body)
+
+    return jsonify({'success': True, 'response': user})
+
+# DELETE: /api/v1/admin/auth
+@router.route('/auth', methods=['DELETE'])
+@login_required
+def delete_user():
+    service = AuthService()
+    service.delete_user(g.admin)
+
+    return jsonify({
+        'success': True,
+        'response': {
+            'uid': g.user.uid
+        }
+    })
