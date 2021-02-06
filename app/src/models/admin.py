@@ -22,7 +22,7 @@ class Admin(BaseMixin, db.Model):
 
     id              = Column(Integer, primary_key=True)
     uid             = Column(String, unique=True, nullable=False)
-    display_name    = Column(String, unique=True, nullable=False)
+    display_name    = Column(String, nullable=False)
     email           = Column(String, unique=True, nullable=False)
     phone_number    = Column(String, unique=True)
     photo_url       = Column(String)
@@ -44,5 +44,5 @@ class Admin(BaseMixin, db.Model):
     def is_user(self):
         return self.privilegies == Privilegies.User
 
-    def hasAccess(self, access):
+    def has_access(self, access):
         return self.privilegies <= access
