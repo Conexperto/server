@@ -11,7 +11,7 @@ class User(BaseMixin, db.Model):
 
     id                  = Column(Integer, primary_key=True)
     uid                 = Column(String, unique=True, nullable=False)
-    display_name        = Column(String, unique=True, nullable=False)
+    display_name        = Column(String, nullable=False)
     email               = Column(String, unique=True, nullable=False)
     phone_number        = Column(String, unique=True)
     photo_url           = Column(String)
