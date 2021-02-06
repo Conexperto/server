@@ -13,6 +13,7 @@ def create_api(env):
                     static_folder='/static')
 
     api.config.from_object(env)
+    api.url_map.strict_slashes = False
     JSONSerializable(api)
 
     CORS(api)
@@ -22,9 +23,14 @@ def create_api(env):
         #db.create_all()
 
     from src.blueprints import auth, auth_admin
-    
+
     api.register_blueprint(auth_admin, url_prefix='/admin')
-    api.register_blueprint(auth, url_prefix='/')
+    api.register_blueprint(auth, url_prefix='/auth')
+
+    from src.blueprints import admin, user
+
+    api.register_blueprint(admin, url_prefix='/admin')
+    api.register_blueprint(user, url_prefix='/user')
     
     @api.route('/')
     def index():
