@@ -16,8 +16,9 @@ class AuthAdmin():
 
         claims = user_record.custom_claims
 
-        if 'admin' in claims and not claims.admin:
-            raise abort(401, 'Unauthorized')
+        if hasattr(claims, "admin"):
+            if not claims.admin:
+                raise abort(401, 'Unauthorized')
         
         admin = Admin.query.filter_by(uid=user_record.uid).first()
 
