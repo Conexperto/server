@@ -7,7 +7,9 @@ services:
         ports: 
             - "5432:5432"
     api: 
-        build: ./docker/api/Dockerfile
+        build: 
+            context: .
+            dockerfile: ./docker/api/Dockerfile
         env_file: ./docker/api/api.conf
         volumes: 
             - ./app:/srv/app
@@ -17,7 +19,9 @@ services:
             - db
         restart: always
     test:
-        build: ./docker/test/Dockerfile
+        build: 
+            context: .
+            dockerfile: ./docker/test/Dockerfile
         env_file: ./docker/test/test.conf
         volumes: 
             - ./test:/srv/test
