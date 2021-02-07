@@ -22,32 +22,35 @@ class AdminService:
         return users
 
     def create_user(self, body):
-        user_record = UserRecord(
-                email=body['email'],
-                password=body['password'],
-                display_name=body['display_name'],
-                phone_number=body['phone_number'], app=admin_sdk)
+        try:
+            user_record = UserRecord(
+                    email=body['email'],
+                    password=body['password'],
+                    display_name=body['display_name'],
+                    phone_number=body['phone_number'], app=admin_sdk)
 
-        user_record.make_claims({ 
-                        'admin': True, 
-                        'access_level': body['privilegies'] if hasattr(body, 'privilegies') else Privilegies.User.value })
-        
-        user = Admin(uid=user_record.uid,
-                        email=body['email'],
-                        display_name=body['display_name'],
-                        phone_number=body['phone_number'],
-                        name=body['name'],
-                        lastname=body['lastname'],
-                        privilegies=body['privilegies'])
+            user_record.make_claims({ 
+                            'admin': True, 
+                            'access_level': body['privilegies'] if hasattr(body, 'privilegies') else Privilegies.User.value })
+            
+            user = Admin(uid=user_record.uid,
+                            email=body['email'],
+                            display_name=body['display_name'],
+                            phone_number=body['phone_number'],
+                            name=body['name'],
+                            lastname=body['lastname'],
+                            privilegies=body['privilegies'])
 
-        user.add()
-        user.save()
+            user.add()
+            user.save()
 
-        return {
-            'uid': user_record.uid,
-            'a': user_record,
-            'b': user
-        }
+            return {
+                'uid': user_record.uid,
+                'a': user_record,
+                'b': user
+            }
+        except KeyError as ex:
+            abort(400, description='BadRequest', response=str(ex))
 
     def update_user(self, uid, body):
         user_record = UserRecord.get_user(uid, app=admin_sdk) 

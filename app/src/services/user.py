@@ -21,31 +21,34 @@ class UserService:
         return users
 
     def create_user(self, body):
-        user_record = UserRecord(
-                email=body['email'],
-                password=body['password'],
-                display_name=body['display_name'],
-                phone_number=body['phone_number'], app=web_sdk)
-        user_record.make_claims({ 'complete_register': body['complete_register'] if hasattr(body, 'complete_register') else False })
-        
-        user = User(uid=user_record.uid,
-                        email=body['email'],
-                        display_name=body['display_name'],
-                        phone_number=body['phone_number'],
-                        name=body['name'],
-                        lastname=body['lastname'],
-                        headline=body['headline'],
-                        about_me=body['about_me'],
-                        complete_register=body['complete_register'] if hasattr(body, 'complete_register') else False)
+        try:
+            user_record = UserRecord(
+                    email=body['email'],
+                    password=body['password'],
+                    display_name=body['display_name'],
+                    phone_number=body['phone_number'], app=web_sdk)
+            user_record.make_claims({ 'complete_register': body['complete_register'] if hasattr(body, 'complete_register') else False })
+            
+            user = User(uid=user_record.uid,
+                            email=body['email'],
+                            display_name=body['display_name'],
+                            phone_number=body['phone_number'],
+                            name=body['name'],
+                            lastname=body['lastname'],
+                            headline=body['headline'],
+                            about_me=body['about_me'],
+                            complete_register=body['complete_register'] if hasattr(body, 'complete_register') else False)
 
-        user.add()
-        user.save()
+            user.add()
+            user.save()
 
-        return {
-            'uid': user_record.uid,
-            'a': user_record,
-            'b': user
-        }
+            return {
+                'uid': user_record.uid,
+                'a': user_record,
+                'b': user
+            }
+        except KeyError as ex:
+            abort(400, description='BadRequest', response=str(ex))
 
     def update_user(self, uid, body):
         user_record = UserRecord.get_user(uid, app=web_sdk) 
@@ -53,8 +56,9 @@ class UserService:
 
         user_record.serialize(body)
         user_record.update_user()
-        
-        user_record.make_claims({ 'complete_register' : hasattr(body, 'complete_register') if body['complete_register'] else False })
+            
+        if hasattr(body, 'complete_register'):
+            user_record.make_claims({ 'complete_register' : body['complete_register'] })
 
         user.serialize(body)
         user.save()
@@ -72,7 +76,8 @@ class UserService:
         user_record.serialize(body)
         user_record.update_user()
         
-        user_record.make_claims({ 'complete_register' : hasattr(body, 'complete_register') if body['complete_register'] else False })
+        if hasattr(body, 'complete_register'):
+            user_record.make_claims({ 'complete_register' :  body['complete_register'] })
 
         user.serialize(body)
         user.save()
