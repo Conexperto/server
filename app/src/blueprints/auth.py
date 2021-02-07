@@ -1,6 +1,5 @@
-from flask import Blueprint, g, request, jsonify
+from flask import Blueprint, g, request, jsonify, abort
 from functools import wraps
-from werkzeug.exceptions import Unauthorized, BadRequest
 from src.services import AuthService
 
 
@@ -12,12 +11,15 @@ def get_token():
     prefix = 'Bearer '
 
     if not 'authorization' in headers:
-        raise Unauthorized('Not found token')
+        raise abort(400, description='NotFoundToken', response='auth/not-found-token')
 
     token = headers['authorization']
 
     if not token.startswith(prefix):
-        raise Unauthorized('Invalid token')
+        raise abort(400, description='InvalidIdToken', response='auth/invalid-id-token')
+    
+    if not token[len(prefix):]:
+        raise abort(400, description='InvalidIdToken', response='auth/invalid-id-token')
 
     return token[len(prefix):]
 
@@ -37,21 +39,21 @@ def login_required(func):
     return wrap
 
 # GET: /api/v1/auth
-@router.route('/auth', methods=['GET'])
+@router.route('/', methods=['GET'])
 @login_required
-def index():
+def index_auth():
     return jsonify({
         "success": True,
         "response": g.user
     })
 
 # POST: /api/v1/auth
-@router.route('/auth', methods=['POST'])
-def register():
+@router.route('/', methods=['POST'])
+def register_auth():
     body = request.get_json()
     
     if not body:
-        return BadRequest('Not found data')
+        return abort(400, description='NotFoundData', response='not-found-data')
 
     service = AuthService()
     user = service.create_user(body)
@@ -59,13 +61,13 @@ def register():
     return jsonify({'success': True, 'response': user});
 
 # PUT: /api/v1/auth
-@router.route('/auth', methods=['PUT'])
+@router.route('/', methods=['PUT'])
 @login_required
-def update():
+def update_auth():
     body = request.get_json()
 
     if not body:
-        return BadRequest('Not found data')
+        return abort(400, description='NotFoundData', response='not-found-data')
 
     service = AuthService()
     user = service.update_user(g.user, body)
@@ -73,31 +75,39 @@ def update():
     return jsonify({'success': True, 'response': user})
 
 # PATCH: /api/v1/auth
-@router.route('/auth', methods=['PATCH'])
+@router.route('/', methods=['PATCH'])
 @login_required
-def update_field():
+def update_field_auth():
     body = request.get_json()
 
     if not body:
-        return BadRequest('Not found data')
+        return abort(400, description='NotFoundData', response='not-found-data')
 
     service = AuthService()
     user = service.update_field_user(g.user, body)
 
     return jsonify({'success': True, 'response': user})
 
-# DELETE: /api/v1/auth
-@router.route('/auth', methods=['DELETE'])
+# PATCH /api/v1/auth/disabled
+@router.route('/disabled', methods=['PATCH'])
 @login_required
-def delete_user():
+def disabled_auth():
+    service = AuthService()
+    user = service.disabled_user(g.user)
+
+    return jsonify({ 'success': True, 'response': user })
+
+
+# DELETE: /api/v1/auth
+@router.route('/', methods=['DELETE'])
+@login_required
+def delete_auth():
     service = AuthService()
     service.delete_user(g.user)
 
     return jsonify({
         'success': True,
-        'response': {
-            'uid': g.user.uid
-        }
+        'response': g.user
     })
 
 
