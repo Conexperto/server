@@ -1,8 +1,9 @@
+from flask import abort
 from src.models import Auth, UserRecord, User
+from src.firebase import web_sdk
 
 
-
-class AuthService():
+class AuthService:
 
     def __init__(self):
         self.__auth = Auth()
@@ -12,23 +13,26 @@ class AuthService():
         return self.__auth.authentication(id_token)
 
     def create_user(self, body):
-        user_record = UserRecord.create_user(
-                        email=body['email'],
-                        password=body['password'],
-                        display_name=body['display_name'])
-        user_record.custom_claims({ 'complete_register': False })
-        
-        user = User(uid=user_record.uid,
-                        email=body['email'],
-                        display_name=body['display_name'])
-        user.add()
-        user.save()
+        try:
+            user_record = UserRecord.create_user(
+                            email=body['email'],
+                            password=body['password'],
+                            display_name=body['display_name'], app=web_sdk)
+            user_record.make_claims({ 'complete_register': False })
+            
+            user = User(uid=user_record.uid,
+                            email=body['email'],
+                            display_name=body['display_name'])
+            user.add()
+            user.save()
 
-        return { 
-            'uid': user_record.uid,
-            'a': user_record, 
-            'b': user 
-        }
+            return { 
+                'uid': user_record.uid,
+                'a': user_record, 
+                'b': user 
+            }
+        except KeyError as ex:
+            abort(400, description='BadRequest', response=str(ex))
 
     def update_user(self, user, body):
         user_record = user['a']
@@ -36,7 +40,9 @@ class AuthService():
        
         user_record.serialize(body)
         user_record.update_user()
-        user_record.custom_claims({ 'complete_register': True })
+
+        if hasattr(body, 'complete_register'):
+            user_record.make_claims({ 'complete_register' : body['complete_register'] })
 
         _user.serialize(body)
         _user.save()  
@@ -54,6 +60,9 @@ class AuthService():
         user_record.serialize(body)
         user_record.update_user()
 
+        if hasattr(body, 'complete_register'):
+            user_record.make_claims({ 'complete_register' : body['complete_register'] })
+
         _user.serialize(body)
         _user.save()  
 
@@ -63,6 +72,22 @@ class AuthService():
             'b': _user
         } 
 
+    def disabled_user(self, user):
+        user_record = user['a']
+        _user = user['b']
+
+        user_record.serialize({ 'disabled': not user_record.disabled })
+        user_record.update_user()
+
+        user.serialize({ 'disabled': not user_record.disabled })
+        user.save()
+
+        return {
+            'uid': user_record.uid,
+            'a': user_record,
+            'b': _user
+        }
+
     def delete_user(self, user):
         user_record = user['a']
         _user = user['b']
@@ -70,4 +95,6 @@ class AuthService():
         user_record.delete_user()
         _user.delete()
         
-
+        return {
+            'uid': user_record.uid
+        }
