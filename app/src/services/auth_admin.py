@@ -1,4 +1,5 @@
 from src.models import AuthAdmin, UserRecord, Admin, Privilegies
+from src.firebase import admin_sdk
 
 
 
@@ -15,10 +16,10 @@ class AuthAdminService():
         user_record = UserRecord.create_user(
                         email=body['email'],
                         password=body['password'],
-                        display_name=body['display_name'])
-        user_record.custom_claims({ 
+                        display_name=body['display_name'], app=admin_sdk)
+        user_record.make_claims({ 
             'admin': True, 
-            'access_level': Privilegies.User.value })
+            'access_level': body['privilegies'] if hasattr(body, 'privilegies') else Privilegies.User.value })
         
         user = Admin(uid=user_record.uid,
                         display_name=body['display_name'],
@@ -26,7 +27,7 @@ class AuthAdminService():
                         phone_number=body['phone_number'],
                         name=body['name'],
                         lastname=body['lastname'],
-                        privilegies=body['privilegies'])
+                        privilegies=body['privilegies'] or Privilegies.User.value)
         user.add()
         user.save()
 
@@ -42,9 +43,9 @@ class AuthAdminService():
        
         user_record.serialize(body)
         user_record.update_user()
-
-        if 'privilegies' in body and not body['privilegies']:
-            user_record.custom_claims({ 'access_level': body['privilegies'] })
+        
+        if hasattr(body, 'privilegies') and not body['privilegies']:
+            user_record.make_claims({ 'access_level': body['privilegies'] })
 
         _user.serialize(body)
         _user.save()  
@@ -62,8 +63,8 @@ class AuthAdminService():
         user_record.serialize(body)
         user_record.update_user()
 
-        if 'privilegies' in body and not body['privilegies']:
-            user_record.custom_claims({ 'access_level': body['privilegies'] })
+        if hasattr(body, 'privilegies') and not body['privilegies']:
+            user_record.make_claims({ 'access_level': body['privilegies'] })
 
         _user.serialize(body)
         _user.save()  
@@ -73,6 +74,22 @@ class AuthAdminService():
             'a': user_record,
             'b': _user
         } 
+
+    def disabled_user(self, user):
+        user_record = user['a']
+        _user = user['b']
+
+        user_record.serialize({ 'disabled': not user_record.disabled })
+        user_record.update_user()
+
+        user.serialize({ 'disabled': not user_record.disabled })
+        user.save()
+
+        return {
+            'uid': user_record.uid,
+            'a': user_record,
+            'b': _user
+        }
 
     def delete_user(self, user):
         user_record = user['a']
