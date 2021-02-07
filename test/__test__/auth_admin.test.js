@@ -1,20 +1,19 @@
 const request = require('supertest');
-const { web } = require('./config');
-const { login } = require('./utils');
+const { admin } = require('../config');
+const { login } = require('../utils');
 
 
 const domain = "http://api:3000/api/v1";
 
 jest.setTimeout(100000)
 
-describe("-Auth", () => {
+describe("AuthAdmin", () => {
 	let token = null;
-	
-	describe("POST /auth", () => {
-		test("It should create an user", async () => {
+
+	describe("POST /admin/auth", () => {
+		test("It should create an user admin", async () => {
 			const response = await request(domain)
-										.post('/auth')
-										.set('Authorization', 'Bearer ' + token)
+										.post('/admin/auth')
 										.send({
 											email: 'frfernandezdev@gmail.com',
 											password: 'token.01',
@@ -26,10 +25,9 @@ describe("-Auth", () => {
 			expect(response.statusCode).toBe(200);
 		});
 
-		test("It should create a repeating user and response with error 400 ", async () => {
+		test("It should create a repeating user admin and response with error 400 ", async () => {
 			const response = await request(domain)
-										.post('/auth')
-										.set('Authorization', 'Bearer ' + token)
+										.post('/admin/auth')
 										.send({
 											email: 'frfernandezdev@gmail.com',
 											password: 'token.01',
@@ -41,10 +39,9 @@ describe("-Auth", () => {
 			expect(response.statusCode).toBe(400);
 		});
 
-		test("It should create a user, but without some fields and response with error 400", async () => {
+		test("It should create a user admin, but without some fields and response with error 400", async () => {
 			const response = await request(domain)
-										.post('/auth')
-										.set('Authorization', 'Bearer ' + token)
+										.post('/admin/auth')
 										.send({
 											email: 'frfernandezdev@gmail.com'
 										});
@@ -54,10 +51,9 @@ describe("-Auth", () => {
 			expect(response.statusCode).toBe(400);
 		});
 
-		test("It should create a user, but with some extra fields and response with error 400", async () => {
+		test("It should create a user admin, but with some extra fields and response with error 400", async () => {
 			const response = await request(domain)
-										.post('/auth')
-										.set('Authorization', 'Bearer ' + token)
+										.post('/admin/auth')
 										.send({
 											email: 'frfernandezdev@gmail.com',
 											passport: 'ABC1235598A'
@@ -74,51 +70,43 @@ describe("-Auth", () => {
 		});
 	});
 
-	describe("GET /auth", () => {
-		test("It should respond with an data user", async () => {
+	describe("GET /admin/auth", () => {
+		test("it should respond with an data user admin", async () => {
 			const response = await request(domain)
-										.get('/auth')
-										.set('Authorization', 'Bearer ' + token);
-			//if (response.error) {
-			//	console.log(response.error)
-			//}
+										.get('/admin/auth')
+										.set('Authorization', 'Bearer ' + token)
+		
 			expect(response.statusCode).toBe(200);
 		});
 
-		test("It should respond with an error 400, because not send authorization headers", async () => {
+		test("it should respond with an error 400, because not send authorization headers", async () => {
 			const response = await request(domain)
-										.get('/auth');
-			//if (response.error) {
-			//	console.log(response.error)
-			//}
+										.get('/admin/auth');
+
 			expect(response.statusCode).toBe(400);
 		});
 
-		test("It should respond with an error 400, because send invalid format authorization headers without bearer", async () => {
+		test("it should respond with an error 400, because send invalid format authorization headers without bearer", async () => {
 			const response = await request(domain)
-										.get('/auth')
+										.get('/admin/auth')
 										.set('Authorization', token);
-			//if (response.error) {
-			//	console.log(response.error)
-			//}
+
 			expect(response.statusCode).toBe(400);
 		});
 
-		test("It should respond with an error 400, because send invalid format authorization headers with Bearer and without idtoken", async () => {
+		test("it should respond with an error 400, because send invalid format authorization headers with without idtoken", async () => {
 			const response = await request(domain)
-										.get('/auth')
+										.get('/admin/auth')
 										.set('Authorization', 'Bearer');
-			//if (response.error) {
-			//	console.log(response.error)
-			//}
+
 			expect(response.statusCode).toBe(400);
 		});
 	});
 
-	describe("PUT /auth", () => {
-		test("It should updated an user", async () => {
+	describe("PUT /admin/auth", () => {
+		test("It should updated an user admin", async () => {
 			const response = await request(domain)
-										.put('/auth')
+										.put('/admin/auth')
 										.set('Authorization', 'Bearer ' + token)
 										.send({
 											phone_number: '+10000000000',
@@ -134,10 +122,10 @@ describe("-Auth", () => {
 		});
 	});
 
-	describe("PATCH /auth", () => {
-		test("It should updated an user", async () => {
+	describe("PATCH /admin/auth", () => {
+		test("It should updated an user admin", async () => {
 			const response = await request(domain)
-										.patch('/auth')
+										.patch('/admin/auth')
 										.set('Authorization', 'Bearer ' + token)
 										.send({
 											display_name: 'frfernandezdev1996'
@@ -149,10 +137,10 @@ describe("-Auth", () => {
 		});
 	});
 
-	//describe("PATCH /auth/disabled", () => {
+	//describe("PATCH /admin/auth/disabled", () => {
 	//	test("It should disabled an user", async () => {
 	//		const response = await request(domain)
-	//									.patch('/auth/disabled')
+	//									.patch('/admin/auth/disabled')
 	//									.set('Authorization', 'Bearer ' + token);
 	//		if (response.error) {
 	//			console.log(response.error)
@@ -162,21 +150,22 @@ describe("-Auth", () => {
 
 	//	afterAll(async () => {
 	//		const response = await request(domain)
-	//									.patch('/auth/disabled')
+	//									.patch('/admin/auth/disabled')
 	//									.set('Authorization', 'Bearer ' + token);
 	//		if (response.error) {
 	//			console.log(response.error)
 	//		}
 	//	})
 	//});
-
+	
 	afterAll(async () => {
 		const response = await request(domain)
-									.delete('/auth')
+									.delete('/admin/auth')
 									.set('Authorization', 'Bearer ' + token);
 		if (response.error) {
 			console.log(response.error)
 		}
 	});
 });
+
 
