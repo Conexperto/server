@@ -22,16 +22,27 @@ def create_api(env):
         db.init_app(api)
         #db.create_all()
 
-    from src.blueprints import auth, auth_admin
+    from src.blueprints.admin import auth_admin, admin, \
+                                        user, \
+                                        expert, \
+                                        method, \
+                                        plan, \
+                                        speciality
 
-    api.register_blueprint(auth_admin, url_prefix='/admin')
-    api.register_blueprint(auth, url_prefix='/auth')
-
-    from src.blueprints import admin, user
-
+    api.register_blueprint(auth_admin, url_prefix='/admin/auth')
     api.register_blueprint(admin, url_prefix='/admin')
-    api.register_blueprint(user, url_prefix='/user')
+    api.register_blueprint(user, url_prefix='/admin/user')
+    api.register_blueprint(expert, url_prefix='/admin/expert')
+    api.register_blueprint(method, url_prefix='/admin/method')
+    api.register_blueprint(plan, url_prefix='/admin/plan')
+    api.register_blueprint(speciality, url_prefix='/admin/speciality')
+
+
+    from src.blueprints import auth
+
+    api.register_blueprint(auth, url_prefix='/auth')
     
+
     @api.route('/')
     def index():
         return render_template('index.html')
