@@ -1,25 +1,17 @@
-import json
-import flask
-import inspect
-from collections import OrderedDict
-from datetime import datetime
+from sqlalchemy.ext.declarative import DeclarativeMeta
+from flask.json import JSONEncoder
+from src.mixins import Record
 
-try:
-    from flask_sqlalchemy.model import Model
-    from src.mixins import Record
-except ImportError as e:
-    print(str(e))
 
-class JSONEncoder(json.JSONEncoder):
+class JSONEncoder(JSONEncoder):
     
     def default(self, o):
-        if isinstance(o, Model):
-            return dict(o.deserialize())
-       
+        if isinstance(o.__class__, DeclarativeMeta):
+            return o.deserialize()
         if isinstance(o, Record):
-            return dict(o.deserialize())
+            return o.deserialize()
+        return super(JSONEncoder, self).default(o)
 
-        return flask.json.JSONEncoder.default(self, o)
 
 def JSONSerializable(app=None, **kwargs):
     if app is not None:

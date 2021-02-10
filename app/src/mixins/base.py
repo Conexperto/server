@@ -1,7 +1,7 @@
-from collections import OrderedDict
 from src.db import db 
 from .audit import AuditMixin
 from datetime import datetime
+from sqlalchemy.ext.declarative import DeclarativeMeta
 
 
 class BaseMixin(AuditMixin):
@@ -19,23 +19,36 @@ class BaseMixin(AuditMixin):
     
     def serialize(self, obj):
         for k, v in obj.items():
+            if k in self._repr_hide:
+                continue
             if k in self.__table__.c.keys() and v:
                 setattr(self, k, v)
         return self
 
-    def deserialize(self, o=None):
-        result = OrderedDict()
-        for k in self.__table__.c.keys():
-            if k in self._repr_hide:
+    def deserialize(self, backref=None):
+        res = dict()
+
+        for attr, col in self.__mapper__.c.items():
+            if attr in self._repr_hide:
                 continue
-            result[k] = getattr(self, k)
+            res[col.key] = getattr(self, attr)
+       
+        for attr, relation in self.__mapper__.relationships.items():
+            if attr == str(backref):
+                continue
+            key = relation.key
+            value = getattr(self, attr)
+            if value is None:
+                res[key] = None
+            elif isinstance(value.__class__, DeclarativeMeta):
+                res[key] = value.deserialize(backref=self.__table__)
+            else:
+                res[key] = [i.deserialize(backref=self.__table__) 
+                                            for i in value]
+        return res
 
-            if isinstance(result[k], dict):
-                result[k] = self.deserialize(result[k])
-            if isinstance(result[k], datetime):
-                result[k] = result[k].timestamp()
-
-        return result
+    def __iter__(self):
+        return self.deserialize().iteritems()
 
     def __repr__(self):
         vals = ', '.join("%s=%r" % (n, getattr(self,n)) for n in self.__table__.c.keys() if n not in self._repr_hide)
