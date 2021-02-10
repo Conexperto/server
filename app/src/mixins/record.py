@@ -3,10 +3,12 @@ from datetime import datetime
 
 
 class Record:
-    _repr_hide = ['app']
+    _repr_hide = ['app', 'custom_claims', 'tokens_valid_after_timestamp']
 
     def serialize(self, obj):
         for k, v in obj.items():
+            if k in self._repr_hide:
+                continue
             if k in self.__dict__.keys() and v:
                 setattr(self, k, v)
         return self
