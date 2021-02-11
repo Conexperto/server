@@ -2,3 +2,9 @@ from .auth import AuthService
 from .auth_admin import AuthAdminService
 from .admin import AdminService
 from .user import UserService
+from .expert import ExpertService
+from .method import MethodService
+from .plan import PlanService
+from .speciality import SpecialityService
+from .association_method import AssociationExpertToMethodService
+from .association_speciality import AssociationExpertToSpecialityService
