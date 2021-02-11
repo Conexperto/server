@@ -55,7 +55,7 @@ def register_auth_admin():
         return abort(400, description='NotFoundData', response='not-found-data')
 
     service = AuthAdminService()
-    user = service.create_user(body)
+    user = service.create(body)
 
     return jsonify({'success': True, 'response': user});
 
@@ -69,7 +69,7 @@ def update_auth_admin():
         return abort(400, description='NotFoundData', response='not-found-data')
 
     service = AuthAdminService()
-    user = service.update_user(g.admin, body)
+    user = service.update(g.admin, body)
 
     return jsonify({'success': True, 'response': user})
 
@@ -83,7 +83,7 @@ def update_field_auth_admin():
         return abort(400, description='NotFoundData', response='not-found-data')
 
     service = AuthAdminService()
-    user = service.update_field_user(g.admin, body)
+    user = service.update_field(g.admin, body)
 
     return jsonify({'success': True, 'response': user})
 
@@ -92,7 +92,7 @@ def update_field_auth_admin():
 @login_required
 def disabled_auth_admin():
     service = AuthAdminService()
-    user = service.disabled_user(g.admin)
+    user = service.disabled(g.admin)
 
     return jsonify({ 'success': True, 'response': user })
 
@@ -100,8 +100,8 @@ def disabled_auth_admin():
 @router.route('/', methods=['DELETE'])
 @login_required
 def delete_auth_admin():
-    service = AuthService()
-    service.delete_user(g.admin)
+    service = AuthAdminService()
+    service.delete(g.admin)
 
     return jsonify({
         'success': True,
