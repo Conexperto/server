@@ -1,10 +1,10 @@
 from flask import Blueprint, g, request, jsonify, abort
 from functools import wraps
-from src.services import AuthAdminService, AdminService
+from src.services import AuthAdminService, PlanService
 from src.models import Privilegies
 
 
-router = Blueprint(name='Admin', import_name=__name__)
+router = Blueprint(name='PlanAdmin', import_name=__name__)
 
 # Decorador
 def get_token():
@@ -41,7 +41,7 @@ def login_required(func):
 
 # Decorator
 def has_access(func, access_level):
-    @wraps
+    @wraps(func)
     def wrap(*arg, **kwargs):
         user = g.admin['b']
         
@@ -50,91 +50,92 @@ def has_access(func, access_level):
 
     return wrap
 
-# GET: /api/v1/admin/<uid>
+# GET: /api/v1/admin/plan/<uid>
 @router.route('/<uid>', methods=['GET'])
 @login_required
-def index_admin_one(uid):
-    service = AdminService()
-    user = service.get_user(uid)
+def index_plan_admin_one(uid):
+    service = PlanService()
+    plan = service.get(uid)
 
     return jsonify({
         "success": True,
-        "response": user
+        "response": plan
     })
 
-# GET: /api/v1/admin
+# GET: /api/v1/admin/plan
 @router.route('/', methods=['GET'])
 @login_required
-def index_admin():
+def index_plan_admin():
     page = request.args.get('page') or 1
+    per_pages = request.args.get('per_pages')
     
-    service = AdminService()
-    users = service.list_user(page)
+    service = PlanService()
+    plans = service.list(page, per_pages)
     
     return jsonify({
         "success": True,
-        "response": users
+        "response": plans
     })
 
-# POST: /api/v1/admin
+# POST: /api/v1/admin/plan
 @router.route('/', methods=['POST'])
 @login_required
-def register_admin():
+def register_plan_admin():
     body = request.get_json()
     
     if not body:
         return abort(400, description='NotFoundData', response='not-found-data')
 
-    service = AdminService()
-    user = service.create_user(body)
+    service = PlanService()
+    plan = service.create(body)
 
-    return jsonify({ 'success': True, 'response': user });
+    return jsonify({ 'success': True, 'response': plan });
 
-# PUT: /api/v1/admin/<uid>
+# PUT: /api/v1/admin/plan/<uid>
 @router.route('/<uid>', methods=['PUT'])
 @login_required
-def update_admin(uid):
+def update_plan_admin(uid):
     body = request.get_json()
 
     if not body:
         return abort(400, description='NotFoundData', response='not-found-data')
 
-    service = AdminService()
-    user = service.update_user(uid, body)
+    service = PlanService()
+    plan = service.update(uid, body)
 
-    return jsonify({ 'success': True, 'response': user })
+    return jsonify({ 'success': True, 'response': plan })
 
-# PATCH: /api/v1/admin/<uid>
+# PATCH: /api/v1/admin/plan/<uid>
 @router.route('/<uid>', methods=['PATCH'])
 @login_required
-def update_field_admin(uid):
+def update_field_plan_admin(uid):
     body = request.get_json()
 
     if not body:
         return abort(400, description='NotFoundData', response='not-found-data')
 
-    service = AdminService()
-    user = service.update_field_user(uid, body)
+    service = PlanService()
+    plan = service.update_field(uid, body)
 
-    return jsonify({ 'success': True, 'response': user })
+    return jsonify({ 'success': True, 'response': plan })
 
-# PATCH /api/v1/admin/disabled/<uid>
+# PATCH /api/v1/admin/plan/disabled/<uid>
 @router.route('/disabled/<uid>', methods=['PATCH'])
 @login_required
-def disabled_admin(uid):
-    service = AdminService()
-    user = service.disabled_user(uid)
+def disabled_plan_admin(uid):
+    service = PlanService()
+    plan = service.disabled(uid)
 
-    return jsonify({ 'success': True, 'response': user })
+    return jsonify({ 'success': True, 'response': plan })
 
-# DELETE: /api/v1/admin/<uid>
+# DELETE: /api/v1/admin/plan/<uid>
 @router.route('/<uid>', methods=['DELETE'])
 @login_required
-def delete_admin(uid):
-    service = AdminService()
-    user = service.delete_user(uid)
+def delete_plan_admin(uid):
+    service = PlanService()
+    plan = service.delete(uid)
 
     return jsonify({
         'success': True,
-        'response': user
+        'response': plan
     })
