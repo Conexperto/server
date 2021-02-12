@@ -16,9 +16,9 @@ class UserRecord(Record):
         except auth.InvalidIdTokenError as ex:
             raise abort(401, description='InvalidIdToken', response='auth/invalid-id-token')
         except auth.TokenSignError as ex:
-            raise abort(401, description='TokenSign')
+            raise abort(401, description='TokenSign', response='auth/token-sign')
         except auth.UnexpectedResponseError as ex:
-            raise abort(500, description='UnexpectedResponse')
+            raise abort(500, description='UnexpectedResponse', response='unexpected-response')
 
     @classmethod
     def get_user(cls, uid, app):
@@ -27,7 +27,7 @@ class UserRecord(Record):
         except auth.UserNotFoundError as ex:
             raise abort(404, description='UserNotFound', response='auth/user-not-found')
         except auth.UnexpectedResponseError as ex:
-            raise abort(500, description='UnexpectedResponse')
+            raise abort(500, description='UnexpectedResponse', response='unexpected-response')
 
     @classmethod
     def create_user(cls, email, password, display_name, app):
@@ -43,7 +43,7 @@ class UserRecord(Record):
         except auth.PhoneNumberAlreadyExistsError as ex:
             raise abort(400, description='PhoneNumberAlreadyExists', response='auth/phone-number-already-exists')
         except auth.UnexpectedResponseError as ex:
-            raise abort(500, description='UnexpectedResponse')
+            raise abort(500, description='UnexpectedResponse', response='unexpected-response')
 
     def __init__(self, user_record, app):
         self.app = app
@@ -87,7 +87,7 @@ class UserRecord(Record):
         except auth.PhoneNumberAlreadyExistsError as ex:
             raise abort(400, description='PhoneNumberAlreadyExists', response='auth/phone-number-already-exists')
         except auth.UnexpectedResponseError as ex:
-            raise abort(500, description='UnexpectedResponse')
+            raise abort(500, description='UnexpectedResponse', response='unexpected-response')
 
     def delete_user(self):
         try:
@@ -95,7 +95,7 @@ class UserRecord(Record):
         except auth.UserNotFoundError as ex:
             raise abort(404, description='UserNotFound', response='auth/user-not-found')
         except auth.UnexpectedResponseError as ex:
-            raise abort(500, description='UnexpectedResponse')
+            raise abort(500, description='UnexpectedResponse', response='unexpected-response')
 
     def make_claims(self, claims={}):
         try:
@@ -103,5 +103,5 @@ class UserRecord(Record):
         except auth.UserNotFoundError as ex:
             raise abort(404, description='UserNotFound', response='auth/user-not-found')
         except auth.UnexpectedResponseError as ex:
-            raise abort(500, description='UnexpectedResponse')
+            raise abort(500, description='UnexpectedResponse', response='unexpected-response')
     
