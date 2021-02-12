@@ -26,4 +26,5 @@ class User(BaseMixin, db.Model):
     session_taken       = Column(Integer, default=0)
     complete_register   = Column(Boolean, default=False) 
     timezone            = Column(Integer, default=0)
+    expert              = relationship("Expert", uselist=False, back_populates="user")
 
