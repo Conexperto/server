@@ -7,7 +7,7 @@ const domain = "http://api:3000/api/v1";
 
 jest.setTimeout(100000)
 
-describe("AuthAdmin", () => {
+describe("-AuthAdmin", () => {
 	let token = null;
 
 	describe("POST /admin/auth", () => {
