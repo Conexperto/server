@@ -12,13 +12,13 @@ class AuthAdmin():
         user_record = UserRecord.get_user(decoded_token['uid'], app=admin_sdk)
         
         if user_record.disabled:
-            raise abort(401, 'AccountDisabled')
+            raise abort(401, description='AccountDisabled', response='auth/account-disabled')
 
         claims = user_record.custom_claims
 
         if hasattr(claims, "admin"):
             if not claims.admin:
-                raise abort(401, 'Unauthorized')
+                raise abort(401, description='Unauthorized', response='auth/unauthorized')
         
         admin = Admin.query.filter_by(uid=user_record.uid).first()
 
