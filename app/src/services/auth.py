@@ -3,16 +3,16 @@ from src.models import Auth, UserRecord, User
 from src.firebase import web_sdk
 
 
+
 class AuthService:
 
     def __init__(self):
         self.__auth = Auth()
 
-
     def authentication(self, id_token):
         return self.__auth.authentication(id_token)
 
-    def create_user(self, body):
+    def create(self, body):
         try:
             user_record = UserRecord.create_user(
                             email=body['email'],
@@ -34,10 +34,13 @@ class AuthService:
         except KeyError as ex:
             abort(400, description='BadRequest', response=str(ex))
 
-    def update_user(self, user, body):
+    def update(self, user, body):
         user_record = user['a']
         _user = user['b']
        
+        if not user_record or not _user:
+            abort(404, description='NotFound', response='not_found')
+
         user_record.serialize(body)
         user_record.update_user()
 
@@ -53,10 +56,13 @@ class AuthService:
             'b': _user
         } 
 
-    def update_field_user(self, user, body):
+    def update_field(self, user, body):
         user_record = user['a']
         _user = user['b']
        
+        if not user_record or not _user:
+            abort(404, description='NotFound', response='not_found')
+
         user_record.serialize(body)
         user_record.update_user()
 
@@ -72,9 +78,12 @@ class AuthService:
             'b': _user
         } 
 
-    def disabled_user(self, user):
+    def disabled(self, user):
         user_record = user['a']
         _user = user['b']
+
+        if not user_record or not _user:
+            abort(404, description='NotFound', response='not_found')
 
         user_record.serialize({ 'disabled': not user_record.disabled })
         user_record.update_user()
@@ -88,9 +97,12 @@ class AuthService:
             'b': _user
         }
 
-    def delete_user(self, user):
+    def delete(self, user):
         user_record = user['a']
         _user = user['b']
+
+        if not user_record or not _user:
+            abort(404, description='NotFound', response='not_found')
 
         user_record.delete_user()
         _user.delete()
