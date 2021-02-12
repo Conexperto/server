@@ -1,7 +1,6 @@
 from flask import Blueprint, g, request, jsonify, abort
 from functools import wraps
 from src.services import AuthService, UserService
-from src.models import Privilegies
 
 
 router = Blueprint(name='User', import_name=__name__)
@@ -39,23 +38,12 @@ def login_required(func):
 
     return wrap
 
-# Decorator
-def has_access(func, access_level):
-    @wraps
-    def wrap(*arg, **kwargs):
-        user = g.admin['b']
-        
-        if not user.has_access(access_level.value):
-            abort(401, description='Unauthorized', response='You not enough permissions to access')
-
-    return wrap
-
 # GET: /api/v1/user/<uid>
 @router.route('/<uid>', methods=['GET'])
 @login_required
 def index_user_one(uid):
-    service = UserService()
-    user = service.get_user(uid)
+    service = UserService() 
+    user = service.get(uid)
 
     return jsonify({
         "success": True,
@@ -67,74 +55,14 @@ def index_user_one(uid):
 @login_required
 def index_user():
     page = request.args.get('page') or 1
-    
+    per_pages = request.args.get('per_pages')
+
     service = UserService()
-    users = service.list_user(page)
+    users = service.list(page, per_pages)
     
     return jsonify({
         "success": True,
-        "response": users
+        "response": user
     })
 
-# POST: /api/v1/user
-@router.route('/', methods=['POST'])
-@login_required
-def register_user():
-    body = request.get_json()
-    
-    if not body:
-        return abort(400, description='NotFoundData', response='not-found-data')
 
-    service = UserService()
-    user = service.create_user(body)
-
-    return jsonify({ 'success': True, 'response': user });
-
-# PUT: /api/v1/user/<uid>
-@router.route('/<uid>', methods=['PUT'])
-@login_required
-def update_user(uid):
-    body = request.get_json()
-
-    if not body:
-        return abort(400, description='NotFoundData', response='not-found-data')
-
-    service = UserService()
-    user = service.update_user(uid, body)
-
-    return jsonify({ 'success': True, 'response': user })
-
-# PATCH: /api/v1/user/<uid>
-@router.route('/<uid>', methods=['PATCH'])
-@login_required
-def update_field_user(uid):
-    body = request.get_json()
-
-    if not body:
-        return abort(400, description='NotFoundData', response='not-found-data')
-
-    service = UserService()
-    user = service.update_field_user(uid, body)
-
-    return jsonify({ 'success': True, 'response': user })
-
-# PATCH /api/v1/user/disabled/<uid>
-@router.route('/disabled/<uid>', methods=['PATCH'])
-@login_required
-def disabled_user(uid):
-    service = UserService()
-    user = service.disabled_user(uid)
-
-    return jsonify({ 'success': True, 'response': user })
-
-# DELETE: /api/v1/user/<uid>
-@router.route('/<uid>', methods=['DELETE'])
-@login_required
-def delete_user(uid):
-    service = UserService()
-    user = service.delete_user(uid)
-
-    return jsonify({
-        'success': True,
-        'response': user
-    })
