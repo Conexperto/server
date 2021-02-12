@@ -1,6 +1,11 @@
 from flask import Blueprint, g, request, jsonify, abort
 from functools import wraps
-from src.services import AuthService
+from src.services import AuthService, \
+                            ExpertService, \
+                            PlanService, \
+                            AssociationExpertToMethodService, \
+                            AssociationExpertToSpecialityService
+
 
 
 router = Blueprint(name='Auth', import_name=__name__)
@@ -56,7 +61,7 @@ def register_auth():
         return abort(400, description='NotFoundData', response='not-found-data')
 
     service = AuthService()
-    user = service.create_user(body)
+    user = service.create(body)
 
     return jsonify({'success': True, 'response': user});
 
@@ -70,9 +75,37 @@ def update_auth():
         return abort(400, description='NotFoundData', response='not-found-data')
 
     service = AuthService()
-    user = service.update_user(g.user, body)
+    user = service.update(g.user, body)
 
     return jsonify({'success': True, 'response': user})
+
+# PUT: /api/v1/auth/expert
+@router.route('/expert', methods=['PUT'])
+@login_required
+def update_auth_expert():
+    body = request.get_json()
+
+    if not body:
+        return abort(400, description='NotFoundData', response='not-found-data')
+
+    _expert = g.user['b'].expert
+    
+    if hasattr(body, 'speciality'):
+        ass_speciality = AssociationExpertToSpecialityService()
+        ass_speciality.update_or_create_many(_expert.id, body['speciality'])
+
+    if hasattr(body, 'method'):
+        ass_method = AssociationExpertToMethodService()
+        ass_method.update_or_create_many(_expert.id, body['method'])
+
+    if hasattr(body, 'plan'):
+        plan = PlanService()
+        plan.update_or_create_many(_expert.id, body['plan'])
+
+    service = ExpertService()
+    expert = service.update(_expert.id, body)
+
+    return jsonify({ 'success': True, 'response': expert })
 
 # PATCH: /api/v1/auth
 @router.route('/', methods=['PATCH'])
@@ -84,7 +117,7 @@ def update_field_auth():
         return abort(400, description='NotFoundData', response='not-found-data')
 
     service = AuthService()
-    user = service.update_field_user(g.user, body)
+    user = service.update_field(g.user, body)
 
     return jsonify({'success': True, 'response': user})
 
@@ -93,7 +126,7 @@ def update_field_auth():
 @login_required
 def disabled_auth():
     service = AuthService()
-    user = service.disabled_user(g.user)
+    user = service.disabled(g.user)
 
     return jsonify({ 'success': True, 'response': user })
 
@@ -103,7 +136,7 @@ def disabled_auth():
 @login_required
 def delete_auth():
     service = AuthService()
-    service.delete_user(g.user)
+    service.delete(g.user)
 
     return jsonify({
         'success': True,
