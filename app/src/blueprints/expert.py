@@ -38,12 +38,12 @@ def login_required(func):
 
     return wrap
 
-# GET: /api/v1/expert/<uid>
-@router.route('/<uid>', methods=['GET'])
+# GET: /api/v1/expert/<int:id>
+@router.route('/<int:id>', methods=['GET'])
 @login_required
-def index_expert_one(uid):
+def index_expert_one(_id):
     service = ExpertService()
-    expert = service.get(uid)
+    expert = service.get(_id)
 
     return jsonify({
         "success": True,
