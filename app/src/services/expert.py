@@ -1,5 +1,10 @@
 from flask import abort
-from src.models import Expert, Speciality, Method, Plan, AssociationMethod, AssociationSpeciality
+from src.models import Expert, \
+                        Speciality, \
+                        Method, \
+                        Plan, \
+                        AssociationMethod, \
+                        AssociationSpeciality
 
 
 
@@ -24,6 +29,28 @@ class ExpertService:
                             about_expert=body['about_expert'],
                             link_video=body['link_video'],
                             user_id=body['user_id'])
+
+            if hasattr(body, 'specialities'):
+                specialities = Speciality.query.filter(Speciality.id.in_(body['specialities'])).all()
+                for speciality in specialities:
+                    ass_speciality = AssociationSpeciality()
+                    ass_speciality.speciality.append(speciality)
+                    expert.speciality.append(ass_speciality)
+            if hasattr(body, 'methods'):
+                ids = [ method for method in body['method'] ]
+                methods = Method.query.filter(Method.id.in_(ids)).all()
+                for method in methods:
+                    _, link = next(item for item in body['methods'] if item['method'] == method.id)
+                    ass_method = AssociationMethod(link=link)
+                    ass_method.method.append(method)
+                expert.method.append(ass_method)
+            if hasattr(body, 'plans'):
+                for duration, price, coin in body['plans']:
+                    expert.plan.append(
+                            Plan(duration=duration, 
+                                    price=price, 
+                                    coin=coin))
+
             expert.add()
             expert.save()
 
