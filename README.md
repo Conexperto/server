@@ -1,7 +1,7 @@
 API Restful dyno-api
 ================
 
-## Getting Started
+## Getting Started 💪
 
 ### Prerequisities
 
@@ -12,7 +12,7 @@ In order to run this container you'll need docker installed.
 * [Linux](https://docs.docker.com/linux/started/)
 
 
-### Instructions
+### Instructions 🧐
 
 Clone the repository and move to the project directory.
 ```sh
@@ -37,19 +37,24 @@ then visit <http://localhost:5000/api/v1/>
 
 Initialize migration of database.
 ```sh
-docker-compose run --rm api python3 manage.py db init
-docker-compose run --rm api python3 manage.py db migrate
-docker-compose run --rm api python3 manage.py db upgrade
+docker-compose exec api python3 manage.py db init
+docker-compose exec api python3 manage.py db migrate
+docker-compose exec api python3 manage.py db upgrade
 ```
 
 if alterations are made in the api `app/src/models`, an update is necessary run this script.
 ```sh
-docker-compose run --rm api python3 manage.py upgrade
+docker-compose exec api python3 manage.py upgrade
 ```
 
 Alternative for run all command, directly inside container api.
 ```sh
-docker-compose run --rm api bash
+docker-compose exec api sh
+```
+
+## Seeds 
+```
+docker-compose exec api python3 manage.py seed --model=<seed>
 ```
 
 ## Environment
@@ -77,32 +82,46 @@ In file database.conf be all variables envionment to db.
 ## Folder Structure
 
 	.
-	├── app 
-	|	├── hooks					# Contains all resource external.
-	|	├── src						# Source files.
-	|	|	├── blueprints			# Blueprints for flask (routes).
-	|	|	├── helpers				# Helpers for integrate to flask.
-	|	|	├── mixins				# Mixins for integrate to sqlalchemy. 
-	|	|	├── models 				# Model for sqlalchemy.
+	├── app/ 
+	|	├── src/					# Source files.
+	|	|	├── blueprints/			# Blueprints for flask (routes).
+	|	|	├── helpers/			# Helpers for integrate to flask.
+	|	|	├── mixins/				# Mixins for integrate to sqlalchemy. 
+	|	|	├── models/ 			# Model for sqlalchemy.
+	|	|	├── seed/				# Seeds
 	|	|	├── api.py				# Entrypoint for api. 
-	|	|	└── db.py				# DB instance.
-	|	├── static					# Contains all resource static
-	|	├── templates				# Templates 
-	|	├── test					# Unit tests.
+	|	|	├── db.py				# DB instance.
+	|	| 	└── firebase.py			# Firebase initialize app for admin and web. 
+	|	├── static/					# Contains all resource static.
+	|	├── templates/				# Templates. 
 	|	├── config.py				# Catch all environment variables to flask.
 	|	├── manage.py				# Manage migrate of database. 
-	|	├── requirements.txt		# pip requirements.txt 
-	|	├── run.py 					# Entrypoint for run app with python3  
-	|	├── test.py					# Entrypoint for exec unitesting
-	|	└── wsgi.py					# Entrypoint for WSGI
-	├── api.conf					# Environment container api.
+	|	├── requirements.txt		
+	|	├── seed.py					# Manage commandline seed.		
+	|	├── run.py 					# Entrypoint for run app with python3.  
+	|	├── test.py					# Entrypoint for exec unitesting.
+	|	└── wsgi.py					# Entrypoint for WSGI.
+	├── docker/						# Config Docker.
+	|	├── api/	
+	|	|	├── api.conf			# Environment container api.
+	|	|	└── Dockerfile			# Contains all the commands for make image of container api.
+	|	├── db/	
+	|	|	└── db.conf				# Environment container db.
+	|	└── test/	
+	|	|	├── test.conf			# Environment container test.
+	|	|	└── Dockerfile			# Contains all the commands for make image of container test.
+	├── test/						# Unittesting.
+	|	├── __test__/				# Contains all the unittesting by endpoint.
+	|	├── config.js				# Configuration for unittesting firebase.
+	|	├── package.json			
+	|	└── utils.js
 	├── db.conf		 				# Environment container db.
 	├── docker-compose.yml			# Configuration that is applied to each container started for that service.
 	├── Dockerfile 					# Contains all the commands for image of container api.
 	├── README.md 					# Readme of a lifetime.
 	└── heroku.yml					# Config for deploy on heroku.
 
-## Deploy
+## Deploy 🏂
 
 ### Prerequisities
 
