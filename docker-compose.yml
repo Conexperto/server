@@ -18,11 +18,3 @@ services:
         depends_on:
             - db
         restart: always
-    test:
-        build: 
-            context: .
-            dockerfile: ./docker/test/Dockerfile
-        env_file: ./docker/test/test.conf
-        volumes: 
-            - ./test:/srv/test
-            - /srv/test/node_modules
