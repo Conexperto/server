@@ -93,19 +93,9 @@ def register_expert_admin():
     service = ExpertService()
     expert = service.create(body)
 
-    if hasattr(body, 'speciality'):
-        ass_speciality = AssociationExpertToMethodService()
-        ass_speciality.create_many(expert.id, body['speciality'])
-    if hasattr(body, 'method'):
-        ass_method = AssociationExpertToMethodService()
-        ass_method.create_many(expert.id, body['method'])
-    if hasattr(body, 'plan'):
-        plan = PlanService()
-        plan.create_many(expert.id, body['plan'])
-
     return jsonify({ 
         "success": True, 
-        "response": service.get(expert.id)  
+        "response": expert 
     });
 
 # PUT: /api/v1/admin/expert/<uid>
