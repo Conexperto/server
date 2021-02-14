@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class Record:
-    _repr_hide = ['app', 'custom_claims', 'tokens_valid_after_timestamp']
+    _repr_hide = ['app', 'tokens_valid_after_timestamp']
 
     def serialize(self, obj):
         for k, v in obj.items():
