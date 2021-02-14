@@ -1,3 +1,4 @@
+from flask import abort
 from firebase_admin import auth
 from src.firebase import admin_sdk
 from .admin import Admin
@@ -16,9 +17,8 @@ class AuthAdmin():
 
         claims = user_record.custom_claims
 
-        if hasattr(claims, "admin"):
-            if not claims.admin:
-                raise abort(401, description='Unauthorized', response='auth/unauthorized')
+        if not "admin" in claims:
+            raise abort(401, description='Unauthorized', response='auth/unauthorized')
         
         admin = Admin.query.filter_by(uid=user_record.uid).first()
 
