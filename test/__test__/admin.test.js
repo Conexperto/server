@@ -8,10 +8,10 @@ const domain = "http://api:3000/api/v1";
 jest.setTimeout(100000)
 
 describe("Admin", () => {
-	let token = null, uid = null;
+	let token_admin = null,token = null, uid = null;
 
 	beforeAll(async () => {
-		token = await login('conexpertotesting@gmail.com', 
+		token_admin = await login('conexpertotesting@gmail.com', 
 							'conexpertotesting2021', admin);
 	});
 
@@ -19,7 +19,7 @@ describe("Admin", () => {
 		test("It should create an user admin", async () => {
 			const response = await request(domain)
 										.post('/admin')
-										.set('Authorization', 'Bearer ' + token)
+										.set('Authorization', 'Bearer ' + token_admin)
 										.send({
 											display_name: 'frfernandezdev',
 											email: 'frfernandezdev@gmail.com',
@@ -38,7 +38,7 @@ describe("Admin", () => {
 		test("It should create a repeating user admin and response with error 400 ", async () => {
 			const response = await request(domain)
 										.post('/admin')
-										.set('Authorization', 'Bearer ' + token)
+										.set('Authorization', 'Bearer ' + token_admin)
 										.send({
 											display_name: 'frfernandezdev',
 											email: 'frfernandezdev@gmail.com',
@@ -56,7 +56,7 @@ describe("Admin", () => {
 		test("It should create a user admin, but without some fields and response with error 400", async () => {
 			const response = await request(domain)
 										.post('/admin')
-										.set('Authorization', 'Bearer ' + token)
+										.set('Authorization', 'Bearer ' + token_admin)
 										.send({
 											email: 'frfernandezdev@gmail.com'
 										});
@@ -69,7 +69,7 @@ describe("Admin", () => {
 		test("It should create a user admin, but with some extra fields and response with error 400", async () => {
 			const response = await request(domain)
 										.post('/admin')
-										.set('Authorization', 'Bearer ' + token)
+										.set('Authorization', 'Bearer ' + token_admin)
 										.send({
 											email: 'frfernandezdev@gmail.com',
 											passport: 'ABC1235598A'
@@ -78,6 +78,11 @@ describe("Admin", () => {
 			//	console.log(response.error);
 			//}
 			expect(response.statusCode).toBe(400);
+		});
+
+		afterAll(async () => {
+			token = await login('frfernandezdev@gmail.com', 
+								'token.01', admin);
 		});
 	});
 
@@ -120,7 +125,7 @@ describe("Admin", () => {
 										.put('/admin/' + uid)
 										.set('Authorization', 'Bearer ' + token)
 										.send({
-											phone_number: '+10000000000',
+											phone_number: '+10010000000',
 											name: 'Fernando',
 											lastname: 'Fernandez'
 										});
