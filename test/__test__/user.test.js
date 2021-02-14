@@ -7,7 +7,7 @@ const domain = "http://api:3000/api/v1";
 
 jest.setTimeout(100000)
 
-describe("-User", () => {
+describe("User", () => {
 	let token = null, uid = null;
 
 	beforeAll(async () => {
@@ -19,7 +19,7 @@ describe("-User", () => {
 		test("It should create an user", async () => {
 			const response = await request(domain)
 										.post('/user')
-										.set('Authorization', 'Bearer ' + token);
+										.set('Authorization', 'Bearer ' + token)
 										.send({
 											display_name: 'frfernandezdev',
 											email: 'frfernandezdev@gmail.com',
@@ -40,7 +40,7 @@ describe("-User", () => {
 		test("It should create a repeating user and response with error 400 ", async () => {
 			const response = await request(domain)
 										.post('/user')
-										.set('Authorization', 'Bearer ' + token);
+										.set('Authorization', 'Bearer ' + token)
 										.send({
 											display_name: 'frfernandezdev',
 											email: 'frfernandezdev@gmail.com',
@@ -60,7 +60,7 @@ describe("-User", () => {
 		test("It should create a user, but without some fields and response with error 400", async () => {
 			const response = await request(domain)
 										.post('/user')
-										.set('Authorization', 'Bearer ' + token);
+										.set('Authorization', 'Bearer ' + token)
 										.send({
 											email: 'frfernandezdev@gmail.com'
 										});
@@ -73,7 +73,7 @@ describe("-User", () => {
 		test("It should create a user, but with some extra fields and response with error 400", async () => {
 			const response = await request(domain)
 										.post('/user')
-										.set('Authorization', 'Bearer ' + token);
+										.set('Authorization', 'Bearer ' + token)
 										.send({
 											email: 'frfernandezdev@gmail.com',
 											passport: 'ABC1235598A'
