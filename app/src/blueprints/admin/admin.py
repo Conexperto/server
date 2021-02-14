@@ -12,15 +12,15 @@ def get_token():
     prefix = 'Bearer '
 
     if not 'authorization' in headers:
-        raise abort(400, description='NotFoundToken', response='auth/not-found-token')
+        raise abort(401, description='NotFoundToken', response='auth/not-found-token')
 
     token = headers['authorization']
 
     if not token.startswith(prefix):
-        raise abort(400, description='InvalidIdToken', response='auth/invalid-id-token')
+        raise abort(401, description='InvalidIdToken', response='auth/invalid-id-token')
     
     if not token[len(prefix):]:
-        raise abort(400, description='InvalidIdToken', response='auth/invalid-id-token')
+        raise abort(401, description='InvalidIdToken', response='auth/invalid-id-token')
 
     return token[len(prefix):]
 
