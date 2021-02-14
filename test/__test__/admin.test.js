@@ -7,7 +7,7 @@ const domain = "http://api:3000/api/v1";
 
 jest.setTimeout(100000)
 
-describe("-Admin", () => {
+describe("Admin", () => {
 	let token = null, uid = null;
 
 	beforeAll(async () => {
@@ -19,7 +19,7 @@ describe("-Admin", () => {
 		test("It should create an user admin", async () => {
 			const response = await request(domain)
 										.post('/admin')
-										.set('Authorization', 'Bearer ' + token);
+										.set('Authorization', 'Bearer ' + token)
 										.send({
 											display_name: 'frfernandezdev',
 											email: 'frfernandezdev@gmail.com',
@@ -38,7 +38,7 @@ describe("-Admin", () => {
 		test("It should create a repeating user admin and response with error 400 ", async () => {
 			const response = await request(domain)
 										.post('/admin')
-										.set('Authorization', 'Bearer ' + token);
+										.set('Authorization', 'Bearer ' + token)
 										.send({
 											display_name: 'frfernandezdev',
 											email: 'frfernandezdev@gmail.com',
@@ -56,7 +56,7 @@ describe("-Admin", () => {
 		test("It should create a user admin, but without some fields and response with error 400", async () => {
 			const response = await request(domain)
 										.post('/admin')
-										.set('Authorization', 'Bearer ' + token);
+										.set('Authorization', 'Bearer ' + token)
 										.send({
 											email: 'frfernandezdev@gmail.com'
 										});
@@ -69,7 +69,7 @@ describe("-Admin", () => {
 		test("It should create a user admin, but with some extra fields and response with error 400", async () => {
 			const response = await request(domain)
 										.post('/admin')
-										.set('Authorization', 'Bearer ' + token);
+										.set('Authorization', 'Bearer ' + token)
 										.send({
 											email: 'frfernandezdev@gmail.com',
 											passport: 'ABC1235598A'
