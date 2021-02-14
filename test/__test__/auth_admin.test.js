@@ -7,17 +7,27 @@ const domain = "http://api:3000/api/v1";
 
 jest.setTimeout(100000)
 
-describe("-AuthAdmin", () => {
-	let token = null;
+describe("AuthAdmin", () => {
+	let token_admin = null, token = null;
+
+	beforeAll(async () => {
+		token_admin = await login('conexpertotesting@gmail.com', 
+								'conexpertotesting2021', admin);
+	});
 
 	describe("POST /admin/auth", () => {
 		test("It should create an user admin", async () => {
 			const response = await request(domain)
 										.post('/admin/auth')
+										.set('Authorization', 'Bearer ' + token_admin)
 										.send({
 											email: 'frfernandezdev@gmail.com',
 											password: 'token.01',
-											display_name: 'frfernandezdev'
+											display_name: 'frfernandezdev',
+											privilegies: 0,
+											phone_number: '+584247025969',
+											name: 'Fernando',
+											lastname: 'Fernandez'
 										});
 			//if (response.error) {
 			//	console.log(response.error);
@@ -28,10 +38,15 @@ describe("-AuthAdmin", () => {
 		test("It should create a repeating user admin and response with error 400 ", async () => {
 			const response = await request(domain)
 										.post('/admin/auth')
+										.set('Authorization', 'Bearer ' + token_admin)
 										.send({
 											email: 'frfernandezdev@gmail.com',
 											password: 'token.01',
-											display_name: 'frfernandezdev'
+											display_name: 'frfernandezdev',
+											privilegies: 0,
+											phone_number: '+584247025969',
+											name: 'Fernando',
+											lastname: 'Fernandez'
 										});
 			//if (response.error) {
 			//	console.log(response.error);
@@ -42,6 +57,7 @@ describe("-AuthAdmin", () => {
 		test("It should create a user admin, but without some fields and response with error 400", async () => {
 			const response = await request(domain)
 										.post('/admin/auth')
+										.set('Authorization', 'Bearer ' + token_admin)
 										.send({
 											email: 'frfernandezdev@gmail.com'
 										});
@@ -54,6 +70,7 @@ describe("-AuthAdmin", () => {
 		test("It should create a user admin, but with some extra fields and response with error 400", async () => {
 			const response = await request(domain)
 										.post('/admin/auth')
+										.set('Authorization', 'Bearer ' + token_admin)
 										.send({
 											email: 'frfernandezdev@gmail.com',
 											passport: 'ABC1235598A'
@@ -66,7 +83,7 @@ describe("-AuthAdmin", () => {
 
 		afterAll(async () => {
 			token = await login('frfernandezdev@gmail.com', 
-								'token.01', web);
+								'token.01', admin);
 		});
 	});
 
@@ -109,7 +126,7 @@ describe("-AuthAdmin", () => {
 										.put('/admin/auth')
 										.set('Authorization', 'Bearer ' + token)
 										.send({
-											phone_number: '+10000000000',
+											phone_number: '+11000000000',
 											name: 'Fernando',
 											lastname: 'Fernandez',
 											headline: 'Lorem ipsum',
