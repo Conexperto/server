@@ -37,7 +37,7 @@ class ExpertService:
                     ass_speciality.speciality.append(speciality)
                     expert.speciality.append(ass_speciality)
             if hasattr(body, 'methods'):
-                ids = [ method for method in body['method'] ]
+                ids = [ method for method in body['methods'] ]
                 methods = Method.query.filter(Method.id.in_(ids)).all()
                 for method in methods:
                     _, link = next(item for item in body['methods'] if item['method'] == method.id)
@@ -63,10 +63,16 @@ class ExpertService:
 
         if not expert:
             abort(404, description='NotFound', response='not_found')
+       
+        if hasattr(body, 'specialities'):
+            pass
+        if hasattr(body, 'methods'):
+            pass
+        if hasattr(body, 'plans'):
+            pass
 
         expert.serialize(body)
         expert.save()
-
 
         return expert
 
