@@ -128,7 +128,7 @@ def disabled_auth():
     service = AuthService()
     user = service.disabled(g.user)
 
-    return jsonify({ 'success': True, 'response': user })
+    return jsonify({ 'success': True })
 
 
 # DELETE: /api/v1/auth
