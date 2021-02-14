@@ -65,6 +65,22 @@ def register_auth():
 
     return jsonify({'success': True, 'response': user});
 
+# POST /api/v1/auth/expert
+@router.route('/expert', methods=['POST'])
+@login_required
+def register_expert():
+    body = request.get_json()
+
+    if not body:
+        return abort(400, description='NotFoundData', response='not-found-data')
+    
+    
+    service = ExpertService()
+    body['user_id'] = g.user.id
+    user = service.create(body)
+
+    return jsonify({ 'success': True, 'response': user })
+
 # PUT: /api/v1/auth
 @router.route('/', methods=['PUT'])
 @login_required
