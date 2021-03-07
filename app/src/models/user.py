@@ -1,6 +1,6 @@
 from src.mixins import BaseMixin
 from sqlalchemy import Column, ForeignKey
-from sqlalchemy import String, Integer, Boolean, ARRAY
+from sqlalchemy import String, Integer, Float, Boolean, ARRAY
 from sqlalchemy.orm import relationship
 from src.db import db
 
@@ -25,6 +25,6 @@ class User(BaseMixin, db.Model):
     about_me            = Column(String(150))
     session_taken       = Column(Integer, default=0)
     complete_register   = Column(Boolean, default=False) 
-    timezone            = Column(Integer, default=0)
+    timezone            = Column(String)
     expert              = relationship("Expert", uselist=False, back_populates="user")
 
