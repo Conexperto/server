@@ -1,3 +1,4 @@
+from sqlalchemy import asc, desc, or_
 from flask import abort
 from src.models import UserRecord, Admin 
 from src.firebase import admin_sdk
@@ -7,10 +8,42 @@ from src.models import Privilegies
 
 class AdminService:
 
+    def search(self, search):
+        if search is None:
+            return self.__query
+
+        self.__query = self.__query \
+                    .filter(or_(
+                        Admin.display_name.like(f"%{search}%"),
+                        Admin.email.like(f"%{search}%"),
+                        Admin.name.like(f"%{search}%"),
+                        Admin.lastname.like(f"%{search}%")
+                    ))
+        return self.__query;
+
+    def sort(self, order_by, order):
+        __order_by = '';
+        __query = None;
+
+        if not order in ['desc', 'asc']:
+            return
+
+        if not hasattr(Admin, order_by):
+            return
+
+        if (order == 'asc'):
+            __query = asc(order_by)
+        if (order == 'desc'):
+            __query = desc(order_by)
+
+        self.__query = self.__query.order_by(__query)
+        return self.__query 
+
     def get(self, uid):
         user_record = UserRecord.get_user(uid, app=admin_sdk)
         user = Admin.query.filter_by(uid=user_record.uid).first()
 
+        print(user_record, user)
         if not user_record or not user:
             abort(404, description='NotFound', response='not_found')
 
@@ -20,22 +53,28 @@ class AdminService:
             'b': user
         }
 
-    def list(self, page=1, per_pages=10):
-        users = Admin.query.paginate(page, per_pages or 10, error_out=False)
-       
-        return users
+    def list(self, search=None, page=1, per_page=10, order_by='created_at', order='desc'):
+        self.__query = Admin.query
+        
+        self.search(search)
+        self.sort(order_by, order)
+        paginate = self.__query.paginate(int(page), int(per_page) or 10, error_out=False)
+        
+        return paginate
 
     def create(self, body):
         try:
-            user_record = UserRecord(
-                    email=body['email'],
-                    password=body['password'],
-                    display_name=body['display_name'],
-                    phone_number=body['phone_number'], app=admin_sdk)
-
+            user = {
+                'email': body['email'],
+                'password': body['password'],
+                'display_name': body['display_name'],
+                'phone_number': body['phone_number']
+            }
+            user_record = UserRecord.create_user(user, app=admin_sdk)
+            privilegies = body['privilegies'] if hasattr(body, 'privilegies') else Privilegies.User.value
             user_record.make_claims({ 
                             'admin': True, 
-                            'access_level': body['privilegies'] if hasattr(body, 'privilegies') else Privilegies.User.value })
+                            'access_level': privilegies })
             
             user = Admin(uid=user_record.uid,
                             email=body['email'],
@@ -43,7 +82,7 @@ class AdminService:
                             phone_number=body['phone_number'],
                             name=body['name'],
                             lastname=body['lastname'],
-                            privilegies=body['privilegies'])
+                            privilegies=privilegies)
 
             user.add()
             user.save()
@@ -114,7 +153,7 @@ class AdminService:
         user_record.serialize({ 'disabled': not user_record.disabled })
         user_record.update_user()
 
-        user.serialize({ 'disabled': not user_record.disabled })
+        user.serialize({ 'disabled': not user.disabled })
         user.save()
 
         return {
