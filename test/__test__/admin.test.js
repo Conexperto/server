@@ -24,7 +24,7 @@ describe("Admin", () => {
 											display_name: 'frfernandezdev',
 											email: 'frfernandezdev@gmail.com',
 											password: 'token.01',
-											phone_number: '+10000000000',
+											phone_number: '+10100001000',
 											name: 'Fernando',
 											lastname: 'Fernandez'
 										});
@@ -98,7 +98,6 @@ describe("Admin", () => {
 		test("it should respond with an error 400, because not send authorization headers", async () => {
 			const response = await request(domain)
 										.get('/admin/' + uid);
-
 			expect(response.statusCode).toBe(400);
 		});
 
@@ -106,7 +105,6 @@ describe("Admin", () => {
 			const response = await request(domain)
 										.get('/admin/' + uid)
 										.set('Authorization', token);
-
 			expect(response.statusCode).toBe(400);
 		});
 
@@ -114,7 +112,6 @@ describe("Admin", () => {
 			const response = await request(domain)
 										.get('/admin/' + uid)
 										.set('Authorization', 'Bearer');
-
 			expect(response.statusCode).toBe(400);
 		});
 	});
@@ -166,7 +163,7 @@ describe("Admin", () => {
 	afterAll(async () => {
 		const response = await request(domain)
 									.delete('/admin/' + uid)
-									.set('Authorization', 'Bearer ' + token);
+									.set('Authorization', 'Bearer ' + token_admin);
 		if (response.error) {
 			console.log(response.error)
 		}
