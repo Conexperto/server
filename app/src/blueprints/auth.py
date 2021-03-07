@@ -76,7 +76,7 @@ def register_expert():
     
     
     service = ExpertService()
-    body['user_id'] = g.user.id
+    body['user_id'] = g.user['b'].id
     user = service.create(body)
 
     return jsonify({ 'success': True, 'response': user })
@@ -105,18 +105,6 @@ def update_auth_expert():
         return abort(400, description='NotFoundData', response='not-found-data')
 
     _expert = g.user['b'].expert
-    
-    if hasattr(body, 'speciality'):
-        ass_speciality = AssociationExpertToSpecialityService()
-        ass_speciality.update_or_create_many(_expert.id, body['speciality'])
-
-    if hasattr(body, 'method'):
-        ass_method = AssociationExpertToMethodService()
-        ass_method.update_or_create_many(_expert.id, body['method'])
-
-    if hasattr(body, 'plan'):
-        plan = PlanService()
-        plan.update_or_create_many(_expert.id, body['plan'])
 
     service = ExpertService()
     expert = service.update(_expert.id, body)
