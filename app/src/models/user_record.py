@@ -30,12 +30,9 @@ class UserRecord(Record):
             raise abort(500, description='UnexpectedResponse', response='unexpected-response')
 
     @classmethod
-    def create_user(cls, email, password, display_name, app):
+    def create_user(cls, user, app):
         try:
-            return cls(auth.create_user(
-                                email=email,
-                                password=password,
-                                display_name=display_name, app=app), app=app)
+            return cls(auth.create_user(**user, app=app), app=app)
         except auth.UidAlreadyExistsError as ex:
             raise abort(400, description='UidAlreadyExists', response='auth/uid-already-exists')
         except auth.EmailAlreadyExistsError as ex:
@@ -72,13 +69,10 @@ class UserRecord(Record):
         try:
             args = { 'app': self.app };
 
-            for k,v in self.__dict__.items():
+            for k, v in self.__dict__.items():
                 if k in ['app', 'provider_data', 'custom_claims', 'tokens_valid_after_timestamp']:
                     continue
-                if not v:
-                    continue
                 args[k] = v
-
             auth.update_user(**args)
         except auth.UidAlreadyExistsError as ex:
             raise abort(400, description='UidAlreadyExists', response='auth/uid-already-exists')
