@@ -8,7 +8,7 @@ const domain = "http://api:3000/api/v1";
 jest.setTimeout(100000)
 
 describe("Auth", () => {
-	let token = null;
+	let token = null, id=null;
 	
 	describe("POST /auth", () => {
 		test("It should create an user", async () => {
@@ -23,6 +23,7 @@ describe("Auth", () => {
 			//	console.log(response.error);
 			//}
 			expect(response.statusCode).toBe(200);
+			id = response.body.response.b.id;
 		});
 
 		test("It should create a repeating user and response with error 400 ", async () => {
@@ -123,9 +124,9 @@ describe("Auth", () => {
 											headline: 'Lorem ipsum',
 											about_me: 'Lorem ipsum'
 										});
-			if (response.error) {
-				console.log(response.error)
-			}
+			//if (response.error) {
+			//	console.log(response.error)
+			//}
 			expect(response.statusCode).toBe(200);
 		});
 	});
@@ -138,11 +139,30 @@ describe("Auth", () => {
 										.send({
 											display_name: 'frfernandezdev1996'
 										});
-			if (response.error) {
-				console.log(response.error)
-			}
+			//if (response.error) {
+			//	console.log(response.error)
+			//}
 			expect(response.statusCode).toBe(200);
 		});
+	});
+
+	describe("POST /auth/expert", () => {
+		test("It should upgrade a user to an expert user", async () => {
+			const response = await request(domain)
+										.post('/auth/expert')
+										.set('Authorization', 'Bearer ' + token)
+										.send({
+											headline: '',
+											about_expert: '',
+											link_video: '',
+											user_id: id
+										});
+			//if (response.error) {
+			//	console.log(response.error)
+			//}
+			expect(response.statusCode).toBe(200);
+		});
+		
 	});
 
 	//describe("PATCH /auth/disabled", () => {
