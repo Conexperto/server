@@ -30,26 +30,34 @@ class ExpertService:
                             link_video=body['link_video'],
                             user_id=body['user_id'])
 
-            if hasattr(body, 'specialities'):
-                specialities = Speciality.query.filter(Speciality.id.in_(body['specialities'])).all()
-                for speciality in specialities:
-                    ass_speciality = AssociationSpeciality()
-                    ass_speciality.speciality.append(speciality)
-                    expert.speciality.append(ass_speciality)
-            if hasattr(body, 'methods'):
-                ids = [ method for method in body['methods'] ]
-                methods = Method.query.filter(Method.id.in_(ids)).all()
-                for method in methods:
-                    _, link = next(item for item in body['methods'] if item['method'] == method.id)
-                    ass_method = AssociationMethod(link=link)
-                    ass_method.method.append(method)
-                expert.method.append(ass_method)
-            if hasattr(body, 'plans'):
-                for duration, price, coin in body['plans']:
-                    expert.plan.append(
-                            Plan(duration=duration, 
-                                    price=price, 
-                                    coin=coin))
+            if 'specialities' in body:
+                body_specialities = body['specialities']
+                __specialities = Speciality.query.filter(
+                                                        Speciality.id.in_(body_specialities)
+                                                    ) \
+                                                    .all()
+                for __speciality in __specialities:
+                    __ass_speciality = AssociationSpeciality()
+                    __ass_speciality.speciality.append(__speciality)
+                    expert.specialities.append(__ass_speciality)
+            if 'methods' in body:
+                body_methods = body['methods']
+                __methods = Method.query.filter(
+                                                    Method.id.in_([method for _, method in body_methods])
+                                            ) \
+                                            .all()
+                for __method in __methods:
+                    _, link = next(item for item in body_methods if item['method'] == __method.id)
+                    __ass_method = AssociationMethod(link=link)
+                    __ass_method.method.append(__method)
+                    expert.methods.append(ass_method)
+            if 'plans' in body:
+                body_plans = body['plans']
+                for item in body_plans:
+                    expert.plans.append(
+                            Plan(duration=item['duration'], 
+                                    price=item['price'], 
+                                    coin=item['coin']))
 
             expert.add()
             expert.save()
@@ -63,13 +71,13 @@ class ExpertService:
 
         if not expert:
             abort(404, description='NotFound', response='not_found')
-       
-        if hasattr(body, 'specialities'):
-            pass
-        if hasattr(body, 'methods'):
-            pass
-        if hasattr(body, 'plans'):
-            pass
+        
+        if 'specialities' in body:
+            self.__specialities(expert, body['specialities'])
+        if 'methods' in body:
+            self.__methods(expert, body['methods'])
+        if 'plans' in body:
+            self.__plans(expert, body)
 
         expert.serialize(body)
         expert.save()
@@ -109,3 +117,56 @@ class ExpertService:
         return {
             'id': expert.id
         }
+
+    def __specialities(self, expert, body):
+        specialities = expert.specialities
+
+        for item in body:
+            mode = item['mode']
+            _id = item['id']
+        
+            if mode == 'delete':
+                __filter = list(filter(lambda item: item[1]['id'] == _id), enumerate(specialities))
+                pos, *_ = __filter[0]
+                del expert.specialities[pos]
+                continue
+            speciality = Speciality.query.get(_id)
+            ass = AssociationSpeciality()
+            ass.speciality.append(speciality)
+            expert.specialities.append(ass)
+
+        return expert
+
+    def __methods(self, expert, body):
+        methods = expert.methods
+
+        for item in body:
+            mode = item['mode']
+            _id = item['id']
+
+            if mode == 'delete':
+                __filter = list(filter(lambda item: item[1]['id'], enumerate(methods)))
+                pos, *_ = __filter[0]
+                del expert.methods[pos]
+                continue
+
+            if mode == 'update':
+                __filter = list(filter(lambda item: item[1]['id'], enumerate(methods)))
+                pos, *_ = __filter[0]
+                method = expert.methods[0]
+                method.link = item['link']
+                continue
+
+            method = Method.query.get(_id)
+            ass = AssociationMethod()
+            ass.methods.append(method)
+            expert.methods.append(ass)
+
+        return expert
+
+    def __plans(self, expert, body):
+        plans = expert.plans
+
+        for item in body:
+            mode = item['mode']
+            _id = item['id']
