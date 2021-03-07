@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import DeclarativeMeta
 
 
 class BaseMixin(AuditMixin):
-    __repr_hide = ['created_at', 'updated_at']
+    __repr_hide = ['updated_at']
     __insert_hide = []
     
     @property
@@ -40,7 +40,7 @@ class BaseMixin(AuditMixin):
                 continue
             if k in self.__insert_hide:
                 continue
-            if k in self.__table__.c.keys() and v:
+            if k in self.__table__.c.keys():
                 setattr(self, k, v)
         return self
 
