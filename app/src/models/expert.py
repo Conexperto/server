@@ -38,8 +38,8 @@ class Expert(BaseMixin, db.Model):
     session_done    = Column(Integer, default=0)
     user_id         = Column(Integer, ForeignKey('user.id'))
     user            = relationship("User", uselist=False, back_populates="expert")
-    speciality      = relationship("AssociationSpeciality")
-    method          = relationship("AssociationMethod")
-    plan            = relationship("Plan")
+    specialities    = relationship("AssociationSpeciality")
+    methods         = relationship("AssociationMethod")
+    plans           = relationship("Plan")
 
 
