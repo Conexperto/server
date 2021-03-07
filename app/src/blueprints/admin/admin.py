@@ -12,15 +12,15 @@ def get_token():
     prefix = 'Bearer '
 
     if not 'authorization' in headers:
-        raise abort(401, description='NotFoundToken', response='auth/not-found-token')
+        raise abort(400, description='NotFoundToken', response='auth/not-found-token')
 
     token = headers['authorization']
 
     if not token.startswith(prefix):
-        raise abort(401, description='InvalidIdToken', response='auth/invalid-id-token')
+        raise abort(400, description='InvalidIdToken', response='auth/invalid-id-token')
     
     if not token[len(prefix):]:
-        raise abort(401, description='InvalidIdToken', response='auth/invalid-id-token')
+        raise abort(400, description='InvalidIdToken', response='auth/invalid-id-token')
 
     return token[len(prefix):]
 
@@ -66,15 +66,22 @@ def index_admin_one(uid):
 @router.route('/', methods=['GET'])
 @login_required
 def index_admin():
+    search = request.args.get('search')
     page = request.args.get('page') or 1
-    per_pages = request.args.get('per_pages')
+    per_page = request.args.get('limit')
+    order_by = request.args.get('orderBy')
+    order = request.args.get('order')
     
     service = AdminService()
-    users = service.list(page, per_pages)
+    paginate = service.list(search, page, per_page, order_by, order)
     
     return jsonify({
         "success": True,
-        "response": users
+        "response": paginate.items,
+        "total": paginate.total,
+        "page": paginate.page,
+        "limit": paginate.per_page,
+        "next": paginate.next_num
     })
 
 # POST: /api/v1/admin
