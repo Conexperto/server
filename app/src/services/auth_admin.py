@@ -14,10 +14,12 @@ class AuthAdminService():
     
     def create(self, body):
         try:
-            user_record = UserRecord.create_user(
-                            email=body['email'],
-                            password=body['password'],
-                            display_name=body['display_name'], app=admin_sdk)
+            user = {
+                'email': body['email'],
+                'password': body['password'],
+                'display_name': body['display_name']
+            }
+            user_record = UserRecord.create_user(user, app=admin_sdk)
             user_record.make_claims({ 
                 'admin': True, 
                 'access_level': body['privilegies'] if hasattr(body, 'privilegies') else Privilegies.User.value })
