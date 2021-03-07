@@ -28,7 +28,7 @@ class Record:
                 continue
             if k in self.__insert_hide:
                 continue
-            if k in self.__dict__.keys() and v:
+            if k in self.__dict__.keys():
                 setattr(self, k, v)
         return self
 
@@ -38,7 +38,6 @@ class Record:
             if k in self.__repr_hide:
                 continue
             result[k] = getattr(self, k)
-
         return result
 
     def __repr__(self):
