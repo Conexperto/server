@@ -1,5 +1,6 @@
 from flask import abort
-from src.models import Auth, UserRecord, User
+from src.models import Auth, UserRecord, User 
+from src.services.expert import ExpertService
 from src.firebase import web_sdk
 
 
@@ -14,10 +15,12 @@ class AuthService:
 
     def create(self, body):
         try:
-            user_record = UserRecord.create_user(
-                            email=body['email'],
-                            password=body['password'],
-                            display_name=body['display_name'], app=web_sdk)
+            user = {
+                'email': body['email'],
+                'password': body['password'],
+                'display_name': body['display_name']
+            }
+            user_record = UserRecord.create_user(user, app=web_sdk)
             user_record.make_claims({ 'complete_register': False })
             
             user = User(uid=user_record.uid,
