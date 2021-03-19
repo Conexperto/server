@@ -66,15 +66,22 @@ def index_method_admin_one(uid):
 @router.route('/', methods=['GET'])
 @login_required
 def index_method_admin():
+    search = request.args.get('search')
     page = request.args.get('page') or 1
-    per_pages = request.args.get('per_pages')
+    per_page = request.args.get('limit')
+    order_by = request.args.get('orderBy')
+    order = request.args.get('order')
     
     service = MethodService()
-    methods = service.list(page, per_ages)
+    paginate = service.list(search, page, per_page, order_by, order)
     
     return jsonify({
         "success": True,
-        "response": methods
+        "response": paginate.items,
+        "total": paginate.total,
+        "page": paginate.page,
+        "limit": paginate.per_page,
+        "next": paginate.next_num
     })
 
 # POST: /api/v1/admin/method
