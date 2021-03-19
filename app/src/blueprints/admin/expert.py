@@ -59,26 +59,33 @@ def has_access(func, access_level):
 @login_required
 def index_expert_admin_one(uid):
     service = ExpertService()
-    expert = service.get(uid)
+    user = service.get(uid)
 
     return jsonify({
         "success": True,
-        "response": expert
+        "response": user
     })
 
 # GET: /api/v1/admin/expert
 @router.route('/', methods=['GET'])
 @login_required
 def index_expert_admin():
+    search = request.args.get('search')
     page = request.args.get('page') or 1
-    per_pages = request.args.get('per_pages')
-
+    per_page = request.args.get('limit')
+    order_by = request.args.get('orderBy')
+    order = request.args.get('order')
+    
     service = ExpertService()
-    experts = service.list(page, per_pages)
+    paginate = service.list(search, page, per_page, order_by, order)
     
     return jsonify({
         "success": True,
-        "response": experts
+        "response": paginate.items,
+        "total": paginate.total,
+        "page": paginate.page,
+        "limit": paginate.per_page,
+        "next": paginate.next_num
     })
 
 # POST: /api/v1/admin/expert
@@ -89,13 +96,14 @@ def register_expert_admin():
     
     if not body:
         return abort(400, description='NotFoundData', response='not-found-data')
-
+    
+    body['complete_register'] = True
     service = ExpertService()
-    expert = service.create(body)
+    user = service.create(body)
 
     return jsonify({ 
         "success": True, 
-        "response": expert 
+        "response": user
     });
 
 # PUT: /api/v1/admin/expert/<uid>
@@ -107,20 +115,11 @@ def update_expert_admin(uid):
     if not body:
         return abort(400, description='NotFoundData', response='not-found-data')
 
+    body['complete_register'] = True
     service = ExpertService()
-    expert = service.update(uid, body)
+    user = service.update(uid, body)
 
-    if hasattr(body, 'speciality'):
-        ass_speciality = AssociationExpertToSpecialityService()
-        ass_speciality.update_or_create_and_delete_many(expert.id, body['speciality'])
-    if hasattr(body, 'method'):
-        ass_method = AssociationExpertToMethodService()
-        ass_method.update_or_create_and_delete_many(expert.id, body['method'])
-    if hasattr(body, 'plan'):
-        plan = PlanService()
-        plan.update_or_create_and_delete_many(expert.id, body['plan'])
-
-    return jsonify({ 'success': True, 'response': service.get(expert.id) })
+    return jsonify({ 'success': True, 'response': user })
 
 # PATCH: /api/v1/admin/expert/<uid>
 @router.route('/<uid>', methods=['PATCH'])
@@ -131,38 +130,29 @@ def update_field_expert_admin(uid):
     if not body:
         return abort(400, description='NotFoundData', response='not-found-data')
 
+    body['complete_register'] = True
     service = ExpertService()
-    expert = service.update_field(uid, body)
+    user = service.update_field(uid, body)
 
-    if hasattr(body, 'speciality'):
-        ass_speciality = AssociationExpertToSpecialityService()
-        ass_speciality.update_or_create_and_delete_many(expert.id, body['speciality'])
-    if hasattr(body, 'method'):
-        ass_method = AssociationExpertToMethodService()
-        ass_method.update_or_create_and_delete_many(expert.id, body['method'])
-    if hasattr(body, 'plan'):
-        plan = PlanService()
-        plan.update_or_create_and_delete_many(expert.id, body['plan'])
-
-    return jsonify({ 'success': True, 'response': service.get(expert.id) })
+    return jsonify({ 'success': True, 'response': user })
 
 # PATCH /api/v1/admin/expert/disabled/<uid>
 @router.route('/disabled/<uid>', methods=['PATCH'])
 @login_required
 def disabled_expert_admin(uid):
     service = ExpertService()
-    expert = service.disabled(uid)
+    user = service.disabled(uid)
 
-    return jsonify({ 'success': True, 'response': expert })
+    return jsonify({ 'success': True, 'response': user })
 
 # DELETE: /api/v1/admin/expert/<uid>
 @router.route('/<uid>', methods=['DELETE'])
 @login_required
 def delete_expert_admin(uid):
     service = ExpertService()
-    expert = service.delete(uid)
+    user = service.delete(uid)
 
     return jsonify({
         'success': True,
-        'response': expert
+        'response': user
     })
