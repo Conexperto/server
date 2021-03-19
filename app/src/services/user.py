@@ -51,12 +51,21 @@ class UserService:
             'b': user
         }
 
-    def list(self, search=None, page=1, per_page=10, order_by='created_at', order='desc'):
-        self.__query = User.query
+    def list(self, 
+                search=None, 
+                page=1, 
+                per_page=10, 
+                order_by='created_at', 
+                order='desc'
+    ):
+        self.__query = User.query.filter(User.expert == None)
         
         self.search(search)
         self.sort(order_by, order)
-        paginate = self.__query.paginate(int(page), int(per_page) or 10, error_out=False)
+        paginate = self.__query.paginate(
+                                    int(page), 
+                                    int(per_page) or 10, 
+                                    error_out=False)
         
         return paginate
 
@@ -69,7 +78,7 @@ class UserService:
                 'phone_number': body['phone_number']
             }
             user_record = UserRecord.create_user(user, app=web_sdk)
-            user_record.make_claims({ 'complete_register': body['complete_register'] if hasattr(body, 'complete_register') else False })
+            user_record.make_claims({ 'complete_register': body['complete_register'] })
             
             user = User(uid=user_record.uid,
                             email=body['email'],
@@ -79,7 +88,7 @@ class UserService:
                             lastname=body['lastname'],
                             headline=body['headline'],
                             about_me=body['about_me'],
-                            complete_register=body['complete_register'] if hasattr(body, 'complete_register') else False)
+                            complete_register=body['complete_register'])
 
             user.add()
             user.save()
@@ -146,7 +155,7 @@ class UserService:
         user_record.serialize({ 'disabled': not user_record.disabled })
         user_record.update_user()
 
-        user.serialize({ 'disabled': not user_record.disabled })
+        user.serialize({ 'disabled': not user.disabled })
         user.save()
 
         return {
@@ -169,6 +178,3 @@ class UserService:
         return {
             'uid': user_record.uid
         }
-
-    def delete_many(self, uid):
-        pass
