@@ -66,17 +66,24 @@ def index_speciality_admin_one(uid):
 @router.route('/', methods=['GET'])
 @login_required
 def index_speciality_admin():
+    search = request.args.get('search')
     page = request.args.get('page') or 1
-    per_pages = request.args.get('per_pages')
+    per_page = request.args.get('limit')
+    order_by = request.args.get('orderBy')
+    order = request.args.get('order')
     
     service = SpecialityService()
-    specialities = service.list(page, per_pages)
+    paginate = service.list(search, page, per_page, order_by, order)
     
     return jsonify({
         "success": True,
-        "response": specialities
+        "response": paginate.items,
+        "total": paginate.total,
+        "page": paginate.page,
+        "limit": paginate.per_page,
+        "next": paginate.next_num
     })
-
+    
 # POST: /api/v1/admin/speciality
 @router.route('/', methods=['POST'])
 @login_required
