@@ -19,7 +19,6 @@ class AssociationMethod(BaseMixin, db.Model):
     
     left_id         = Column(Integer, ForeignKey('expert.id'), primary_key=True)
     right_id        = Column(Integer, ForeignKey('method.id'), primary_key=True)
-    link            = Column(String, nullable=False)
     disabled        = Column(Boolean, default=False)
     method          = relationship("Method")
 
@@ -38,8 +37,8 @@ class Expert(BaseMixin, db.Model):
     session_done    = Column(Integer, default=0)
     user_id         = Column(Integer, ForeignKey('user.id'))
     user            = relationship("User", uselist=False, back_populates="expert")
-    specialities    = relationship("AssociationSpeciality")
-    methods         = relationship("AssociationMethod")
-    plans           = relationship("Plan")
+    specialities    = relationship("AssociationSpeciality", cascade="all, delete-orphan")
+    methods         = relationship("AssociationMethod", cascade="all, delete-orphan")
+    plans           = relationship("Plan", cascade="all, delete-orphan")
 
 
