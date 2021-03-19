@@ -28,7 +28,7 @@ class Record:
                 continue
             if k in self.__insert_hide:
                 continue
-            if k in self.__dict__.keys() and v:
+            if k in self.__dict__.keys():
                 setattr(self, k, v)
         return self
 
