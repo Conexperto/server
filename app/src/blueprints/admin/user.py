@@ -92,7 +92,8 @@ def register_user_admin():
     
     if not body:
         return abort(400, description='NotFoundData', response='not-found-data')
-
+    
+    body['complete_register'] = True
     service = UserService()
     user = service.create(body)
 
@@ -107,6 +108,7 @@ def update_user_admin(uid):
     if not body:
         return abort(400, description='NotFoundData', response='not-found-data')
 
+    body['complete_register'] = True
     service = UserService()
     user = service.update(uid, body)
 
@@ -121,6 +123,7 @@ def update_field_user_admin(uid):
     if not body:
         return abort(400, description='NotFoundData', response='not-found-data')
 
+    body['complete_register'] = True
     service = UserService()
     user = service.update_field(uid, body)
 
