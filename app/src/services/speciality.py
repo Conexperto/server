@@ -1,9 +1,36 @@
+from sqlalchemy import asc, desc, or_
 from flask import abort 
 from src.models import Speciality
 
 
 
 class SpecialityService:
+
+    def search(self, search):
+        if search is None:
+            return self.__query
+
+        self.__query = self.__query \
+                    .filter(Speciality.name.like(f"%{search}%"))
+        return self.__query;
+
+    def sort(self, order_by, order):
+        __order_by = '';
+        __query = None;
+
+        if not order in ['desc', 'asc']:
+            return
+
+        if not hasattr(Speciality, order_by):
+            return
+
+        if (order == 'asc'):
+            __query = asc(order_by)
+        if (order == 'desc'):
+            __query = desc(order_by)
+
+        self.__query = self.__query.order_by(__query)
+        return self.__query 
 
     def get(self, _id):
         speciality = Speciality.query.get(_id)
@@ -13,10 +40,20 @@ class SpecialityService:
 
         return speciality
 
-    def list(self, page, per_pages=10):
-        specialities = Speciality.query.paginate(page, per_pages or 10, error_out=False)
+    def list(self, search=None,
+                    page=1, 
+                    per_page=10,
+                    order_by='created_at',
+                    order='desc'):
+        self.__query = Speciality.query
 
-        return specialities
+        self.search(search)
+        self.sort(order_by, order)
+        paginate = self.__query.paginate(
+                                    int(page),
+                                    int(per_page),
+                                    error_out=False)
+        return paginate
 
     def create(self, body):
         try:
