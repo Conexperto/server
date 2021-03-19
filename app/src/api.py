@@ -23,24 +23,34 @@ def create_api(env):
         #db.create_all()
 
     from src.blueprints.admin import auth_admin, admin, \
-                                        user, \
-                                        expert, \
-                                        method, \
-                                        plan, \
-                                        speciality
+                                        user_admin, \
+                                        expert_admin, \
+                                        method_admin, \
+                                        plan_admin, \
+                                        speciality_admin
 
     api.register_blueprint(auth_admin, url_prefix='/admin/auth')
     api.register_blueprint(admin, url_prefix='/admin')
-    api.register_blueprint(user, url_prefix='/admin/user')
-    api.register_blueprint(expert, url_prefix='/admin/expert')
-    api.register_blueprint(method, url_prefix='/admin/method')
-    api.register_blueprint(plan, url_prefix='/admin/plan')
-    api.register_blueprint(speciality, url_prefix='/admin/speciality')
+    api.register_blueprint(user_admin, url_prefix='/admin/user')
+    api.register_blueprint(expert_admin, url_prefix='/admin/expert')
+    api.register_blueprint(method_admin, url_prefix='/admin/method')
+    api.register_blueprint(plan_admin, url_prefix='/admin/plan')
+    api.register_blueprint(speciality_admin, url_prefix='/admin/speciality')
 
 
-    from src.blueprints import auth
+    from src.blueprints import auth, \
+                                user, \
+                                expert, \
+                                speciality, \
+                                method
+                                    
+                                
 
     api.register_blueprint(auth, url_prefix='/auth')
+    api.register_blueprint(user, url_prefix='/user')
+    api.register_blueprint(expert, url_prefix='/expert')
+    api.register_blueprint(speciality, url_prefix='/speciality')
+    api.register_blueprint(method, url_prefix='/method')
     
 
     @api.route('/')
