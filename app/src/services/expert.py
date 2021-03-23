@@ -262,7 +262,7 @@ class ExpertService:
         user_record.update_user()
 
         user.serialize({ 'disabled': not user.disabled })
-        user.expert.serialize({ 'disabled': not expert.disabled })
+        user.expert.serialize({ 'disabled': not user.expert.disabled })
 
         user.save()
 
