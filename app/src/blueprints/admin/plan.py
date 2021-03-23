@@ -50,12 +50,12 @@ def has_access(func, access_level):
 
     return wrap
 
-# GET: /api/v1/admin/plan/<uid>
-@router.route('/<uid>', methods=['GET'])
+# GET: /api/v1/admin/plan/<int:_id>
+@router.route('/<int:_id>', methods=['GET'])
 @login_required
-def index_plan_admin_one(uid):
+def index_plan_admin_one(_id):
     service = PlanService()
-    plan = service.get(uid)
+    plan = service.get(_id)
 
     return jsonify({
         "success": True,
@@ -91,8 +91,8 @@ def register_plan_admin():
 
     return jsonify({ 'success': True, 'response': plan });
 
-# PUT: /api/v1/admin/plan/<uid>
-@router.route('/<uid>', methods=['PUT'])
+# PUT: /api/v1/admin/plan/<int:_id>
+@router.route('/<int:_id>', methods=['PUT'])
 @login_required
 def update_plan_admin(uid):
     body = request.get_json()
@@ -101,39 +101,39 @@ def update_plan_admin(uid):
         return abort(400, description='NotFoundData', response='not-found-data')
 
     service = PlanService()
-    plan = service.update(uid, body)
+    plan = service.update(_id, body)
 
     return jsonify({ 'success': True, 'response': plan })
 
-# PATCH: /api/v1/admin/plan/<uid>
-@router.route('/<uid>', methods=['PATCH'])
+# PATCH: /api/v1/admin/plan/<int:_id>
+@router.route('/<int:_id>', methods=['PATCH'])
 @login_required
-def update_field_plan_admin(uid):
+def update_field_plan_admin(_id):
     body = request.get_json()
 
     if not body:
         return abort(400, description='NotFoundData', response='not-found-data')
 
     service = PlanService()
-    plan = service.update_field(uid, body)
+    plan = service.update_field(_id, body)
 
     return jsonify({ 'success': True, 'response': plan })
 
-# PATCH /api/v1/admin/plan/disabled/<uid>
-@router.route('/disabled/<uid>', methods=['PATCH'])
+# PATCH /api/v1/admin/plan/disabled/<int:_id>
+@router.route('/disabled/<int:_id>', methods=['PATCH'])
 @login_required
-def disabled_plan_admin(uid):
+def disabled_plan_admin(_id):
     service = PlanService()
-    plan = service.disabled(uid)
+    plan = service.disabled(_id)
 
     return jsonify({ 'success': True, 'response': plan })
 
-# DELETE: /api/v1/admin/plan/<uid>
-@router.route('/<uid>', methods=['DELETE'])
+# DELETE: /api/v1/admin/plan/<int:_id>
+@router.route('/<int:_id>', methods=['DELETE'])
 @login_required
-def delete_plan_admin(uid):
+def delete_plan_admin(_id):
     service = PlanService()
-    plan = service.delete(uid)
+    plan = service.delete(_id)
 
     return jsonify({
         'success': True,
