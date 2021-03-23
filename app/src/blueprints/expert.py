@@ -38,12 +38,11 @@ def login_required(func):
 
     return wrap
 
-# GET: /api/v1/expert/<int:id>
-@router.route('/<int:id>', methods=['GET'])
-@login_required
-def index_expert_one(_id):
+# GET: /api/v1/expert/<uid>
+@router.route('/<uid>', methods=['GET'])
+def index_expert_one(uid):
     service = ExpertService()
-    expert = service.get(_id)
+    expert = service.get(uid)
 
     return jsonify({
         "success": True,
@@ -52,11 +51,10 @@ def index_expert_one(_id):
 
 # GET: /api/v1/expert
 @router.route('/', methods=['GET'])
-@login_required
 def index_expert():
     search = request.args.get('search')
     page = request.args.get('page') or 1
-    per_page = request.args.get('limit')
+    per_page = request.args.get('limit') or 10
     order_by = request.args.get('orderBy')
     order = request.args.get('order')
     
