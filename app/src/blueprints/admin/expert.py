@@ -72,7 +72,7 @@ def index_expert_admin_one(uid):
 def index_expert_admin():
     search = request.args.get('search')
     page = request.args.get('page') or 1
-    per_page = request.args.get('limit')
+    per_page = request.args.get('limit') or 10
     order_by = request.args.get('orderBy')
     order = request.args.get('order')
     
