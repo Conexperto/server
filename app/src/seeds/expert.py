@@ -45,8 +45,7 @@ class ExpertSeed():
         plan.save()
         relation_a = AssociationSpeciality(left_id=self.__model.id,
                                             right_id=self.__speciality.id)
-        relation_b = AssociationMethod(link=faker.image_url(), 
-                                            left_id=self.__model.id, 
+        relation_b = AssociationMethod(left_id=self.__model.id, 
                                             right_id=self.__method.id)
         relation_a.add()
         relation_a.save()
