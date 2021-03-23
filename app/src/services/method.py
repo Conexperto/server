@@ -57,7 +57,7 @@ class MethodService:
 
     def create(self, body):
         try:
-            method = Speciality(name=body['name'])
+            method = Method(name=body['name'])
 
             method.add()
             method.save()
