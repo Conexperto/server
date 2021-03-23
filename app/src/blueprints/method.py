@@ -5,8 +5,8 @@ from src.services import MethodService
 
 router = Blueprint(name='Method', import_name=__name__)
 
-# GET: /api/v1/method/<int:id>
-@router.route('/<int:id>', methods=['GET'])
+# GET: /api/v1/method/<int:_id>
+@router.route('/<int:_id>', methods=['GET'])
 def index_speciality_one(_id):
     service = SpecialityService()
     speciality = service.get(_id)
