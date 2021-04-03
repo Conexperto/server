@@ -278,9 +278,9 @@ class ExpertService:
         if not expert:
             abort(404, description='NotFound', response='not_found')
 
-        expert.delete()
+        user.delete()
 
         return {
-            'id': expert.id
+                'id': user.id
         }
 

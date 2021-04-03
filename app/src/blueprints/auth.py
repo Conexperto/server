@@ -74,7 +74,6 @@ def register_expert():
     if not body:
         return abort(400, description='NotFoundData', response='not-found-data')
     
-    
     service = ExpertService()
     body['user_id'] = g.user['b'].id
     user = service.create(body)
