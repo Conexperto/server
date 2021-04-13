@@ -1,30 +1,31 @@
 from flask import Blueprint, g, request, jsonify, abort
-from src.services import ExpertService
+from src.services import SearchService 
 
 
-router = Blueprint(name='Expert', import_name=__name__)
+router = Blueprint(name='Search', import_name=__name__)
 
-# GET: /api/v1/expert/<uid>
-@router.route('/<uid>', methods=['GET'])
-def index_expert_one(uid):
-    service = ExpertService()
-    expert = service.get(uid)
+# GET: /api/v1/search/suggestions
+@router.route('/suggestions', methods=['GET'])
+def index_suggestion():
+    search = request.args.get('search')
+    service = SearchService()
+    search = service.suggestions(search)
 
     return jsonify({
         "success": True,
-        "response": expert
+        "response": search
     })
 
-# GET: /api/v1/expert
+# GET: /api/v1/search
 @router.route('/', methods=['GET'])
-def index_expert():
+def index_search():
     search = request.args.get('search')
     page = request.args.get('page') or 1
     per_page = request.args.get('limit') or 10
     order_by = request.args.get('orderBy')
     order = request.args.get('order')
     
-    service = ExpertService()
+    service = SearchService()
     paginate = service.list(search, page, per_page, order_by, order)
     
     return jsonify({
