@@ -8,3 +8,4 @@ from .plan import PlanService
 from .speciality import SpecialityService
 from .association_method import AssociationExpertToMethodService
 from .association_speciality import AssociationExpertToSpecialityService
+from .search import SearchService
