@@ -42,7 +42,8 @@ def create_api(env):
                                 user, \
                                 expert, \
                                 speciality, \
-                                method
+                                method, \
+                                search
                                     
                                 
 
@@ -51,6 +52,7 @@ def create_api(env):
     api.register_blueprint(expert, url_prefix='/expert')
     api.register_blueprint(speciality, url_prefix='/speciality')
     api.register_blueprint(method, url_prefix='/method')
+    api.register_blueprint(search, url_prefix='/search')
     
 
     @api.route('/')
