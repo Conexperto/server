@@ -39,7 +39,6 @@ def index_search():
     return jsonify({
         "success": True,
         "query": query,
-        "speciality": speciality,
         "response": paginate.items,
         "total": paginate.total,
         "page": paginate.page,
@@ -47,5 +46,27 @@ def index_search():
         "next": paginate.next_num
     })
 
+# GET: /api/v1/search/speciality
+@router.route('/speciality', methods=['GET'])
+def index_search_speciality():
+    page = request.args.get('page') or 1
+    per_page = request.args.get('limit') or 10
+    order_by = request.args.get('orderBy') or 'created_at'
+    order = request.args.get('order') or 'desc'
+
+    service = SearchService()
+    paginate = service.speciality(page, 
+                                    per_page, 
+                                    order_by, 
+                                    order)
+
+    return jsonify({
+        "success": True,
+        "response": paginate.items,
+        "total": paginate.total,
+        "page": paginate.page,
+        "limit": paginate.per_page,
+        "next": paginate.next_num
+    })
 
 

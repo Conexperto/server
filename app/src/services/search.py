@@ -84,7 +84,7 @@ class SearchService:
                     .join(AssociationSpeciality) \
                     .join(Speciality)
 
-        self.filter(fragment).limit(10)
+        self.filter(fragment)
         self.items = self.query.all()
 
         return self.projection()
@@ -111,3 +111,34 @@ class SearchService:
                             int(page), 
                             int(per_page) or 10, 
                             error_out=False)
+
+    def speciality(self, 
+            page=1,
+            per_page=10,
+            order_by='created_at',
+            order='desc'
+    ):
+        self.query = db.session.query(
+                    Speciality.id,
+                    Speciality.name
+                ) \
+                .filter(Speciality.disabled.is_(False))
+
+        self.sort(order_by, order)
+        paginate = self.query.paginate(
+                    int(page),
+                    int(per_page or 100),
+                    error_out=False)
+
+        def projection(items):
+            result = []
+            
+            for item in items:
+                result.append({
+                        'id': item[0],
+                        'name': item[1],
+                    })
+            return result
+    
+        paginate.items = projection(paginate.items)
+        return paginate
