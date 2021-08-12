@@ -9,6 +9,23 @@ class BaseMixin(AuditMixin):
     """BaseMixin"""
 
     _repr_hide = ["created_at", "updated_at"]
+    __insert_hide = []
+
+    @property
+    def _repr_hide(self):
+        return self.__repr_hide
+
+    @_repr_hide.setter
+    def _repr_hide(self, k):
+        self.__repr_hide.append(k)
+
+    @property
+    def _insert_hide(self):
+        return self.__insert_hide
+
+    @_insert_hide.setter
+    def _insert_hide(self, k):
+        self.__insert_hide.append(k)
 
     def add(self):
         """add"""
@@ -26,9 +43,11 @@ class BaseMixin(AuditMixin):
     def serialize(self, obj):
         """serialize"""
         for k, v in obj.items():
-            if k in self._repr_hide:
+            if k in self.__repr_hide:
                 continue
-            if k in self.__table__.c.keys() and v:
+            if k in self.__insert_hide:
+                continue
+            if k in self.__table__.c.keys():
                 setattr(self, k, v)
         return self
 
@@ -37,7 +56,7 @@ class BaseMixin(AuditMixin):
         res = dict()
 
         for attr, col in self.__mapper__.c.items():
-            if attr in self._repr_hide:
+            if attr in self.__repr_hide:
                 continue
             res[col.key] = getattr(self, attr)
 
