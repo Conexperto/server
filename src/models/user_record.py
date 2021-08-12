@@ -3,6 +3,7 @@
 """
 from firebase_admin import auth
 from flask import abort
+
 from src.mixins import Record
 
 
@@ -55,9 +56,7 @@ class UserRecord(Record):
                 decoded_token
         """
         try:
-            return auth.verify_id_token(
-                id_token, check_revoked=check_revoked, app=app
-            )
+            return auth.verify_id_token(id_token, check_revoked=check_revoked, app=app)
         except auth.ExpiredIdTokenError as ex:
             raise abort(
                 401,
@@ -186,9 +185,7 @@ class UserRecord(Record):
             for provider in user_record.provider_data
         ]
         self.custom_claims = user_record.custom_claims
-        self.tokens_valid_after_timestamp = (
-            user_record.tokens_valid_after_timestamp
-        )
+        self.tokens_valid_after_timestamp = user_record.tokens_valid_after_timestamp
 
     def update_user(self):
         """

@@ -1,11 +1,8 @@
 """ src.api """
-from os.path import abspath
-from os.path import join
-
 from flask import Flask
 from flask import jsonify
-from flask import render_template
 from flask_cors import CORS
+
 from src.blueprints import auth
 from src.blueprints.admin import admin
 from src.blueprints.admin import auth_admin
@@ -17,11 +14,10 @@ from src.blueprints.admin import user
 from src.helpers import JSONSerializable
 
 
-def create_api(env):
+def create_api():
     """Initialize Application"""
     api = Flask(__name__)
 
-    api.config.from_object(env)
     api.url_map.strict_slashes = False
     JSONSerializable(api)
 

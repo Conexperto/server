@@ -2,6 +2,7 @@
 from random import randint
 
 from faker import Faker
+
 from src.models import AssociationMethod
 from src.models import AssociationSpeciality
 from src.models import Expert
@@ -21,9 +22,7 @@ class ExpertSeed:
     __seed__ = "expert"
 
     def __init__(self):
-        user = User.query.filter_by(
-            email="conexpertotesting@gmail.com"
-        ).first()
+        user = User.query.filter_by(email="conexpertotesting@gmail.com").first()
 
         self.__model = Expert(
             headline=faker.text(60),

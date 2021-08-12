@@ -3,6 +3,7 @@ import unittest
 
 from config import Config
 from flask_testing import TestCase
+
 from src.api import create_api
 from src.api import db
 

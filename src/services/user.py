@@ -2,6 +2,7 @@
     Service: User
 """
 from flask import abort
+
 from src.firebase import web_sdk
 from src.models import User
 from src.models import UserRecord
@@ -128,9 +129,7 @@ class UserService:
         user_record.update_user()
 
         if hasattr(body, "complete_register"):
-            user_record.make_claims(
-                {"complete_register": body["complete_register"]}
-            )
+            user_record.make_claims({"complete_register": body["complete_register"]})
 
         user.serialize(body)
         user.save()
@@ -166,9 +165,7 @@ class UserService:
         user_record.update_user()
 
         if hasattr(body, "complete_register"):
-            user_record.make_claims(
-                {"complete_register": body["complete_register"]}
-            )
+            user_record.make_claims({"complete_register": body["complete_register"]})
 
         user.serialize(body)
         user.save()

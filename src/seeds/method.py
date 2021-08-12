@@ -1,5 +1,6 @@
 """ seeds.method.py """
 from faker import Faker
+
 from src.models import Method
 
 faker = Faker()

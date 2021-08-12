@@ -1,5 +1,6 @@
 """ src.seeds.test """
 from faker import Faker
+
 from src.models import TestModel
 
 faker = Faker()

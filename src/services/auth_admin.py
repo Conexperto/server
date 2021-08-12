@@ -2,6 +2,7 @@
     Service Auth Admin
 """
 from flask import abort
+
 from src.firebase import admin_sdk
 from src.models import Admin
 from src.models import Privileges

@@ -7,6 +7,7 @@ from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy.orm import relationship
+
 from src.db import db
 from src.mixins import BaseMixin
 

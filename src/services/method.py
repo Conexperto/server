@@ -1,5 +1,6 @@
 """ src.services.method """
 from flask import abort
+
 from src.models import Method
 
 

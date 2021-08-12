@@ -1,5 +1,6 @@
 """ src.services.association_method """
 from flask import abort
+
 from src.db import db
 from src.models import AssociationMethod
 
@@ -18,9 +19,7 @@ class AssociationExpertToMethodService:
 
         Returns: (Method&Expert)
         """
-        association = AssociationMethod.query.filter_by(
-            left_id=expert_id
-        ).all()
+        association = AssociationMethod.query.filter_by(left_id=expert_id).all()
 
         if not association:
             abort(404, description="NotFound", response="not_found")
@@ -36,9 +35,7 @@ class AssociationExpertToMethodService:
 
         Returns: (Method&Expert)
         """
-        association = AssociationMethod.query.filter_by(
-            right_id=method_id
-        ).all()
+        association = AssociationMethod.query.filter_by(right_id=method_id).all()
 
         if not association:
             abort(404, description="NotFound", response="not_found")
