@@ -4,6 +4,7 @@
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
+
 from src.db import db
 from src.helpers import generate_hash
 from src.mixins import BaseMixin

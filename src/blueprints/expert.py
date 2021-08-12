@@ -8,6 +8,7 @@ from flask import Blueprint
 from flask import g
 from flask import jsonify
 from flask import request
+
 from src.services import AuthService
 from src.services import ExpertService
 
@@ -23,21 +24,15 @@ def get_token():
     prefix = "Bearer "
 
     if "authorization" not in headers:
-        raise abort(
-            400, description="NotFoundToken", response="auth/not-found-token"
-        )
+        raise abort(400, description="NotFoundToken", response="auth/not-found-token")
 
     token = headers["authorization"]
 
     if not token.startswith(prefix):
-        raise abort(
-            400, description="InvalidIdToken", response="auth/invalid-id-token"
-        )
+        raise abort(400, description="InvalidIdToken", response="auth/invalid-id-token")
 
     if not token[len(prefix) :]:
-        raise abort(
-            400, description="InvalidIdToken", response="auth/invalid-id-token"
-        )
+        raise abort(400, description="InvalidIdToken", response="auth/invalid-id-token")
 
     return token[len(prefix) :]
 
@@ -52,9 +47,7 @@ def login_required(func):
         id_token = get_token()
 
         if not id_token:
-            raise TypeError(
-                "The auth decorator needs to token_required decorator"
-            )
+            raise TypeError("The auth decorator needs to token_required decorator")
 
         service = AuthService()
         g.admin = service.authentication(id_token)

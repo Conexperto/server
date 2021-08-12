@@ -1,6 +1,7 @@
 """ helpers.json_serializable """
 from flask.json import JSONEncoder as __JSONEncoder
 from sqlalchemy.ext.declarative import DeclarativeMeta
+
 from src.mixins import Record
 
 

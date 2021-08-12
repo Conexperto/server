@@ -7,6 +7,7 @@ from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
+
 from src.db import db
 from src.mixins import BaseMixin
 

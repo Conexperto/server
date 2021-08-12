@@ -1,5 +1,6 @@
 """ src.services.speciality """
 from flask import abort
+
 from src.models import Speciality
 
 
@@ -34,9 +35,7 @@ class SpecialityService:
 
         Returns: list specialities
         """
-        specialities = Speciality.query.paginate(
-            page, per_pages or 10, error_out=False
-        )
+        specialities = Speciality.query.paginate(page, per_pages or 10, error_out=False)
 
         return specialities
 

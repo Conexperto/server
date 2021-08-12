@@ -6,6 +6,7 @@ from flask import Blueprint
 from flask import g
 from flask import jsonify
 from flask import request
+
 from src.services import AdminService
 from src.services import AuthAdminService
 
@@ -21,21 +22,15 @@ def get_token():
     prefix = "Bearer "
 
     if "authorization" not in headers:
-        raise abort(
-            400, description="NotFoundToken", response="auth/not-found-token"
-        )
+        raise abort(400, description="NotFoundToken", response="auth/not-found-token")
 
     token = headers["authorization"]
 
     if not token.startswith(prefix):
-        raise abort(
-            400, description="InvalidIdToken", response="auth/invalid-id-token"
-        )
+        raise abort(400, description="InvalidIdToken", response="auth/invalid-id-token")
 
     if not token[len(prefix) :]:
-        raise abort(
-            400, description="InvalidIdToken", response="auth/invalid-id-token"
-        )
+        raise abort(400, description="InvalidIdToken", response="auth/invalid-id-token")
 
     return token[len(prefix) :]
 
@@ -50,9 +45,7 @@ def login_required(func):
         id_token = get_token()
 
         if not id_token:
-            raise TypeError(
-                "The auth decorator needs to token_required decorator"
-            )
+            raise TypeError("The auth decorator needs to token_required decorator")
 
         service = AuthAdminService()
         g.admin = service.authentication(id_token)
@@ -116,9 +109,7 @@ def register_admin():
     body = request.get_json()
 
     if not body:
-        return abort(
-            400, description="NotFoundData", response="not-found-data"
-        )
+        return abort(400, description="NotFoundData", response="not-found-data")
 
     service = AdminService()
     user = service.create(body)
@@ -135,9 +126,7 @@ def update_admin(uid):
     body = request.get_json()
 
     if not body:
-        return abort(
-            400, description="NotFoundData", response="not-found-data"
-        )
+        return abort(400, description="NotFoundData", response="not-found-data")
 
     service = AdminService()
     user = service.update(uid, body)
@@ -154,9 +143,7 @@ def update_field_admin(uid):
     body = request.get_json()
 
     if not body:
-        return abort(
-            400, description="NotFoundData", response="not-found-data"
-        )
+        return abort(400, description="NotFoundData", response="not-found-data")
 
     service = AdminService()
     user = service.update_field(uid, body)
