@@ -1,5 +1,6 @@
 """ src.services.admin """
 from flask import abort
+
 from src.firebase import admin_sdk
 from src.models import Admin
 from src.models import Privileges
@@ -127,9 +128,7 @@ class AdminService:
         user_record.update_user()
 
         if hasattr(body, "privileges"):
-            user_record.make_claims(
-                {"admin": True, "access_level": body["privileges"]}
-            )
+            user_record.make_claims({"admin": True, "access_level": body["privileges"]})
 
         user.serialize(body)
         user.save()
@@ -166,9 +165,7 @@ class AdminService:
         user_record.update_user()
 
         if hasattr(body, "privileges"):
-            user_record.make_claims(
-                {"admin": True, "access_level": body["privileges"]}
-            )
+            user_record.make_claims({"admin": True, "access_level": body["privileges"]})
 
         user.serialize(body)
         user.save()

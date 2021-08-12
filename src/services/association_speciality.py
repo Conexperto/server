@@ -1,5 +1,6 @@
 """ src.services.association_speciality """
 from flask import abort
+
 from src.db import db
 from src.models import AssociationSpeciality
 
@@ -18,9 +19,7 @@ class AssociationExpertToSpecialityService:
 
         Returns: (Speciality&Expert)
         """
-        association = AssociationSpeciality.query.filter_by(
-            left_id=expert_id
-        ).all()
+        association = AssociationSpeciality.query.filter_by(left_id=expert_id).all()
 
         if not association:
             abort(404, description="NotFound", response="not_found")
@@ -55,9 +54,7 @@ class AssociationExpertToSpecialityService:
 
         Returns: (Speciality&Expert)
         """
-        association = AssociationSpeciality(
-            left_id=expert_id, right_id=speciality_id
-        )
+        association = AssociationSpeciality(left_id=expert_id, right_id=speciality_id)
 
         association.add()
         association.save()
@@ -173,9 +170,7 @@ class AssociationExpertToSpecialityService:
                 mappings_update.append(update)
                 continue
 
-            mappings_create.append(
-                {"left_id": expert_id, "right_id": p["speciality"]}
-            )
+            mappings_create.append({"left_id": expert_id, "right_id": p["speciality"]})
 
         db.session.bulk_update_mappings(AssociationSpeciality, mappings_update)
         db.session.bulk_insert_mappings(AssociationSpeciality, mappings_create)

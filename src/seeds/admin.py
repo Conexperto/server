@@ -1,5 +1,6 @@
 """ src.seeds.admin """
 from faker import Faker
+
 from src.models import Admin
 from src.models import Privileges
 

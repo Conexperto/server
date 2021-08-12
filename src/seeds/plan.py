@@ -2,6 +2,7 @@
 from random import randint
 
 from faker import Faker
+
 from src.models import Plan
 
 faker = Faker()

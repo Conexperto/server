@@ -1,23 +1,23 @@
 """ wsgi """
-from config import Config
+import os
+
 from flask import Flask
 from flask import jsonify
 from flask_cors import CORS
 from flask_migrate import Migrate
-from src.api import create_api
-from src.db import db
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
-
+from src.api import create_api
+from src.db import db
 
 
 def create_wsgi():
     """Create wsgi app"""
-    env = Config
     wsgi = Flask(__name__)
 
-    # Set environment variables to wsgi flask app.
-    wsgi.config.from_object(env)
+    wsgi.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
+    wsgi.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    wsgi.config["JSON_SORT_KEYS"] = False
 
     # Set cors to wsgi flask app.
     CORS(wsgi)
@@ -25,7 +25,7 @@ def create_wsgi():
 
     with wsgi.app_context():
         db.init_app(wsgi)
-    
+
     # Handler Errors HTTP
     def error_handler(err, msg, detail=None):
         return jsonify(err=err, msg=msg, detail=detail)
@@ -44,7 +44,7 @@ def create_wsgi():
 
     # Set api v1.
     wsgi.wsgi_app = DispatcherMiddleware(
-        wsgi.wsgi_app, {"/api/v1": create_api(env).wsgi_app}
+        wsgi.wsgi_app, {"/api/v1": create_api().wsgi_app}
     )
 
     return wsgi
