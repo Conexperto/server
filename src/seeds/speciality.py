@@ -1,5 +1,6 @@
 """ src.seeds.speciality """
 from faker import Faker
+
 from src.models import Speciality
 
 faker = Faker()

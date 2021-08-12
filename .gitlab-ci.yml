@@ -1,0 +1,98 @@
+image: python:latest
+
+stages:
+  - format
+  - test
+  - deploy
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  POSTGRES_DB: "cxp_test"
+  POSTGRES_USER: "owner"
+  POSTGRES_PASSWORD: "token.01"
+  SQLALCHEMY_DATABASE_URI: "postgres://owner:token.01@127.0.0.1/cxp_test"
+  FIREBASE_TOKEN: "1//01oOxnx8H1x1bCgYIARAAGAESNwF-L9IrDYa8EKEGhP55_lSx5MzPI-76952cMi9esR06R45VTkqzwkYhx5x2ydqBArg1UzfqH54"
+  FIREBASE_PROJECT: "conexperto-admin"
+  FIREBASE_PORT: "9099"
+  FIREBASE_AUTH_EMULATOR_HOST: "$FIREBASE_PORT"
+
+cache:
+  key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
+  paths:
+    - .cache/pip
+    - venv/
+
+services:
+  - name: postgres:13-alpine
+    alias: db
+  - name: frfernandezdev/firebase-emulators:latest
+    alias: emulator
+
+before_script:
+  - python -V
+  - pip install virtualenv
+  - virtualenv venv
+  - source venv/bin/activate
+  - pip install -r requirements.txt
+  - pip install black
+  - pip install flake8
+
+format:
+  stage: format
+  script:
+    - black --config=.black .
+    - flake8 .
+
+test services:
+  stage: test
+  script:
+    - yarn test --testNamePattern="Testing Connection to Database"
+    - yarn test --testNamePattern="Testing Connection to Emulator Auth"
+
+test:
+  stage: test
+  needs:
+    - format
+  only:
+    - /^feature([{\/,\-,\.}]\w+)*$/
+  script:
+    # - yarn test --testNamePattern="^$CI_COMMIT_BRANCH([{\/,\-,\.}]\w+)*$"
+    - yarn test:db
+
+test all:
+  stage: test
+  needs:
+    - format
+  only:
+    - main
+    - develop
+    - /^hotfix-[0-9]\d*(\.[0-9]\d*)*$/
+    - /^staging-[0-9]\d*(\.[0-9]\d*)*$/
+    - /^release-[0-9]\d*(\.[0-9]\d*)*$/
+  script:
+    - yarn test
+
+staging:
+  stage: deploy
+  needs:
+    - test all
+  only:
+    - main
+  script:
+    - apt-get update -qy
+    - apt-get install -y ruby-dev
+    - gem install dpl
+    - dpl --provider=heroku --app=$HEROKU_APP_STAGING --api_key=$HEROKU_API_KEY
+
+prod:
+  stage: deploy
+  needs:
+    - format
+    - test all
+  only:
+    - tags
+  script:
+    - apt-get update -qy
+    - apt-get install -y ruby-dev
+    - gem install dpl
+    - dpl --provider=heroku --app=$HEROKU_APP_PROD --api_key=$HEROKU_API_KEY

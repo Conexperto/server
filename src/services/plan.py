@@ -1,5 +1,6 @@
 """ src.services.plan """
 from flask import abort
+
 from src.db import db
 from src.models import Plan
 

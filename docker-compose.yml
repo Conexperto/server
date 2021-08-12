@@ -2,20 +2,32 @@ version: "3"
 
 services:
     db:
-        container_name: cxp_db
-        image: postgres:13-alpine
-        env_file: ./docker/db/db.conf
-        ports:
-            - "5432:5432"
+      container_name: cxp_db
+      image: postgres:13-alpine
+      env_file: ./docker/db/db.conf
+      ports:
+          - "5432:5432"
+      volumes:
+          - ./docker/db/pg-init-scripts:/docker-entrypoint-initdb.d
+    emulator:
+      container_name: cxp_emulator
+      build:
+        context: ./docker/emulator
+        dockerfile: Dockerfile
+      env_file: ./docker/emulator/emulator.conf
+      ports:
+        - "9099:9099"
+        - "9000:9000"
+      volumes:
+        - ./docker/emulator/.cache/firebase/emulators/:/app/.cache/firebase/emulators/
     api:
-        build:
-            context: .
-            dockerfile: ./docker/api/Dockerfile
-        env_file: ./docker/api/api.conf
-        volumes:
-            - ./app:/srv/app
-        ports:
-            - "5000:3000"
-        depends_on:
-            - db
-        restart: always
+      build:
+        context: .
+        dockerfile: ./docker/api/Dockerfile
+      env_file: ./docker/api/api.conf
+      volumes:
+        - ./:/srv/app
+      ports:
+        - "5000:3000"
+      depends_on:
+        - db
