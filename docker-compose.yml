@@ -1,18 +1,18 @@
 version: "3"
 
-services: 
-    db: 
-        container_name: cxp_db 
+services:
+    db:
+        container_name: cxp_db
         image: postgres:13-alpine
         env_file: ./docker/db/db.conf
-        ports: 
+        ports:
             - "5432:5432"
-    api: 
-        build: 
+    api:
+        build:
             context: .
             dockerfile: ./docker/api/Dockerfile
         env_file: ./docker/api/api.conf
-        volumes: 
+        volumes:
             - ./app:/srv/app
         ports:
             - "5000:3000"

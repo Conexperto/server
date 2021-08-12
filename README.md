@@ -52,7 +52,7 @@ Alternative for run all command, directly inside container api.
 docker-compose exec api sh
 ```
 
-## Seeds 
+## Seeds
 ```
 docker-compose exec api python3 manage.py seed --model=<seed>
 ```
@@ -62,8 +62,8 @@ docker-compose exec api python3 manage.py seed --model=<seed>
 ### Environment for api.
 In file api.conf be all variables environment to api.
 * `ENV`     		- Set env, 'production' or 'development'.
-* `DEBUG`   		- Set debug, enabled flask debug. 
-* `TESTING` 		- Set testing, enabled flask testing. 
+* `DEBUG`   		- Set debug, enabled flask debug.
+* `TESTING` 		- Set testing, enabled flask testing.
 
 Sqlalchemy connect to db container.
 * `POSTGRES_HOST` 	  - Set host, default `db`.
@@ -82,38 +82,38 @@ In file database.conf be all variables envionment to db.
 ## Folder Structure
 
 	.
-	├── app/ 
+	├── app/
 	|	├── src/					# Source files.
 	|	|	├── blueprints/			# Blueprints for flask (routes).
 	|	|	├── helpers/			# Helpers for integrate to flask.
-	|	|	├── mixins/				# Mixins for integrate to sqlalchemy. 
+	|	|	├── mixins/				# Mixins for integrate to sqlalchemy.
 	|	|	├── models/ 			# Model for sqlalchemy.
 	|	|	├── seed/				# Seeds
-	|	|	├── api.py				# Entrypoint for api. 
+	|	|	├── api.py				# Entrypoint for api.
 	|	|	├── db.py				# DB instance.
-	|	| 	└── firebase.py			# Firebase initialize app for admin and web. 
+	|	| 	└── firebase.py			# Firebase initialize app for admin and web.
 	|	├── static/					# Contains all resource static.
-	|	├── templates/				# Templates. 
+	|	├── templates/				# Templates.
 	|	├── config.py				# Catch all environment variables to flask.
-	|	├── manage.py				# Manage migrate of database. 
-	|	├── requirements.txt		
-	|	├── seed.py					# Manage commandline seed.		
-	|	├── run.py 					# Entrypoint for run app with python3.  
+	|	├── manage.py				# Manage migrate of database.
+	|	├── requirements.txt
+	|	├── seed.py					# Manage commandline seed.
+	|	├── run.py 					# Entrypoint for run app with python3.
 	|	├── test.py					# Entrypoint for exec unitesting.
 	|	└── wsgi.py					# Entrypoint for WSGI.
 	├── docker/						# Config Docker.
-	|	├── api/	
+	|	├── api/
 	|	|	├── api.conf			# Environment container api.
 	|	|	└── Dockerfile			# Contains all the commands for make image of container api.
-	|	├── db/	
+	|	├── db/
 	|	|	└── db.conf				# Environment container db.
-	|	└── test/	
+	|	└── test/
 	|	|	├── test.conf			# Environment container test.
 	|	|	└── Dockerfile			# Contains all the commands for make image of container test.
 	├── test/						# Unittesting.
 	|	├── __test__/				# Contains all the unittesting by endpoint.
 	|	├── config.js				# Configuration for unittesting firebase.
-	|	├── package.json			
+	|	├── package.json
 	|	└── utils.js
 	├── db.conf		 				# Environment container db.
 	├── docker-compose.yml			# Configuration that is applied to each container started for that service.
@@ -125,7 +125,7 @@ In file database.conf be all variables envionment to db.
 
 ### Prerequisities
 
-In order to deploy this container you'll need heroku installed. [Here the information on how to install it and login](https://devcenter.heroku.com/articles/heroku-cli) 
+In order to deploy this container you'll need heroku installed. [Here the information on how to install it and login](https://devcenter.heroku.com/articles/heroku-cli)
 
 
 ### Instructions
