@@ -8,18 +8,22 @@ from src.services import SpecialityService
 router = Blueprint(name="Speciality", import_name=__name__)
 
 
-# GET: /api/v1/speciality/<int:_id>
 @router.route("/<int:_id>", methods=["GET"])
 def index_speciality_one(_id):
+    """
+    GET: /api/v1/speciality/<int:_id>
+    """
     service = SpecialityService()
     speciality = service.get(_id)
 
     return jsonify({"success": True, "response": speciality})
 
 
-# GET: /api/v1/speciality
 @router.route("/", methods=["GET"])
 def index_speciality():
+    """
+    GET: /api/v1/speciality
+    """
     search = request.args.get("search")
     page = request.args.get("page") or 1
     per_page = request.args.get("limit") or 10
