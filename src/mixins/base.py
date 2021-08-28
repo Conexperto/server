@@ -82,4 +82,5 @@ class BaseMixin(AuditMixin):
             for n in self.__table__.c.keys()
             if n not in self._repr_hide
         )
+
         return "<%s={%s}>" % (self.__class__.__name__, vals)
