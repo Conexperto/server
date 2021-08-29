@@ -27,6 +27,7 @@ services:
       env_file: ./docker/api/api.conf
       volumes:
         - ./:/srv/app
+        - /srv/app/migrations
       ports:
         - "5000:3000"
       depends_on:
