@@ -1,38 +1,33 @@
-''' tests.confauth '''
+""" tests.confauth """
 import os
+
 import requests
 
 
-URI = 'http://emulator:9099/identitytoolkit.googleapis.com/v1/accounts:{}?key={}'
+URI = "http://emulator:9099/identitytoolkit.googleapis.com/v1/accounts:{}?key={}"
 
 
 class AuthActions(object):
     def __init__(self):
-        self._key = os.getenv('FIREBASE_API_KEY')
+        self._key = os.getenv("FIREBASE_API_KEY")
         self._user = None
         self._token = None
         self._refresh_token = None
 
     def login(self, email, password):
-        uri = URI.format('signInWithPassword', self._key)
-        payload = {
-            'email': email,
-            'password': password,
-            'returnSecureToken': True
-        }
+        uri = URI.format("signInWithPassword", self._key)
+        payload = {"email": email, "password": password, "returnSecureToken": True}
         rv = requests.post(uri, json=payload)
         if rv.status_code != 200:
             assert False, "Faild authentication"
         self._user = rv.json()
-        self._token = self._user['idToken']
-        self._refresh_token = self._user['refreshToken']
-    
-    def delete(self):
-        uri = URI.format('delete', self._key)
+        self._token = self._user["idToken"]
+        self._refresh_token = self._user["refreshToken"]
 
-        payload = {
-            'idToken': self._token
-        }
+    def delete(self):
+        uri = URI.format("delete", self._key)
+
+        payload = {"idToken": self._token}
         rv = requests.post(uri, json=payload)
         return rv
 
@@ -43,7 +38,7 @@ class AuthActions(object):
     @property
     def token(self):
         return self._token
-        
+
     @property
     def refresh_token(self):
         return self._refresh_token
