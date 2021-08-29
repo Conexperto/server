@@ -38,10 +38,10 @@ class AdminService:
         __query = None
 
         if not order in ["desc", "asc"]:
-           raise abort(400, description="Bad order, must be desc or asc") 
-    
+            raise abort(400, description="Bad order, must be desc or asc")
+
         if not hasattr(Admin, order_by):
-           raise abort(400, description="Bad order_by, field not found") 
+            raise abort(400, description="Bad order_by, field not found")
 
         if order == "asc":
             __query = asc(order_by)
@@ -71,12 +71,9 @@ class AdminService:
 
         return {"uid": user_record.uid, "a": user_record, "b": user}
 
-    def list(self, 
-                search=None,
-                page=1, 
-                per_pages=10,
-                order_by="created_at",
-                order="desc"):
+    def list(
+        self, search=None, page=1, per_pages=10, order_by="created_at", order="desc"
+    ):
         """
         Get list user admin
 
@@ -124,16 +121,19 @@ class AdminService:
             b (Admin): Admin
         """
         try:
-            if not user_auth['b'].has_access(body['privileges']):
-                raise abort(401, \
-                            description="Unauthorized", \
-                            response="Logged user doesn't have sufficient permissions to create a user with equal or higher privileges")
-                                      
+            if not user_auth["b"].has_access(body["privileges"]):
+                raise abort(
+                    401,
+                    description="Unauthorized",
+                    response="Logged user doesn't have sufficient permissions to create a user with equal or higher privileges",
+                )
+
             user_record = UserRecord.create_user(
-                    email=body['email'],
-                    password=body['password'],
-                    display_name=body['display_name'],
-                    app=admin_sdk)
+                email=body["email"],
+                password=body["password"],
+                display_name=body["display_name"],
+                app=admin_sdk,
+            )
             user_record.make_claims(
                 {
                     "admin": True,
@@ -182,11 +182,13 @@ class AdminService:
             b (Admin): Admin
         """
         try:
-            if 'privileges' in body: 
-                if not user_auth['b'].has_acess(body['privileges']):
-                    raise abort(401, \
-                            description="Unauthorized", \
-                            response="Logged user doesn't have sufficient permissions to create a user with equal or higher privileges")
+            if "privileges" in body:
+                if not user_auth["b"].has_acess(body["privileges"]):
+                    raise abort(
+                        401,
+                        description="Unauthorized",
+                        response="Logged user doesn't have sufficient permissions to create a user with equal or higher privileges",
+                    )
 
             user_record = UserRecord.get_user(uid, app=admin_sdk)
             user = Admin.query.filter_by(uid=user_record.uid).first()
@@ -198,7 +200,9 @@ class AdminService:
             user_record.update_user()
 
             if "privileges" in body:
-                user_record.make_claims({"admin": True, "access_level": body["privileges"]})
+                user_record.make_claims(
+                    {"admin": True, "access_level": body["privileges"]}
+                )
 
             user.serialize(body)
             user.save()
@@ -229,11 +233,13 @@ class AdminService:
             b (Admin): Admin
         """
         try:
-            if 'privileges' in body: 
-                if not user_auth['b'].has_acess(body['privileges']):
-                    raise abort(401, \
-                            description="Unauthorized", \
-                            response="Logged user doesn't have sufficient permissions to create a user with equal or higher privileges")
+            if "privileges" in body:
+                if not user_auth["b"].has_acess(body["privileges"]):
+                    raise abort(
+                        401,
+                        description="Unauthorized",
+                        response="Logged user doesn't have sufficient permissions to create a user with equal or higher privileges",
+                    )
 
             user_record = UserRecord.get_user(uid, app=admin_sdk)
             user = Admin.query.filter_by(uid=user_record.uid).first()
@@ -245,7 +251,9 @@ class AdminService:
             user_record.update_user()
 
             if "privileges" in body:
-                user_record.make_claims({"admin": True, "access_level": body["privileges"]})
+                user_record.make_claims(
+                    {"admin": True, "access_level": body["privileges"]}
+                )
 
             user.serialize(body)
             user.save()
@@ -274,10 +282,12 @@ class AdminService:
         if not user_record or not user:
             abort(404, description="NotFound", response="not_found")
 
-        if not user_auth['b'].has_acess(user.privileges):
-            return abort(401, \
-                        description="Unauthorized", \
-                        response="Logged user doesn't have sufficient permissions to create a user with equal or higher privileges")
+        if not user_auth["b"].has_acess(user.privileges):
+            return abort(
+                401,
+                description="Unauthorized",
+                response="Logged user doesn't have sufficient permissions to create a user with equal or higher privileges",
+            )
 
         user_record.serialize({"disabled": not user_record.disabled})
         user_record.update_user()
@@ -298,11 +308,13 @@ class AdminService:
         Returns: dict
             uid (str): User uid
         """
-        if not user_auth['b'].has_acess(body['privileges']):
-            return abort(401, \
-                            description="Unauthorized", \
-                            response="Logged user doesn't have sufficient permissions to create a user with equal or higher privileges")
-                
+        if not user_auth["b"].has_acess(body["privileges"]):
+            return abort(
+                401,
+                description="Unauthorized",
+                response="Logged user doesn't have sufficient permissions to create a user with equal or higher privileges",
+            )
+
         user_record = UserRecord.get_user(uid, app=admin_sdk)
         user = Admin.query.filter_by(uid=user_record.uid).first()
 
