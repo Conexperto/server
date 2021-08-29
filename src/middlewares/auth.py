@@ -1,17 +1,18 @@
-''' src.middlewares.auth '''
-from functools import wraps 
-from flask import current_app
+""" src.middlewares.auth """
+from functools import wraps
 
-from flask import abort 
+from flask import abort
+from flask import current_app
 from flask import g
 from flask import request
 
-from src.services import AuthService, AuthAdminService
+from src.services import AuthAdminService
+from src.services import AuthService
 
 
 def get_token(headers):
     prefix = "Bearer "
-    
+
     if "authorization" not in headers:
         raise abort(400, description="NotFoundToken", response="auth/not-found-token")
 
@@ -25,18 +26,22 @@ def get_token(headers):
 
     return token[len(prefix) :]
 
-def login_required(admin=False): 
+
+def login_required(admin=False):
     """
     Decorator login_required
     """
+
     def decorator(func):
         @wraps(func)
         def wrap(*args, **kwargs):
             id_token = get_token(request.headers)
 
             if not id_token:
-                raise abort(400, description="NotFoundToken", response="auth/not-found-token")
-            
+                raise abort(
+                    400, description="NotFoundToken", response="auth/not-found-token"
+                )
+
             if admin:
                 service = AuthAdminService()
                 g.admin = service.authentication(id_token)
@@ -50,13 +55,15 @@ def login_required(admin=False):
 
     return decorator
 
+
 def has_access(access_level, strict=False):
     """
     Decorator has_acess
-    
+
     Args:
         - access_level (Privileges): Privileges enum
     """
+
     def decorator(func):
         @wraps(func)
         def wrap(*args, **kwargs):
@@ -66,7 +73,7 @@ def has_access(access_level, strict=False):
                 raise abort(
                     401,
                     description="Unauthorized",
-                    response="You not enough permissions to access"
+                    response="You not enough permissions to access",
                 )
 
             return func(*args, **kwargs)
@@ -74,4 +81,3 @@ def has_access(access_level, strict=False):
         return wrap
 
     return decorator
-
