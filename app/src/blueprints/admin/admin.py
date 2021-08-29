@@ -1,28 +1,36 @@
-from flask import Blueprint, g, request, jsonify, abort
 from functools import wraps
-from src.services import AuthAdminService, AdminService
+
+from flask import abort
+from flask import Blueprint
+from flask import g
+from flask import jsonify
+from flask import request
+
 from src.models import Privilegies
+from src.services import AdminService
+from src.services import AuthAdminService
 
 
-router = Blueprint(name='Admin', import_name=__name__)
+router = Blueprint(name="Admin", import_name=__name__)
 
 # Decorador
 def get_token():
     headers = request.headers
-    prefix = 'Bearer '
+    prefix = "Bearer "
 
-    if not 'authorization' in headers:
-        raise abort(400, description='NotFoundToken', response='auth/not-found-token')
+    if not "authorization" in headers:
+        raise abort(400, description="NotFoundToken", response="auth/not-found-token")
 
-    token = headers['authorization']
+    token = headers["authorization"]
 
     if not token.startswith(prefix):
-        raise abort(400, description='InvalidIdToken', response='auth/invalid-id-token')
-    
-    if not token[len(prefix):]:
-        raise abort(400, description='InvalidIdToken', response='auth/invalid-id-token')
+        raise abort(400, description="InvalidIdToken", response="auth/invalid-id-token")
 
-    return token[len(prefix):]
+    if not token[len(prefix) :]:
+        raise abort(400, description="InvalidIdToken", response="auth/invalid-id-token")
+
+    return token[len(prefix) :]
+
 
 # Decorador
 def login_required(func):
@@ -31,7 +39,7 @@ def login_required(func):
         id_token = get_token()
 
         if not id_token:
-            raise TypeError('The auth decorator needs to token_required decorator')
+            raise TypeError("The auth decorator needs to token_required decorator")
 
         service = AuthAdminService()
         g.admin = service.authentication(id_token)
@@ -39,110 +47,118 @@ def login_required(func):
 
     return wrap
 
+
 # Decorator
 def has_access(func, access_level):
     @wraps(func)
     def wrap(*args, **kwargs):
-        user = g.admin['b']
-        
+        user = g.admin["b"]
+
         if not user.has_access(access_level.value):
-            abort(401, description='Unauthorized', response='You not enough permissions to access')
+            abort(
+                401,
+                description="Unauthorized",
+                response="You not enough permissions to access",
+            )
 
     return wrap
 
+
 # GET: /api/v1/admin/<uid>
-@router.route('/<uid>', methods=['GET'])
+@router.route("/<uid>", methods=["GET"])
 @login_required
 def index_admin_one(uid):
     service = AdminService()
     user = service.get(uid)
 
-    return jsonify({
-        "success": True,
-        "response": user
-    })
+    return jsonify({"success": True, "response": user})
+
 
 # GET: /api/v1/admin
-@router.route('/', methods=['GET'])
+@router.route("/", methods=["GET"])
 @login_required
 def index_admin():
-    search = request.args.get('search')
-    page = request.args.get('page') or 1
-    per_page = request.args.get('limit')
-    order_by = request.args.get('orderBy')
-    order = request.args.get('order')
-    
+    search = request.args.get("search")
+    page = request.args.get("page") or 1
+    per_page = request.args.get("limit")
+    order_by = request.args.get("orderBy")
+    order = request.args.get("order")
+
     service = AdminService()
     paginate = service.list(search, page, per_page, order_by, order)
-    
-    return jsonify({
-        "success": True,
-        "response": paginate.items,
-        "total": paginate.total,
-        "page": paginate.page,
-        "limit": paginate.per_page,
-        "next": paginate.next_num
-    })
+
+    return jsonify(
+        {
+            "success": True,
+            "response": paginate.items,
+            "total": paginate.total,
+            "page": paginate.page,
+            "limit": paginate.per_page,
+            "next": paginate.next_num,
+        }
+    )
+
 
 # POST: /api/v1/admin
-@router.route('/', methods=['POST'])
+@router.route("/", methods=["POST"])
 @login_required
 def register_admin():
     body = request.get_json()
-    
+
     if not body:
-        return abort(400, description='NotFoundData', response='not-found-data')
+        return abort(400, description="NotFoundData", response="not-found-data")
 
     service = AdminService()
     user = service.create(body)
 
-    return jsonify({ 'success': True, 'response': user });
+    return jsonify({"success": True, "response": user})
+
 
 # PUT: /api/v1/admin/<uid>
-@router.route('/<uid>', methods=['PUT'])
+@router.route("/<uid>", methods=["PUT"])
 @login_required
 def update_admin(uid):
     body = request.get_json()
 
     if not body:
-        return abort(400, description='NotFoundData', response='not-found-data')
+        return abort(400, description="NotFoundData", response="not-found-data")
 
     service = AdminService()
     user = service.update(uid, body)
 
-    return jsonify({ 'success': True, 'response': user })
+    return jsonify({"success": True, "response": user})
+
 
 # PATCH: /api/v1/admin/<uid>
-@router.route('/<uid>', methods=['PATCH'])
+@router.route("/<uid>", methods=["PATCH"])
 @login_required
 def update_field_admin(uid):
     body = request.get_json()
 
     if not body:
-        return abort(400, description='NotFoundData', response='not-found-data')
+        return abort(400, description="NotFoundData", response="not-found-data")
 
     service = AdminService()
     user = service.update_field(uid, body)
 
-    return jsonify({ 'success': True, 'response': user })
+    return jsonify({"success": True, "response": user})
+
 
 # PATCH /api/v1/admin/disabled/<uid>
-@router.route('/disabled/<uid>', methods=['PATCH'])
+@router.route("/disabled/<uid>", methods=["PATCH"])
 @login_required
 def disabled_admin(uid):
     service = AdminService()
     user = service.disabled(uid)
 
-    return jsonify({ 'success': True, 'response': user })
+    return jsonify({"success": True, "response": user})
+
 
 # DELETE: /api/v1/admin/<uid>
-@router.route('/<uid>', methods=['DELETE'])
+@router.route("/<uid>", methods=["DELETE"])
 @login_required
 def delete_admin(uid):
     service = AdminService()
     user = service.delete(uid)
 
-    return jsonify({
-        'success': True,
-        'response': user
-    })
+    return jsonify({"success": True, "response": user})

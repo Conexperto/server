@@ -1,28 +1,36 @@
-from flask import Blueprint, g, request, jsonify, abort
 from functools import wraps
-from src.services import AuthAdminService, SpecialityService
+
+from flask import abort
+from flask import Blueprint
+from flask import g
+from flask import jsonify
+from flask import request
+
 from src.models import Privilegies
+from src.services import AuthAdminService
+from src.services import SpecialityService
 
 
-router = Blueprint(name='SpecialityAdmin', import_name=__name__)
+router = Blueprint(name="SpecialityAdmin", import_name=__name__)
 
 # Decorador
 def get_token():
     headers = request.headers
-    prefix = 'Bearer '
+    prefix = "Bearer "
 
-    if not 'authorization' in headers:
-        raise abort(401, description='NotFoundToken', response='auth/not-found-token')
+    if not "authorization" in headers:
+        raise abort(401, description="NotFoundToken", response="auth/not-found-token")
 
-    token = headers['authorization']
+    token = headers["authorization"]
 
     if not token.startswith(prefix):
-        raise abort(401, description='InvalidIdToken', response='auth/invalid-id-token')
-    
-    if not token[len(prefix):]:
-        raise abort(401, description='InvalidIdToken', response='auth/invalid-id-token')
+        raise abort(401, description="InvalidIdToken", response="auth/invalid-id-token")
 
-    return token[len(prefix):]
+    if not token[len(prefix) :]:
+        raise abort(401, description="InvalidIdToken", response="auth/invalid-id-token")
+
+    return token[len(prefix) :]
+
 
 # Decorador
 def login_required(func):
@@ -31,7 +39,7 @@ def login_required(func):
         id_token = get_token()
 
         if not id_token:
-            raise TypeError('The auth decorator needs to token_required decorator')
+            raise TypeError("The auth decorator needs to token_required decorator")
 
         service = AuthAdminService()
         g.admin = service.authentication(id_token)
@@ -39,110 +47,118 @@ def login_required(func):
 
     return wrap
 
+
 # Decorator
 def has_access(func, access_level):
     @wraps(func)
     def wrap(*arg, **kwargs):
-        user = g.admin['b']
-        
+        user = g.admin["b"]
+
         if not user.has_access(access_level.value):
-            abort(401, description='Unauthorized', response='You not enough permissions to access')
+            abort(
+                401,
+                description="Unauthorized",
+                response="You not enough permissions to access",
+            )
 
     return wrap
 
+
 # GET: /api/v1/admin/speciality/<int:_id>
-@router.route('/<int:_id>', methods=['GET'])
+@router.route("/<int:_id>", methods=["GET"])
 @login_required
 def index_speciality_admin_one(_id):
     service = SpecialityService()
     speciality = service.get(_id)
 
-    return jsonify({
-        "success": True,
-        "response": speciality
-    })
+    return jsonify({"success": True, "response": speciality})
+
 
 # GET: /api/v1/admin/speciality
-@router.route('/', methods=['GET'])
+@router.route("/", methods=["GET"])
 @login_required
 def index_speciality_admin():
-    search = request.args.get('search')
-    page = request.args.get('page') or 1
-    per_page = request.args.get('limit')
-    order_by = request.args.get('orderBy')
-    order = request.args.get('order')
-    
+    search = request.args.get("search")
+    page = request.args.get("page") or 1
+    per_page = request.args.get("limit")
+    order_by = request.args.get("orderBy")
+    order = request.args.get("order")
+
     service = SpecialityService()
     paginate = service.list(search, page, per_page, order_by, order)
-    
-    return jsonify({
-        "success": True,
-        "response": paginate.items,
-        "total": paginate.total,
-        "page": paginate.page,
-        "limit": paginate.per_page,
-        "next": paginate.next_num
-    })
-    
+
+    return jsonify(
+        {
+            "success": True,
+            "response": paginate.items,
+            "total": paginate.total,
+            "page": paginate.page,
+            "limit": paginate.per_page,
+            "next": paginate.next_num,
+        }
+    )
+
+
 # POST: /api/v1/admin/speciality
-@router.route('/', methods=['POST'])
+@router.route("/", methods=["POST"])
 @login_required
 def register_speciality_admin():
     body = request.get_json()
-    
+
     if not body:
-        return abort(400, description='NotFoundData', response='not-found-data')
+        return abort(400, description="NotFoundData", response="not-found-data")
 
     service = SpecialityService()
     speciality = service.create(body)
 
-    return jsonify({ 'success': True, 'response': speciality });
+    return jsonify({"success": True, "response": speciality})
+
 
 # PUT: /api/v1/admin/speciality/<int:_id>
-@router.route('/<int:_id>', methods=['PUT'])
+@router.route("/<int:_id>", methods=["PUT"])
 @login_required
 def update_speciality_admin(_id):
     body = request.get_json()
 
     if not body:
-        return abort(400, description='NotFoundData', response='not-found-data')
+        return abort(400, description="NotFoundData", response="not-found-data")
 
     service = SpecialityService()
     speciality = service.update(_id, body)
 
-    return jsonify({ 'success': True, 'response': speciality })
+    return jsonify({"success": True, "response": speciality})
+
 
 # PATCH: /api/v1/admin/speciality/<int:_id>
-@router.route('/<int:_id>', methods=['PATCH'])
+@router.route("/<int:_id>", methods=["PATCH"])
 @login_required
 def update_field_speciality_admin(_id):
     body = request.get_json()
 
     if not body:
-        return abort(400, description='NotFoundData', response='not-found-data')
+        return abort(400, description="NotFoundData", response="not-found-data")
 
     service = SpecialityService()
     speciality = service.update_field(_id, body)
 
-    return jsonify({ 'success': True, 'response': speciality })
+    return jsonify({"success": True, "response": speciality})
+
 
 # PATCH /api/v1/admin/speciality/disabled/<int:_id>
-@router.route('/disabled/<int:_id>', methods=['PATCH'])
+@router.route("/disabled/<int:_id>", methods=["PATCH"])
 @login_required
 def disabled_speciality_admin(_id):
     service = SpecialityService()
     speciality = service.disabled(_id)
 
-    return jsonify({ 'success': True, 'response': speciality })
+    return jsonify({"success": True, "response": speciality})
+
 
 # DELETE: /api/v1/admin/speciality/<int:_id>
-@router.route('/<int:_id>', methods=['DELETE'])
+@router.route("/<int:_id>", methods=["DELETE"])
 @login_required
 def delete_speciality_admin(_id):
-    service = SpecialityService() 
+    service = SpecialityService()
     speciality = service.delete(_id)
 
-    return jsonify({
-        'success': True,
-        'response': speciality
-    })
+    return jsonify({"success": True, "response": speciality})
