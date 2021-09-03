@@ -1,6 +1,8 @@
 """ src.services.method """
-from flask import abort
+from sqlalchemy import asc
+from sqlalchemy import desc
 
+from src.exceptions import HandlerException
 from src.models import Method
 
 
@@ -9,35 +11,75 @@ class MethodService:
     MethodService contains all CRUD operations
     """
 
+    def search(self, search):
+        """
+        Make search query
+        """
+        if search is None:
+            return self.__query
+
+        self.__query = self.__query.filter(Method.name.like(f"%{search}"))
+        return self.__query
+
+    def sort(self, order_by, order):
+        """
+        Make sort query
+        """
+        __order = order or "asc"
+        __order_by = order_by or "id"
+        __subquery = None
+
+        if __order not in ["desc", "asc"]:
+            raise HandlerException(400, "Bad order, mest be desc or asc")
+
+        if not hasattr(Method, __order_by):
+            raise HandlerException(400, "Bad order_by, field not found")
+
+        if __order == "asc":
+            __subquery = asc(__order_by)
+        if __order == "desc":
+            __subquery = desc(__order_by)
+
+        self.__query = self.__query.order_by(__subquery)
+        return self.__query
+
     def get(self, _id):
         """
         Get method by uid
 
         Args:
-            _id (str): method id
+            _id (str): Method id
 
         Returns: Method
         """
         method = Method.query.get(_id)
 
         if not method:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found method")
 
         return method
 
-    def list(self, page, per_pages=10):
+    def list(self, search, page, per_pages, order_by, order):
         """
         Get list method
 
         Args:
+            search (str)L Search
             page (int): Pagination position
             per_pages (int): Limit result by page
+            order_by (str): Field by order
+            order (str|int): desc or asc (1|-1)
 
-        Returns: list method
+        Returns: list Method
         """
-        methods = Method.query.paginate(page, per_pages or 10, error_out=False)
+        self.__query = Method.query
+        self.search(search)
+        self.sort(order_by, order)
+        paginate = self.__query.paginate(
+            int(page), int(per_pages) or 10, error_out=False
+        )
 
-        return methods
+        return paginate
 
     def create(self, body):
         """
@@ -57,7 +99,7 @@ class MethodService:
 
             return method
         except KeyError as ex:
-            return abort(404, description="BadRequest", response=str(ex))
+            raise HandlerException(400, "Unexpected response: " + str(ex))
 
     def update(self, _id, body):
         """
@@ -73,7 +115,7 @@ class MethodService:
         method = Method.query.get(_id)
 
         if not method:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found method")
 
         method.serialize(body)
         method.save()
@@ -94,7 +136,7 @@ class MethodService:
         method = Method.query.get(_id)
 
         if not method:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found method")
 
         method.serialize(body)
         method.save()
@@ -113,7 +155,7 @@ class MethodService:
         method = Method.query.get(_id)
 
         if not method:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found method")
 
         method.serialize({"disabled": not method.disabled})
         method.save()
@@ -133,7 +175,7 @@ class MethodService:
         method = Method.query.get(_id)
 
         if not method:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found method")
 
         method.delete()
 

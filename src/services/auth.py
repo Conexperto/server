@@ -1,8 +1,5 @@
-"""
-    Service Auth
-"""
-from flask import abort
-
+""" src.services.auth """
+from src.exceptions import HandlerException
 from src.firebase import web_sdk
 from src.models import User
 from src.models import UserRecord
@@ -28,16 +25,16 @@ class AuthService:
         decoded_token = UserRecord.verify_id_token(
             id_token, check_revoked=True, app=web_sdk
         )
+
         user_record = UserRecord.get_user(decoded_token["uid"], app=web_sdk)
 
         if user_record.disabled:
-            raise abort(
-                401,
-                description="AccountDisabled",
-                response="auth/account-disabled",
-            )
+            raise HandlerException(401, "Account disabled")
 
-        # claims = user_record.custom_claims
+        claims = user_record.custom_claims
+
+        if claims and "admin" in claims:
+            raise HandlerException(404, "Not found user")
 
         user = User.query.filter_by(uid=user_record.uid).first()
 
@@ -80,7 +77,7 @@ class AuthService:
 
             return {"uid": user_record.uid, "a": user_record, "b": user}
         except KeyError as ex:
-            return abort(400, description="BadRequest", response=str(ex))
+            raise HandlerException(400, "Bad request" + str(ex))
 
     def update(self, user, body):
         """
@@ -108,12 +105,12 @@ class AuthService:
         _user = user["b"]
 
         if not user_record or not _user:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found user")
 
         user_record.serialize(body)
         user_record.update_user()
 
-        if hasattr(body, "complete_register"):
+        if "complete_register" in body:
             user_record.make_claims({"complete_register": body["complete_register"]})
 
         _user.serialize(body)
@@ -147,12 +144,12 @@ class AuthService:
         _user = user["b"]
 
         if not user_record or not _user:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found user")
 
         user_record.serialize(body)
         user_record.update_user()
 
-        if hasattr(body, "complete_register"):
+        if "complete_register" in body:
             user_record.make_claims({"complete_register": body["complete_register"]})
 
         _user.serialize(body)
@@ -176,13 +173,13 @@ class AuthService:
         _user = user["b"]
 
         if not user_record or not _user:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found user")
 
-        user_record.serialize({"disabled": not user_record.disabled})
+        user_record.serialize({"disabled": True})
         user_record.update_user()
 
-        user.serialize({"disabled": not user_record.disabled})
-        user.save()
+        _user.serialize({"disabled": True})
+        _user.save()
 
         return {"uid": user_record.uid, "a": user_record, "b": _user}
 
@@ -200,7 +197,7 @@ class AuthService:
         _user = user["b"]
 
         if not user_record or not _user:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found user")
 
         user_record.delete_user()
         _user.delete()

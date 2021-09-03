@@ -1,32 +1,46 @@
 """ src.api """
+import os
+
 from flask import Flask
 from flask import jsonify
 from flask_cors import CORS
+from flask_migrate import Migrate
 
 from src.blueprints import auth
 from src.blueprints.admin import admin
 from src.blueprints.admin import auth_admin
-from src.blueprints.admin import expert
 from src.blueprints.admin import method
 from src.blueprints.admin import plan
 from src.blueprints.admin import speciality
 from src.blueprints.admin import user
+from src.db import db
 from src.helpers import JSONSerializable
+from src.seed import seed
 
 
 def create_api():
     """Initialize Application"""
     api = Flask(__name__)
 
+    api.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
+    api.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    api.config["JSON_SORT_KEYS"] = False
+
+    Migrate(api, db)
+
+    api.cli.add_command(seed)
+
     api.url_map.strict_slashes = False
     JSONSerializable(api)
 
     CORS(api)
 
+    with api.app_context():
+        db.init_app(api)
+
     api.register_blueprint(auth_admin, url_prefix="/admin/auth")
     api.register_blueprint(admin, url_prefix="/admin")
     api.register_blueprint(user, url_prefix="/admin/user")
-    api.register_blueprint(expert, url_prefix="/admin/expert")
     api.register_blueprint(method, url_prefix="/admin/method")
     api.register_blueprint(plan, url_prefix="/admin/plan")
     api.register_blueprint(speciality, url_prefix="/admin/speciality")
@@ -41,8 +55,7 @@ def create_api():
                     "success": False,
                     "err": err,
                     "msg": msg,
-                    "detail": str(detail),
-                    "code": detail.response,
+                    "detail": str(detail.description),
                 }
             ),
             err,
