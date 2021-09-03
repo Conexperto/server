@@ -1,7 +1,9 @@
 """ src.services.plan """
-from flask import abort
+from sqlalchemy import asc
+from sqlalchemy import desc
 
 from src.db import db
+from src.exceptions import HandlerException
 from src.models import Plan
 
 
@@ -9,6 +11,38 @@ class PlanService:
     """
     PlanService contains all CRUD operations
     """
+
+    def search(self, search):
+        """
+        Make search query
+        """
+        if search is None:
+            return self.__query
+
+        self.__query = self.__query.filter(Plan.name.like(f"%{search}"))
+        return self.__query
+
+    def sort(self, order_by, order):
+        """
+        Make sort query
+        """
+        __order = order or "asc"
+        __order_by = order_by or "id"
+        __subquery = None
+
+        if __order not in ["desc", "asc"]:
+            raise HandlerException(400, "Bad order, mest be desc or asc")
+
+        if not hasattr(Plan, __order_by):
+            raise HandlerException(400, "Bad order_by, field not found")
+
+        if __order == "asc":
+            __subquery = asc(__order_by)
+        if __order == "desc":
+            __subquery = desc(__order_by)
+
+        self.__query = self.__query.order_by(__subquery)
+        return self.__query
 
     def get(self, _id):
         """
@@ -22,23 +56,31 @@ class PlanService:
         plan = Plan.query.get(_id)
 
         if not plan:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found plan")
 
         return plan
 
-    def list(self, page, per_pages=10):
+    def list(self, search, page, per_pages, order_by, order):
         """
         Get list plan
 
         Args:
+            search (str)L Search
             page (int): Pagination position
             per_pages (int): Limit result by page
+            order_by (str): Field by order
+            order (str|int): desc or asc (1|-1)
 
         Returns: list Plan
         """
-        plans = Plan.query.paginate(page, per_pages or 10, error_out=False)
+        self.__query = Plan.query
+        self.search(search)
+        self.sort(order_by, order)
+        paginate = self.__query.paginate(
+            int(page), int(per_pages) or 10, error_out=False
+        )
 
-        return plans
+        return paginate
 
     def create(self, body):
         """
@@ -65,7 +107,7 @@ class PlanService:
 
             return plan
         except KeyError as ex:
-            return abort(404, description="BadRequest", response=str(ex))
+            raise HandlerException(404, "Bad request: " + str(ex))
 
     def create_many(self, expert_id, body):
         """
@@ -80,24 +122,25 @@ class PlanService:
 
         Returns: Plan
         """
-        mappings_create = []
-        pipe = []
-
-        if not isinstance(body, list):
-            pipe.append(body)
-        else:
+        try:
+            mappings_create = []
             pipe = body
 
-        for p in pipe:
-            plan = Plan(
-                duration=p["duration"],
-                price=p["price"],
-                coin=p["coin"],
-                expert_id=expert_id,
-            )
-            mappings_create.append(plan)
+            if not isinstance(pipe, list):
+                pipe = [body]
 
-        db.session.bulk_insert_mappings(Plan, mappings_create)
+            for p in pipe:
+                plan = Plan(
+                    duration=p["duration"],
+                    price=p["price"],
+                    coin=p["coin"],
+                    expert_id=expert_id,
+                )
+                mappings_create.append(plan)
+
+            db.session.bulk_insert_mappings(Plan, mappings_create)
+        except KeyError as ex:
+            raise HandlerException(404, "Bad request: " + str(ex))
 
     def update(self, _id, body):
         """
@@ -116,7 +159,7 @@ class PlanService:
         plan = Plan.query.get(_id)
 
         if not plan:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found plan")
 
         plan.serialize(body)
         plan.save()
@@ -140,7 +183,7 @@ class PlanService:
         plan = Plan.query.get(_id)
 
         if not plan:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found plan")
 
         plan.serialize(body)
         plan.save()
@@ -159,7 +202,7 @@ class PlanService:
         plan = Plan.query.get(_id)
 
         if not plan:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found plan")
 
         plan.serialize({"disabled": not plan.disabled})
         plan.save()
@@ -179,65 +222,8 @@ class PlanService:
         plan = Plan.query.get(_id)
 
         if not plan:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found plan")
 
         plan.delete()
 
         return {"id": plan.id}
-
-    def update_or_create_and_delete_many(self, expert_id, body):
-        """
-        Update or create and delete many plan
-
-        Args:
-            body (dict):
-                duration (int): Duration
-                price (int): Price
-                coint (str): Coin
-                expert_id (int): Expert id
-        """
-        mappings_create = []
-        mappings_update = []
-        mappings_delete = []
-        pipe = []
-
-        if not isinstance(body, list):
-            pipe.append(body)
-        else:
-            pipe = body
-
-        for p in pipe:
-            if hasattr(p, "id"):
-                if hasattr(p, "delete"):
-                    mappings_delete.append({"id": p["id"]})
-                    continue
-
-                update = {"id": p["id"], "expert_id": expert_id}
-
-                if hasattr(p, "duration"):
-                    update.update({"duration": p["duration"]})
-                if hasattr(p, "price"):
-                    update.update({"price": p["price"]})
-                if hasattr(p, "coin"):
-                    update.update({"coin": p["coin"]})
-                if hasattr(p, "disabled"):
-                    update.update({"disabled": p["disabled"]})
-
-                mappings_update.append(update)
-                continue
-
-            create = {
-                "duration": p["duration"],
-                "price": p["price"],
-                "expert_id": expert_id,
-            }
-
-            if hasattr(p, "coin"):
-                create.update({"coin": p["coin"]})
-            if hasattr(p, "disabled"):
-                create.update({"disabled": p["disabled"]})
-
-            mappings_create.append(create)
-
-        db.session.bulk_update_mappings(Plan, mappings_update)
-        db.session.bulk_insert_mappings(Plan, mappings_create)

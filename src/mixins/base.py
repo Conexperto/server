@@ -1,14 +1,17 @@
 """ src.mixins.base """
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
 from src.db import db
+from src.exceptions import HandlerException
 from src.mixins.audit import AuditMixin
 
 
 class BaseMixin(AuditMixin):
     """BaseMixin"""
 
-    _repr_hide = ["created_at", "updated_at"]
+    __repr_hide = ["created_at", "updated_at"]
     __insert_hide = []
 
     @property
@@ -29,19 +32,32 @@ class BaseMixin(AuditMixin):
 
     def add(self):
         """add"""
-        db.session.add(self)
+        try:
+            db.session.add(self)
+        except IntegrityError as ex:
+            raise HandlerException(400, "Bad request" + str(ex))
+        except SQLAlchemyError:
+            raise HandlerException(500, "Error in add function")
 
     def save(self):
         """save"""
-        db.session.commit()
+        try:
+            db.session.commit()
+        except IntegrityError as ex:
+            raise HandlerException(400, "Bad request" + str(ex))
+        except SQLAlchemyError:
+            raise HandlerException(500, "Error in add function")
 
     def delete(self):
         """delete"""
-        db.session.delete(self)
-        db.session.commit()
+        try:
+            db.session.delete(self)
+            db.session.commit()
+        except SQLAlchemyError:
+            raise HandlerException(500, "Error in add function")
 
     def serialize(self, obj):
-        """serialize"""
+        """serialize from json"""
         for k, v in obj.items():
             if k in self.__repr_hide:
                 continue
@@ -52,11 +68,11 @@ class BaseMixin(AuditMixin):
         return self
 
     def deserialize(self, backref=None):
-        """deserialize"""
+        """deserialize to json"""
         res = dict()
 
         for attr, col in self.__mapper__.c.items():
-            if attr in self.__repr_hide:
+            if attr in self._repr_hide:
                 continue
             res[col.key] = getattr(self, attr)
 

@@ -32,3 +32,13 @@ services:
         - "5000:3000"
       depends_on:
         - db
+    test:
+      build:
+        context: .
+        dockerfile: ./docker/test/Dockerfile
+      env_file: ./docker/test/test.conf
+      volumes:
+        - ./:/srv/test
+      depends_on:
+        - db
+        - emulator

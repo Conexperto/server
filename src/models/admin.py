@@ -22,6 +22,10 @@ class Privileges(Enum):
     Admin = 2
     User = 3
 
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_
+
     def __str__(self):
         return str(self.value)
 
@@ -46,28 +50,32 @@ class Admin(BaseMixin, db.Model):
 
     def is_super_root(self):
         """Returns a boolean if the user has superroot privileges."""
-        return self.privileges == Privileges.SuperRoot
+        return self.privileges == Privileges.SuperRoot.value
 
     def is_root(self):
         """Returns a boolean if the user has root privileges."""
-        return self.privileges == Privileges.Root
+        return self.privileges == Privileges.Root.value
 
     def is_admin(self):
         """Returns a boolean if the user has admin privileges."""
-        return self.privileges == Privileges.Admin
+        return self.privileges == Privileges.Admin.value
 
     def is_user(self):
         """Returns a boolean if the user has user privileges."""
-        return self.privileges == Privileges.User
+        return self.privileges == Privileges.User.value
 
-    def has_access(self, access):
+    def has_access(self, access, strict=False):
         """
         Returns a boolean if the user has access
 
             Parameters:
                 access (int): The integer access level from Privileges Enum
+                strict (bool): Specify access desc to user
 
             Returns:
                 access (bool)
         """
-        return self.privileges <= access
+        if self.is_super_root():  # superroot have all access
+            return True
+
+        return self.privileges < access if strict else self.privileges <= access

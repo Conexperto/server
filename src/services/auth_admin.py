@@ -1,8 +1,5 @@
-"""
-    Service Auth Admin
-"""
-from flask import abort
-
+""" src.services.auth_admin """
+from src.exceptions import HandlerException
 from src.firebase import admin_sdk
 from src.models import Admin
 from src.models import Privileges
@@ -32,21 +29,24 @@ class AuthAdminService:
         user_record = UserRecord.get_user(decoded_token["uid"], app=admin_sdk)
 
         if user_record.disabled:
-            raise abort(
-                401,
-                description="AccountDisabled",
-                response="auth/account-disabled",
-            )
+            raise HandlerException(401, "Account disabled")
+
         claims = user_record.custom_claims
 
-        if hasattr(claims, "admin"):
-            if not claims.admin:
-                raise abort(
-                    401,
-                    description="Unauthorized",
-                    response="auth/unauthorized",
-                )
+        if not claims or "admin" not in claims:
+            raise HandlerException(404, "Not found user")
+
+        if "access_level" not in claims:
+            raise HandlerException(401, "Unauthorized")
+
+        if not Privileges.has_value(claims["access_level"]):
+            raise HandlerException(401, "Unauthorized")
+
         admin = Admin.query.filter_by(uid=user_record.uid).first()
+
+        if not admin:
+            raise HandlerException(404, "Not found user")
+
         return {"uid": user_record.uid, "a": user_record, "b": admin}
 
     def create(self, body):
@@ -78,8 +78,8 @@ class AuthAdminService:
             user_record.make_claims(
                 {
                     "admin": True,
-                    "access_level": body["Privileges"]
-                    if hasattr(body, "Privileges")
+                    "access_level": body["privileges"]
+                    if "privileges" in body
                     else Privileges.User.value,
                 }
             )
@@ -91,14 +91,14 @@ class AuthAdminService:
                 phone_number=body["phone_number"],
                 name=body["name"],
                 lastname=body["lastname"],
-                Privileges=body["Privileges"] or Privileges.User.value,
+                privileges=body["privileges"] or Privileges.User.value,
             )
             user.add()
             user.save()
 
             return {"uid": user_record.uid, "a": user_record, "b": user}
         except KeyError as ex:
-            return abort(400, description="BadRequest", response=str(ex))
+            raise HandlerException(400, "Bad request" + str(ex))
 
     def update(self, user, body):
         """
@@ -126,14 +126,11 @@ class AuthAdminService:
         user_record = user["a"]
         _user = user["b"]
 
-        if not user_record or not _user:
-            abort(404, description="NotFound", response="not_found")
+        if "privileges" in body:
+            del body["privileges"]
 
         user_record.serialize(body)
         user_record.update_user()
-
-        if hasattr(body, "Privileges") and not body["Privileges"]:
-            user_record.make_claims({"access_level": body["Privileges"]})
 
         _user.serialize(body)
         _user.save()
@@ -167,13 +164,13 @@ class AuthAdminService:
         _user = user["b"]
 
         if not user_record or not _user:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found user")
+
+        if "privileges" in body:
+            del body["privileges"]
 
         user_record.serialize(body)
         user_record.update_user()
-
-        if hasattr(body, "Privileges") and not body["Privileges"]:
-            user_record.make_claims({"access_level": body["Privileges"]})
 
         _user.serialize(body)
         _user.save()
@@ -196,13 +193,13 @@ class AuthAdminService:
         _user = user["b"]
 
         if not user_record or not _user:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found user")
 
-        user_record.serialize({"disabled": not user_record.disabled})
+        user_record.serialize({"disabled": True})
         user_record.update_user()
 
-        user.serialize({"disabled": not user_record.disabled})
-        user.save()
+        _user.serialize({"disabled": True})
+        _user.save()
 
         return {"uid": user_record.uid, "a": user_record, "b": _user}
 
@@ -220,7 +217,7 @@ class AuthAdminService:
         _user = user["b"]
 
         if not user_record or not _user:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found user")
 
         user_record.delete_user()
         _user.delete()

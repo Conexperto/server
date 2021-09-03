@@ -2,8 +2,8 @@
     Model: UserRecord
 """
 from firebase_admin import auth
-from flask import abort
 
+from src.exceptions import HandlerException
 from src.mixins import Record
 
 
@@ -56,35 +56,17 @@ class UserRecord(Record):
                 decoded_token
         """
         try:
-            return auth.verify_id_token(id_token, check_revoked=check_revoked, app=app)
-        except auth.ExpiredIdTokenError as ex:
-            raise abort(
-                401,
-                description="ExpiredIdToken",
-                response="auth/id-token-expired",
-            ) from ex
-        except auth.RevokedIdTokenError as ex:
-            raise abort(
-                401,
-                description="RevokedIdToken",
-                response="auth/id-token-revoked",
-            ) from ex
-        except auth.InvalidIdTokenError as ex:
-            raise abort(
-                401,
-                description="InvalidIdToken",
-                response="auth/invalid-id-token",
-            ) from ex
-        except auth.TokenSignError as ex:
-            raise abort(
-                401, description="TokenSign", response="auth/token-sign"
-            ) from ex
-        except auth.UnexpectedResponseError as ex:
-            raise abort(
-                500,
-                description="UnexpectedResponse",
-                response="unexpected-response",
-            ) from ex
+            return auth.verify_id_token(id_token, app=app)
+        except auth.ExpiredIdTokenError:
+            raise HandlerException(401, "Expired IdToken")
+        except auth.RevokedIdTokenError:
+            raise HandlerException(401, "Revoked IdToken")
+        except auth.InvalidIdTokenError:
+            raise HandlerException(401, "Invalid IdToken")
+        except auth.TokenSignError:
+            raise HandlerException(401, "Token sign")
+        except auth.UnexpectedResponseError:
+            raise HandlerException(500, "Unexpected response")
 
     @classmethod
     def get_user(cls, uid, app):
@@ -103,19 +85,13 @@ class UserRecord(Record):
         """
         try:
             return cls(auth.get_user(uid, app=app), app=app)
-        except auth.UserNotFoundError as ex:
-            raise abort(
-                404, description="UserNotFound", response="auth/user-not-found"
-            ) from ex
-        except auth.UnexpectedResponseError as ex:
-            raise abort(
-                500,
-                description="UnexpectedResponse",
-                response="unexpected-response",
-            ) from ex
+        except auth.UserNotFoundError:
+            raise HandlerException(404, "User not found")
+        except auth.UnexpectedResponseError:
+            raise HandlerException(500, "Unexpected response")
 
     @classmethod
-    def create_user(cls, email, password, display_name, app):
+    def create_user(cls, **kwargs):
         """
         Returns data user created
 
@@ -134,32 +110,15 @@ class UserRecord(Record):
         """
         try:
             return cls(
-                auth.create_user(
-                    email=email,
-                    password=password,
-                    display_name=display_name,
-                    app=app,
-                ),
-                app=app,
+                auth.create_user(**kwargs),
+                app=kwargs["app"],
             )
-        except auth.EmailAlreadyExistsError as ex:
-            raise abort(
-                400,
-                description="EmailAlreadyExists",
-                response="auth/email-already-exists",
-            ) from ex
-        except auth.PhoneNumberAlreadyExistsError as ex:
-            raise abort(
-                400,
-                description="PhoneNumberAlreadyExists",
-                response="auth/phone-number-already-exists",
-            ) from ex
-        except auth.UnexpectedResponseError as ex:
-            raise abort(
-                500,
-                description="UnexpectedResponse",
-                response="unexpected-response",
-            ) from ex
+        except auth.EmailAlreadyExistsError:
+            raise HandlerException(400, "Email already exists")
+        except auth.PhoneNumberAlreadyExistsError:
+            raise HandlerException(400, "PhoneNumber already exists")
+        except auth.UnexpectedResponseError:
+            raise HandlerException(500, "Unexpected response")
 
     def __init__(self, user_record, app):
         self.app = app
@@ -194,7 +153,6 @@ class UserRecord(Record):
         Raises:
             EmailAlreadyExistsError: Email already exists
             PhoneNumberAlreadyExistsError: Phone number already exists
-
         """
         try:
             args = {"app": self.app}
@@ -207,29 +165,17 @@ class UserRecord(Record):
                     "tokens_valid_after_timestamp",
                 ]:
                     continue
-                if not v:
+                if v is None:
                     continue
                 args[k] = v
 
             auth.update_user(**args)
-        except auth.EmailAlreadyExistsError as ex:
-            raise abort(
-                400,
-                description="EmailAlreadyExists",
-                response="auth/email-already-exists",
-            ) from ex
-        except auth.PhoneNumberAlreadyExistsError as ex:
-            raise abort(
-                400,
-                description="PhoneNumberAlreadyExists",
-                response="auth/phone-number-already-exists",
-            ) from ex
-        except auth.UnexpectedResponseError as ex:
-            raise abort(
-                500,
-                description="UnexpectedResponse",
-                response="unexpected-response",
-            ) from ex
+        except auth.EmailAlreadyExistsError:
+            raise HandlerException(400, "Email already exists")
+        except auth.PhoneNumberAlreadyExistsError:
+            raise HandlerException(400, "PhoneNumber already exists")
+        except auth.UnexpectedResponseError:
+            raise HandlerException(500, "Unexpected response")
 
     def delete_user(self):
         """
@@ -240,16 +186,10 @@ class UserRecord(Record):
         """
         try:
             auth.delete_user(uid=self.uid, app=self.app)
-        except auth.UserNotFoundError as ex:
-            raise abort(
-                404, description="UserNotFound", response="auth/user-not-found"
-            ) from ex
-        except auth.UnexpectedResponseError as ex:
-            raise abort(
-                500,
-                description="UnexpectedResponse",
-                response="unexpected-response",
-            ) from ex
+        except auth.UserNotFoundError:
+            raise HandlerException(404, "User not found")
+        except auth.UnexpectedResponseError:
+            raise HandlerException(500, "Unexpected response")
 
     def make_claims(self, claims=None):
         """
@@ -263,13 +203,7 @@ class UserRecord(Record):
         """
         try:
             auth.set_custom_user_claims(self.uid, claims or {}, app=self.app)
-        except auth.UserNotFoundError as ex:
-            raise abort(
-                404, description="UserNotFound", response="auth/user-not-found"
-            ) from ex
-        except auth.UnexpectedResponseError as ex:
-            raise abort(
-                500,
-                description="UnexpectedResponse",
-                response="unexpected-response",
-            ) from ex
+        except auth.UserNotFoundError:
+            raise HandlerException(404, "User not found")
+        except auth.UnexpectedResponseError:
+            raise HandlerException(500, "Unexpected response")

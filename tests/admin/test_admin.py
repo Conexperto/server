@@ -1,6 +1,5 @@
 """ tests.admin.test_admin """
 import logging
-from json import dumps
 from json import loads
 
 from jsonschema import validate
@@ -64,17 +63,79 @@ schema = {
     "required": ["success", "response"],
 }
 
+schema_list = {
+    "type": "object",
+    "properties": {
+        "success": {"type": "boolean"},
+        "response": {
+            "type": "array",
+            "items": {
+                "id": {"type": "number"},
+                "uid": {"type": "string"},
+                "display_name": {"type": "string"},
+                "email": {"type": "string"},
+                "phone_number": {"type": ["string", "null"]},
+                "photo_url": {"type": ["string", "null"]},
+                "name": {"type": ["string", "null"]},
+                "lastname": {"type": ["string", "null"]},
+                "disabled": {"type": "boolean"},
+                "privileges": {"type": "number"},
+            },
+        },
+        "total": {"type": "number"},
+        "page": {"type": "number"},
+        "limit": {"type": "number"},
+        "next": {"type": ["number", "null"]},
+    },
+    "required": ["success", "response", "total", "page", "limit", "next"],
+}
+
 schema_error = {
     "type": "object",
     "properties": {
         "success": {"type": "boolean"},
         "err": {"type": "number"},
         "msg": {"type": "string"},
-        "detail": {"type": "string"},
-        "code": {"type": "string"},
     },
-    "required": ["success", "err", "msg", "detail", "code"],
+    "required": ["success", "err", "msg"],
 }
+
+schema_delete = {
+    "type": "object",
+    "properties": {
+        "success": {"type": "boolean"},
+        "response": {"type": "object", "properties": {"uid": {"type": "string"}}},
+    },
+}
+
+
+def search_user(client, auth, search):
+    auth.login("admin@adminconexperto.com", "token_admin")
+    headers = {"Authorization": "Bearer " + auth.token}
+    params = {"search": search}
+    rv = client.get("/admin", query_string=params, headers=headers)
+    assert rv.status_code == 200, "should be status code 200"
+    assert (
+        rv.headers["Content-Type"] == "application/json"
+    ), "should be content type application/json"
+    body = loads(rv.data)
+    validate(instance=body, schema=schema_list)
+    return body["response"][0]["uid"]
+
+
+def prove_order(items, order):
+    identifiers = [item["id"] for item in items]
+    if identifiers == sorted(identifiers):
+        return order == "asc"
+    else:
+        return order == "desc"
+    return False
+
+
+def paginate(client, auth, params):
+    headers = {"Authorization": "Bearer " + auth.token}
+    rv = client.get("/admin", query_string=params, headers=headers)
+    return rv
 
 
 def test_admin_create_user(client, auth, login_admin):
@@ -277,7 +338,8 @@ def test_admin_update_user(client, auth, login_admin):
         "name": "Testing SuperRoot SuperRoot",
         "lastname": "Testing SuperRoot",
     }
-    rv = client.put("/admin/" + auth.user["localId"], headers=headers, json=payload)
+    identifier = search_user(client, auth, "test@adminconexperto.com")
+    rv = client.put("/admin/" + identifier, headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -289,11 +351,10 @@ def test_admin_update_user(client, auth, login_admin):
 def test_admin_update_user_duplicate_phone_number(client, auth, login_admin):
     headers = {"Authorization": "Bearer " + auth.token}
     payload = {
-        "phone_number": "+13100000000",
-        "name": "Testing SuperRoot",
-        "lastname": "Testing SuperRoot",
+        "phone_number": "+13200000000",
     }
-    rv = client.put("/admin/" + auth.user["localId"], headers=headers, json=payload)
+    identifier = search_user(client, auth, "test@adminconexperto.com")
+    rv = client.put("/admin/" + identifier, headers=headers, json=payload)
     assert rv.status_code == 400, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -307,7 +368,8 @@ def test_admin_update_field(client, auth, login_admin):
     payload = {
         "display_name": "Testing SuperRoot",
     }
-    rv = client.patch("/admin/" + auth.user["localId"], headers=headers, json=payload)
+    identifier = search_user(client, auth, "test@adminconexperto.com")
+    rv = client.patch("/admin/" + identifier, headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -319,9 +381,10 @@ def test_admin_update_field(client, auth, login_admin):
 def test_admin_update_field_duplicate_phone_number(client, auth, login_admin):
     headers = {"Authorization": "Bearer " + auth.token}
     payload = {
-        "phone_number": "+13100000000",
+        "phone_number": "+13200000000",
     }
-    rv = client.patch("/admin/" + auth.user["localId"], headers=headers, json=payload)
+    identifier = search_user(client, auth, "test@adminconexperto.com")
+    rv = client.patch("/admin/" + identifier, headers=headers, json=payload)
     assert rv.status_code == 400, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -360,5 +423,162 @@ def test_admin_list_user(client, auth, login_admin):
         rv.headers["Content-Type"] == "application/json"
     ), "should be content type application/json"
     body = loads(rv.data)
-    logger.info(dumps(body, indent=2))
-    # validate(instance=body, schema=schema)
+    validate(instance=body, schema=schema_list)
+
+
+def test_admin_list_user_search(client, auth, login_admin):
+    headers = {"Authorization": "Bearer " + auth.token}
+    params = {
+        "search": "test_admin@admin",
+    }
+    rv = client.get("/admin", query_string=params, headers=headers)
+    assert rv.status_code == 200, "should be status code 200"
+    assert (
+        rv.headers["Content-Type"] == "application/json"
+    ), "should be content type application/json"
+    body = loads(rv.data)
+    validate(instance=body, schema=schema_list)
+
+
+def test_admin_list_user_paginate(client, auth, login_admin):
+    params = {"page": 1, "limit": 2}
+    while True:
+        rv = paginate(client, auth, params)
+        assert rv.status_code == 200, "should be status code 200"
+        assert (
+            rv.headers["Content-Type"] == "application/json"
+        ), "should be content type application/json"
+        body = loads(rv.data)
+        assert len(body["response"]) == 2, "should be length 2 items"
+        assert body["page"] == params["page"], "should be page 2"
+        validate(instance=body, schema=schema_list)
+        params["page"] = body["next"]
+        if not body["next"]:
+            return
+
+
+def test_admin_list_user_order_asc(client, auth, login_admin):
+    headers = {"Authorization": "Bearer " + auth.token}
+    params = {"orderBy": "id", "order": "asc"}
+    rv = client.get("/admin", query_string=params, headers=headers)
+    assert rv.status_code == 200, "should be status code 200"
+    assert (
+        rv.headers["Content-Type"] == "application/json"
+    ), "should be content type application/json"
+    body = loads(rv.data)
+    validate(instance=body, schema=schema_list)
+    assert prove_order(body["response"], "asc"), "should be sorted in ascending order"
+
+
+def test_admin_list_user_order_desc(client, auth, login_admin):
+    headers = {"Authorization": "Bearer " + auth.token}
+    params = {"orderBy": "id", "order": "desc"}
+    rv = client.get("/admin", query_string=params, headers=headers)
+    assert rv.status_code == 200, "should be status code 200"
+    assert (
+        rv.headers["Content-Type"] == "application/json"
+    ), "should be content type application/json"
+    body = loads(rv.data)
+    validate(instance=body, schema=schema_list)
+    assert prove_order(body["response"], "desc"), "should be sorted in descending order"
+
+
+def test_admin_disabled(client, auth, login_admin):
+    headers = {"Authorization": "Bearer " + auth.token}
+    identifier = search_user(client, auth, "test@adminconexperto.com")
+    rv = client.patch("/admin/disabled/" + identifier, headers=headers)
+    assert rv.status_code == 200, "should be status code 200"
+    assert (
+        rv.headers["Content-Type"] == "application/json"
+    ), "should be content type application/json"
+    body = loads(rv.data)
+    validate(instance=body, schema=schema)
+    assert body["response"]["a"]["disabled"] is True, "should be disabled True"
+    assert body["response"]["b"]["disabled"] is True, "should be disabled True"
+
+
+def test_admin_enabled(client, auth, login_admin):
+    headers = {"Authorization": "Bearer " + auth.token}
+    identifier = search_user(client, auth, "test@adminconexperto.com")
+    rv = client.patch("/admin/disabled/" + identifier, headers=headers)
+    assert rv.status_code == 200, "should be status code 200"
+    assert (
+        rv.headers["Content-Type"] == "application/json"
+    ), "should be content type application/json"
+    body = loads(rv.data)
+    validate(instance=body, schema=schema)
+    assert body["response"]["a"]["disabled"] is False, "should be disabled False"
+    assert body["response"]["b"]["disabled"] is False, "should be disabled False"
+
+
+def test_admin_disabled_wrong_auth(client, auth, login_user):
+    """
+    Test admin disabled
+    """
+    headers = {"Authorization": "Bearer " + auth.token}
+    identifier = search_user(client, auth, "test@adminconexperto.com")
+    rv = client.patch("/admin/disabled/" + identifier, headers=headers)
+    assert rv.status_code == 401, "should be status code 401"
+    assert (
+        rv.headers["Content-Type"] == "application/json"
+    ), "should be content type application/json"
+    body = loads(rv.data)
+    validate(instance=body, schema=schema_error)
+
+
+def test_admin_disabled_user_root_wrong_auth(client, auth, login_admin):
+    """
+    Endpoint: /admin/disabled
+    Method: PATCH
+    Assert: status_code == 401
+    Description:
+        Test admin disabled to user root from auth admin
+    """
+    headers = {"Authorization": "Bearer " + auth.token}
+    identifier = search_user(client, auth, "test_root@adminconexperto.com")
+    rv = client.patch("/admin/disabled/" + identifier, headers=headers)
+    assert rv.status_code == 401, "should be status code 401"
+    assert (
+        rv.headers["Content-Type"] == "application/json"
+    ), "should be content type application/json"
+    body = loads(rv.data)
+    validate(instance=body, schema=schema_error)
+
+
+def test_admin_delete(client, auth, login_admin):
+    """
+    Endpoint: /admin/<uid>
+    Method: Delete
+    Assert: status_code = 200
+    Description:
+        Test admin delete
+    """
+    headers = {"Authorization": "Bearer " + auth.token}
+    identifier = search_user(client, auth, "test@adminconexperto.com")
+    rv = client.delete("/admin/" + identifier, headers=headers)
+    print(rv.data)
+    assert rv.status_code == 200, "should be status code 200"
+    assert (
+        rv.headers["Content-Type"] == "application/json"
+    ), "should be content type application/json"
+    body = loads(rv.data)
+    validate(instance=body, schema=schema_delete)
+
+
+def test_admin_delete_wrong_auth(client, auth, login_user):
+    """
+    Endpoint: /admin/<uid>
+    Method: Delete
+    Assert: status_code = 200
+    Description:
+        Test admin delete
+    """
+    headers = {"Authorization": "Bearer " + auth.token}
+    identifier = search_user(client, auth, "test_root@adminconexperto.com")
+    rv = client.delete("/admin/" + identifier, headers=headers)
+    assert rv.status_code == 401, "should be status code 401"
+    assert (
+        rv.headers["Content-Type"] == "application/json"
+    ), "should be content type application/json"
+    body = loads(rv.data)
+    validate(instance=body, schema=schema_error)
