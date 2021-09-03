@@ -1,175 +1,152 @@
 """ src.blueprints.admin.plan """
-from functools import wraps
-
-from flask import abort
 from flask import Blueprint
-from flask import g
 from flask import jsonify
 from flask import request
 
-from src.services import AuthAdminService
+from src.exceptions import HandlerException
+from src.helpers import parse_order
+from src.middlewares import login_required
 from src.services import PlanService
 
 
 router = Blueprint(name="PlanAdmin", import_name=__name__)
 
 
-def get_token():
-    """
-    Decorator get_token
-    """
-    headers = request.headers
-    prefix = "Bearer "
-
-    if "authorization" not in headers:
-        raise abort(400, description="NotFoundToken", response="auth/not-found-token")
-
-    token = headers["authorization"]
-
-    if not token.startswith(prefix):
-        raise abort(400, description="InvalidIdToken", response="auth/invalid-id-token")
-
-    if not token[len(prefix) :]:
-        raise abort(400, description="InvalidIdToken", response="auth/invalid-id-token")
-
-    return token[len(prefix) :]
-
-
-def login_required(func):
-    """
-    Decorator login_required
-    """
-
-    @wraps(func)
-    def wrap(*args, **kwargs):
-        id_token = get_token()
-
-        if not id_token:
-            raise TypeError("The auth decorator needs to token_required decorator")
-
-        service = AuthAdminService()
-        g.admin = service.authentication(id_token)
-        return func(*args, **kwargs)
-
-    return wrap
-
-
-def has_access(func, access_level):
-    """
-    Decorator has_access
-    """
-
-    @wraps(func)
-    def wrap():
-        user = g.admin["b"]
-
-        if not user.has_access(access_level.value):
-            abort(
-                401,
-                description="Unauthorized",
-                response="You not enough permissions to access",
-            )
-
-    return wrap
-
-
 @router.route("/<uid>", methods=["GET"])
-@login_required
+@login_required(admin=True)
 def index_plan_admin_one(uid):
     """
     GET: /api/v1/admin/plan/<uid>
     """
-    service = PlanService()
-    plan = service.get(uid)
+    try:
+        service = PlanService()
+        plan = service.get(uid)
 
-    return jsonify({"success": True, "response": plan})
+        return jsonify({"success": True, "response": plan})
+    except HandlerException as ex:
+        ex.abort()
+    except Exception as ex:
+        HandlerException(500, "Unexpected response: " + str(ex))
 
 
 @router.route("/", methods=["GET"])
-@login_required
+@login_required(admin=True)
 def index_plan_admin():
     """
     GET: /api/v1/admin/plan
     """
-    page = request.args.get("page") or 1
-    per_pages = request.args.get("per_pages")
+    try:
+        query = request.args.get("query")
+        page = request.args.get("page") or 1
+        per_pages = request.args.get("limit") or 10
+        order_by = request.args.get("orderBy") or None
+        order = parse_order(request.args.get("order"))
 
-    service = PlanService()
-    plans = service.list(page, per_pages)
+        service = PlanService()
+        plans = service.list(query, page, per_pages, order_by, order)
 
-    return jsonify({"success": True, "response": plans})
+        return jsonify({"success": True, "response": plans})
+    except HandlerException as ex:
+        ex.abort()
+    except Exception as ex:
+        HandlerException(500, "Unexpected response:" + str(ex))
 
 
 @router.route("/", methods=["POST"])
-@login_required
+@login_required(admin=True)
 def register_plan_admin():
     """
     POST: /api/v1/admin/plan
     """
-    body = request.get_json()
+    try:
+        body = request.get_json()
 
-    if not body:
-        return abort(400, description="NotFoundData", response="not-found-data")
+        if not body:
+            raise HandlerException(400, "Not found body")
 
-    service = PlanService()
-    plan = service.create(body)
+        service = PlanService()
+        plan = service.create(body)
 
-    return jsonify({"success": True, "response": plan})
+        return jsonify({"success": True, "response": plan})
+    except HandlerException as ex:
+        ex.abort()
+    except Exception as ex:
+        HandlerException(500, "Unexpected response: " + str(ex))
 
 
 @router.route("/<uid>", methods=["PUT"])
-@login_required
+@login_required(admin=True)
 def update_plan_admin(uid):
     """
     PUT: /api/v1/admin/plan/<uid>
     """
-    body = request.get_json()
+    try:
+        body = request.get_json()
 
-    if not body:
-        return abort(400, description="NotFoundData", response="not-found-data")
+        if not body:
+            raise HandlerException(400, "Not found body")
 
-    service = PlanService()
-    plan = service.update(uid, body)
+        service = PlanService()
+        plan = service.update(uid, body)
 
-    return jsonify({"success": True, "response": plan})
+        return jsonify({"success": True, "response": plan})
+    except HandlerException as ex:
+        ex.abort()
+    except Exception as ex:
+        HandlerException(500, "Unexpected response: " + str(ex))
 
 
 @router.route("/<uid>", methods=["PATCH"])
-@login_required
+@login_required(admin=True)
 def update_field_plan_admin(uid):
     """
     PATCH: /api/v1/admin/plan/<uid>
     """
-    body = request.get_json()
+    try:
+        body = request.get_json()
 
-    if not body:
-        return abort(400, description="NotFoundData", response="not-found-data")
+        if not body:
+            raise HandlerException(400, "Not found body")
 
-    service = PlanService()
-    plan = service.update_field(uid, body)
+        service = PlanService()
+        plan = service.update_field(uid, body)
 
-    return jsonify({"success": True, "response": plan})
+        return jsonify({"success": True, "response": plan})
+    except HandlerException as ex:
+        ex.abort()
+    except Exception as ex:
+        HandlerException(500, "Unexpected response: " + str(ex))
 
 
 @router.route("/disabled/<uid>", methods=["PATCH"])
-@login_required
+@login_required(admin=True)
 def disabled_plan_admin(uid):
     """
     PATCH /api/v1/admin/plan/disabled/<uid>
     """
-    service = PlanService()
-    plan = service.disabled(uid)
+    try:
+        service = PlanService()
+        plan = service.disabled(uid)
 
-    return jsonify({"success": True, "response": plan})
+        return jsonify({"success": True, "response": plan})
+    except HandlerException as ex:
+        ex.abort()
+    except Exception as ex:
+        HandlerException(500, "Unexpected response: " + str(ex))
 
 
 @router.route("/<uid>", methods=["DELETE"])
-@login_required
+@login_required(admin=True)
 def delete_plan_admin(uid):
     """
     DELETE: /api/v1/admin/plan/<uid>
     """
-    service = PlanService()
-    plan = service.delete(uid)
+    try:
+        service = PlanService()
+        plan = service.delete(uid)
 
-    return jsonify({"success": True, "response": plan})
+        return jsonify({"success": True, "response": plan})
+    except HandlerException as ex:
+        ex.abort()
+    except Exception as ex:
+        HandlerException(500, "Unexpected response: " + str(ex))

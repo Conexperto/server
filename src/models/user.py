@@ -10,6 +10,8 @@ from sqlalchemy.orm import relationship
 
 from src.db import db
 from src.mixins import BaseMixin
+from src.models import AssociationSpeciality
+from src.models import Speciality
 
 
 class User(BaseMixin, db.Model):
@@ -35,5 +37,24 @@ class User(BaseMixin, db.Model):
     about_me = Column(String(150))
     session_taken = Column(Integer, default=0)
     complete_register = Column(Boolean, default=False)
-    timezone = Column(Integer, default=0)
-    expert = relationship("Expert", uselist=False, back_populates="user")
+    timezone = Column(String)
+    link_video = Column(String)
+    location = Column(String)
+    plans = relationship("Plan")
+    specialities = relationship("AssociationSpeciality")
+    methods = relationship("AssociationMethod")
+
+    def append_speciality(self, identifier):
+        """
+        Associate Specialities to the user
+
+        Args:
+            identifiers (list): List of _id associated with the speciality
+
+        Returns: void
+        """
+        __query = Speciality.query
+        speciality = __query.filter(Speciality.id.in_(identifier)).all()
+        ass_speciality = AssociationSpeciality()
+        ass_speciality.speciality.append(speciality)
+        self.specialities.append(ass_speciality)

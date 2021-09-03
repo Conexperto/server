@@ -1,19 +1,21 @@
 """
     Credentials of Firebase for Admin & Web
 """
-from os.path import abspath
-from os.path import join
+import os
 
 import firebase_admin
 
 
-admin_cred = firebase_admin.credentials.Certificate(
-    abspath(join(__package__, "./config/conexperto-admin-firebase-adminsdk.json"))
+admin_sdk_cred = firebase_admin.credentials.Certificate(
+    os.path.abspath(os.path.join(__package__, "./config/conexperto-admin-sdk.json"))
 )
-admin_sdk = firebase_admin.initialize_app(credential=admin_cred, name="admin")
+admin_sdk = firebase_admin.initialize_app(credential=admin_sdk_cred, name="admin")
 
 
-web_cred = firebase_admin.credentials.Certificate(
-    abspath(join(__package__, "./config/conexperto-web-firebase-adminsdk.json"))
+web_sdk_cred = firebase_admin.credentials.Certificate(
+    os.path.abspath(os.path.join(__package__, "./config/conexperto-web-sdk.json"))
 )
-web_sdk = firebase_admin.initialize_app(credential=web_cred, name="web")
+web_sdk = firebase_admin.initialize_app(credential=web_sdk_cred, name="web")
+
+if os.getenv("TESTING"):
+    web_sdk = admin_sdk

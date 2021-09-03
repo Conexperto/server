@@ -18,8 +18,7 @@ class AuthActions(object):
         uri = URI.format("signInWithPassword", self._key)
         payload = {"email": email, "password": password, "returnSecureToken": True}
         rv = requests.post(uri, json=payload)
-        if rv.status_code != 200:
-            assert False, "Faild authentication"
+        assert rv.status_code == 200, "Faild authentication"
         self._user = rv.json()
         self._token = self._user["idToken"]
         self._refresh_token = self._user["refreshToken"]
