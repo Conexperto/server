@@ -25,7 +25,6 @@ repos:
     -   id: check-yaml
     -   id: check-added-large-files
     -   id: check-json
-    -   id: name-tests-test
     -   id: check-merge-conflict
 -   repo: https://github.com/PyCQA/flake8
     rev: 3.9.2

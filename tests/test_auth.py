@@ -125,10 +125,8 @@ schema_error = {
         "success": {"type": "boolean"},
         "err": {"type": "number"},
         "msg": {"type": "string"},
-        "detail": {"type": "string"},
-        "code": {"type": "string"},
     },
-    "required": ["success", "err", "msg", "detail", "code"],
+    "required": ["success", "err", "msg"],
 }
 
 
@@ -180,6 +178,7 @@ def test_auth(client, auth):
 
 def test_auth_wrong_user(client, auth, login_user):
     rv = client.get("/auth", headers={"Authorization": "Bearer " + auth.token})
+    print(rv.data)
     assert rv.status_code == 404, "should be status code 200"
     assert rv.headers["Content-Type"] == "application/json"
     body = loads(rv.data)

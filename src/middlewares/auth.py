@@ -1,11 +1,10 @@
 """ src.middlewares.auth """
 from functools import wraps
 
-from flask import abort
-from flask import current_app
 from flask import g
 from flask import request
 
+from src.exceptions import HandlerException
 from src.services import AuthAdminService
 from src.services import AuthService
 
@@ -14,15 +13,15 @@ def get_token(headers):
     prefix = "Bearer "
 
     if "authorization" not in headers:
-        raise abort(400, description="NotFoundToken", response="auth/not-found-token")
+        raise HandlerException(400, "TokenId not found")
 
     token = headers["authorization"]
 
     if not token.startswith(prefix):
-        raise abort(400, description="InvalidIdToken", response="auth/invalid-id-token")
+        raise HandlerException(400, "TokenId not found")
 
     if not token[len(prefix) :]:
-        raise abort(400, description="InvalidIdToken", response="auth/invalid-id-token")
+        raise HandlerException(400, "TokenId not found")
 
     return token[len(prefix) :]
 
@@ -35,19 +34,22 @@ def login_required(admin=False):
     def decorator(func):
         @wraps(func)
         def wrap(*args, **kwargs):
-            id_token = get_token(request.headers)
+            try:
+                id_token = get_token(request.headers)
 
-            if not id_token:
-                raise abort(
-                    400, description="NotFoundToken", response="auth/not-found-token"
-                )
+                if not id_token:
+                    raise HandlerException(400, "TokenId not found")
 
-            if admin:
-                service = AuthAdminService()
-                g.admin = service.authentication(id_token)
-            else:
-                service = AuthService()
-                g.user = service.authentication(id_token)
+                if admin:
+                    service = AuthAdminService()
+                    g.admin = service.authentication(id_token)
+                else:
+                    service = AuthService()
+                    g.user = service.authentication(id_token)
+            except HandlerException as ex:
+                ex.abort()
+            except Exception as ex:
+                HandlerException(500, "Unexpected response: " + str(ex)).abort()
 
             return func(*args, **kwargs)
 
@@ -70,11 +72,7 @@ def has_access(access_level, strict=False):
             user = g.admin["b"]
 
             if not user.has_access(access_level.value, strict):
-                raise abort(
-                    401,
-                    description="Unauthorized",
-                    response="You not enough permissions to access",
-                )
+                HandlerException(401, "You not enough permissions to access").abort()
 
             return func(*args, **kwargs)
 

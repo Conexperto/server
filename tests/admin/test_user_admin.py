@@ -1,9 +1,5 @@
 """ tests.test_user_admin """
 import logging
-from json import dumps
-from json import loads
-
-from jsonschema import validate
 
 
 logger = logging.getLogger(__name__)
@@ -30,8 +26,6 @@ schema_error = {
         "success": {"type": "boolean"},
         "err": {"type": "number"},
         "msg": {"type": "string"},
-        "detail": {"type": "string"},
-        "code": {"type": "string"},
     },
-    "required": ["success", "err", "msg", "detail", "code"],
+    "required": ["success", "err", "msg"],
 }

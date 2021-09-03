@@ -1,7 +1,9 @@
 """ src.services.admin """
-from flask import abort
-from flask import current_app
+from sqlalchemy import asc
+from sqlalchemy import desc
+from sqlalchemy import or_
 
+from src.exceptions import HandlerException
 from src.firebase import admin_sdk
 from src.models import Admin
 from src.models import Privileges
@@ -34,21 +36,22 @@ class AdminService:
         """
         Make sort query
         """
-        __order_by = ""
-        __query = None
+        __order = order or "asc"
+        __order_by = order_by or "id"
+        __subquery = None
 
-        if not order in ["desc", "asc"]:
-            raise abort(400, description="Bad order, must be desc or asc")
+        if __order not in ["desc", "asc"]:
+            raise HandlerException(400, "Bad order, mest be desc or asc")
 
-        if not hasattr(Admin, order_by):
-            raise abort(400, description="Bad order_by, field not found")
+        if not hasattr(Admin, __order_by):
+            raise HandlerException(400, "Bad order_by, field not found")
 
-        if order == "asc":
-            __query = asc(order_by)
-        if order == "desc":
-            __query = desc(order_by)
+        if __order == "asc":
+            __subquery = asc(__order_by)
+        if __order == "desc":
+            __subquery = desc(__order_by)
 
-        self.__query = self.__query.order_by(__query)
+        self.__query = self.__query.order_by(__subquery)
         return self.__query
 
     def get(self, uid):
@@ -67,13 +70,11 @@ class AdminService:
         user = Admin.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found user")
 
         return {"uid": user_record.uid, "a": user_record, "b": user}
 
-    def list(
-        self, search=None, page=1, per_pages=10, order_by="created_at", order="desc"
-    ):
+    def list(self, search, page, per_pages, order_by, order):
         """
         Get list user admin
 
@@ -82,20 +83,18 @@ class AdminService:
             page (int): Pagination position
             per_pages (int): Limit result by page
             order_by (str): Field by order
-            order (str): desc or asc
+            order (str): desc or asc (1|-1)
 
         Returns: list
-            uid (str): User uid
             a (UserRecord): UserRecord
             b (Admin): Admin
 
         """
         self.__query = Admin.query
-
         self.search(search)
         self.sort(order_by, order)
         paginate = self.__query.paginate(
-            int(page), int(per_page) or 10, error_out=False
+            int(page), int(per_pages) or 10, error_out=False
         )
 
         return paginate
@@ -121,28 +120,24 @@ class AdminService:
             b (Admin): Admin
         """
         try:
-            if not user_auth["b"].has_access(body["privileges"]):
-                raise abort(
+            if not user_auth["b"].has_access(body["privileges"], True):
+                raise HandlerException(
                     401,
-                    description="Unauthorized",
-                    response="Logged user doesn't have sufficient permissions to create a user with equal or higher privileges",
+                    "Logged user doesn't have sufficient permissions \
+                                  to create a user with equal or higher privileges",
                 )
 
             user_record = UserRecord.create_user(
                 email=body["email"],
                 password=body["password"],
                 display_name=body["display_name"],
+                phone_number=body["phone_number"],
                 app=admin_sdk,
             )
-            user_record.make_claims(
-                {
-                    "admin": True,
-                    "access_level": body["privileges"]
-                    if "privileges" in body
-                    else Privileges.User.value,
-                }
+            privileges = (
+                body["privileges"] if "privileges" in body else Privileges.User.value
             )
-
+            user_record.make_claims({"admin": True, "access_level": privileges})
             user = Admin(
                 uid=user_record.uid,
                 email=user_record.email,
@@ -152,13 +147,12 @@ class AdminService:
                 lastname=body["lastname"],
                 privileges=body["privileges"],
             )
-
             user.add()
             user.save()
 
             return {"uid": user_record.uid, "a": user_record, "b": user}
         except KeyError as ex:
-            return abort(400, description="BadRequest", response=str(ex))
+            raise HandlerException(400, "Unexpected response: " + str(ex))
 
     def update(self, uid, body, user_auth):
         """
@@ -181,35 +175,34 @@ class AdminService:
             a (UserRecord): UserRecord
             b (Admin): Admin
         """
-        try:
-            if "privileges" in body:
-                if not user_auth["b"].has_acess(body["privileges"]):
-                    raise abort(
-                        401,
-                        description="Unauthorized",
-                        response="Logged user doesn't have sufficient permissions to create a user with equal or higher privileges",
-                    )
+        user_record = UserRecord.get_user(uid, app=admin_sdk)
+        user = Admin.query.filter_by(uid=user_record.uid).first()
 
-            user_record = UserRecord.get_user(uid, app=admin_sdk)
-            user = Admin.query.filter_by(uid=user_record.uid).first()
+        if not user_record or not user:
+            raise HandlerException(404, "Not found user")
 
-            if not user_record or not user:
-                abort(404, description="NotFound", response="not_found")
+        if user_auth["uid"] == uid:
+            raise HandlerException(
+                401, "Logged user can't modify own profile in this endpoint"
+            )
 
-            user_record.serialize(body)
-            user_record.update_user()
+        if not user_auth["b"].has_access(user.privileges, True):
+            raise HandlerException(
+                401,
+                "Logged user doesn't have sufficient permissions \
+                                        to create a user with equal or higher privileges",
+            )
 
-            if "privileges" in body:
-                user_record.make_claims(
-                    {"admin": True, "access_level": body["privileges"]}
-                )
+        user_record.serialize(body)
+        user_record.update_user()
 
-            user.serialize(body)
-            user.save()
+        if "privileges" in body:
+            user_record.make_claims({"admin": True, "access_level": body["privileges"]})
 
-            return {"uid": user_record.uid, "a": user_record, "b": user}
-        except Exception as ex:
-            return abort(400, description="BadRequest", response=str(ex))
+        user.serialize(body)
+        user.save()
+
+        return {"uid": user_record.uid, "a": user_record, "b": user}
 
     def update_field(self, uid, body, user_auth):
         """
@@ -232,35 +225,34 @@ class AdminService:
             a (UserRecord): UserRecord
             b (Admin): Admin
         """
-        try:
-            if "privileges" in body:
-                if not user_auth["b"].has_acess(body["privileges"]):
-                    raise abort(
-                        401,
-                        description="Unauthorized",
-                        response="Logged user doesn't have sufficient permissions to create a user with equal or higher privileges",
-                    )
+        user_record = UserRecord.get_user(uid, app=admin_sdk)
+        user = Admin.query.filter_by(uid=user_record.uid).first()
 
-            user_record = UserRecord.get_user(uid, app=admin_sdk)
-            user = Admin.query.filter_by(uid=user_record.uid).first()
+        if not user_record or not user:
+            raise HandlerException(404, "Not found user")
 
-            if not user_record or not user:
-                abort(404, description="NotFound", response="not_found")
+        if user_auth["uid"] == uid:
+            raise HandlerException(
+                401, "Logged user can't modify own profile in this endpoint"
+            )
 
-            user_record.serialize(body)
-            user_record.update_user()
+        if not user_auth["b"].has_access(user.privileges, True):
+            raise HandlerException(
+                401,
+                "Logged user doesn't have sufficient permissions \
+                                          to update a user with equal or higher privileges",
+            )
 
-            if "privileges" in body:
-                user_record.make_claims(
-                    {"admin": True, "access_level": body["privileges"]}
-                )
+        user_record.serialize(body)
+        user_record.update_user()
 
-            user.serialize(body)
-            user.save()
+        if "privileges" in body:
+            user_record.make_claims({"admin": True, "access_level": body["privileges"]})
 
-            return {"uid": user_record.uid, "a": user_record, "b": user}
-        except Exception as ex:
-            return abort(400, description="BadRequest", response=str(ex))
+        user.serialize(body)
+        user.save()
+
+        return {"uid": user_record.uid, "a": user_record, "b": user}
 
     def disabled(self, uid, user_auth):
         """
@@ -275,24 +267,28 @@ class AdminService:
             a (UserRecord): UserRecord
             b (Admin): Admin
         """
-
         user_record = UserRecord.get_user(uid, app=admin_sdk)
         user = Admin.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found user")
 
-        if not user_auth["b"].has_acess(user.privileges):
-            return abort(
+        if user_auth["uid"] == uid:
+            raise HandlerException(
+                401, "Logged user can't modify own profile in this endpoint"
+            )
+
+        if not user_auth["b"].has_access(user.privileges, True):
+            raise HandlerException(
                 401,
-                description="Unauthorized",
-                response="Logged user doesn't have sufficient permissions to create a user with equal or higher privileges",
+                "Logged user doesn't have sufficient permissions \
+                              to create a user with equal or higher privileges",
             )
 
         user_record.serialize({"disabled": not user_record.disabled})
         user_record.update_user()
 
-        user.serialize({"disabled": not user_record.disabled})
+        user.serialize({"disabled": not user.disabled})
         user.save()
 
         return {"uid": user_record.uid, "a": user_record, "b": user}
@@ -308,18 +304,23 @@ class AdminService:
         Returns: dict
             uid (str): User uid
         """
-        if not user_auth["b"].has_acess(body["privileges"]):
-            return abort(
-                401,
-                description="Unauthorized",
-                response="Logged user doesn't have sufficient permissions to create a user with equal or higher privileges",
-            )
-
         user_record = UserRecord.get_user(uid, app=admin_sdk)
         user = Admin.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:
-            return abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found user")
+
+        if user_auth["uid"] == uid:
+            raise HandlerException(
+                401, "Logged user can't modify own profile in this endpoint"
+            )
+
+        if not user_auth["b"].has_access(user.privileges, True):
+            raise HandlerException(
+                401,
+                "Logged user doesn't have sufficient permissions \
+                              to create a user with equal or higher privileges",
+            )
 
         user_record.delete_user()
         user.delete()

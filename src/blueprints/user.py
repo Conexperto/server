@@ -1,81 +1,52 @@
 """ src.blueprints.user """
-from functools import wraps
-
-from flask import abort
 from flask import Blueprint
-from flask import g
 from flask import jsonify
 from flask import request
 
-from src.services import AuthService
+from src.exceptions import HandlerException
+from src.helpers import parse_order
+from src.middlewares import login_required
 from src.services import UserService
 
 
 router = Blueprint(name="User", import_name=__name__)
 
 
-def get_token():
+@router.route("/<int:_id>", methods=["GET"])
+@login_required()
+def index_user_one(_id):
     """
-    Decorador get_token
+    GET: /api/v1/user/<int:_id>
     """
-    headers = request.headers
-    prefix = "Bearer "
+    try:
+        service = UserService()
+        user = service.get(_id)
 
-    if "authorization" not in headers:
-        raise abort(400, description="NotFoundToken", response="auth/not-found-token")
-
-    token = headers["authorization"]
-
-    if not token.startswith(prefix):
-        raise abort(400, description="InvalidIdToken", response="auth/invalid-id-token")
-
-    if not token[len(prefix) :]:
-        raise abort(400, description="InvalidIdToken", response="auth/invalid-id-token")
-
-    return token[len(prefix) :]
-
-
-def login_required(func):
-    """
-    Decorador login_required
-    """
-
-    @wraps(func)
-    def wrap(*args, **kwargs):
-        id_token = get_token()
-
-        if not id_token:
-            raise TypeError("The auth decorator needs to token_required decorator")
-
-        service = AuthService()
-        g.admin = service.authentication(id_token)
-        return func(*args, **kwargs)
-
-    return wrap
-
-
-@router.route("/<uid>", methods=["GET"])
-@login_required
-def index_user_one(uid):
-    """
-    GET: /api/v1/user/<uid>
-    """
-    service = UserService()
-    user = service.get(uid)
-
-    return jsonify({"success": True, "response": user})
+        return jsonify({"success": True, "response": user})
+    except HandlerException as ex:
+        ex.abort()
+    except Exception as ex:
+        HandlerException(500, "Unexpected response: " + str(ex))
 
 
 @router.route("/", methods=["GET"])
-@login_required
+@login_required()
 def index_user():
     """
     GET: /api/v1/user
     """
-    page = request.args.get("page") or 1
-    per_pages = request.args.get("per_pages")
+    try:
+        search = request.args.get("search")
+        page = request.args.get("page") or 1
+        per_pages = request.args.get("limit") or 10
+        order_by = request.args.get("orderBy") or None
+        order = parse_order(request.args.get("order"))
 
-    service = UserService()
-    users = service.list(page, per_pages)
+        service = UserService()
+        users = service.list(search, page, per_pages, order_by, order)
 
-    return jsonify({"success": True, "response": users})
+        return jsonify({"success": True, "response": users})
+    except HandlerException as ex:
+        ex.abort()
+    except Exception as ex:
+        HandlerException(500, "Unexpected response: " + str(ex))
