@@ -11,6 +11,7 @@ from src.middlewares import login_required
 from src.services import AdminService
 from src.services import Privileges
 
+# from flask import current_app
 
 router = Blueprint(name="Admin", import_name=__name__)
 
@@ -41,14 +42,14 @@ def index_admin():
     GET: /api/v1/admin
     """
     try:
-        query = request.args.get("query")
+        search = request.args.get("search")
         page = request.args.get("page") or 1
         per_pages = request.args.get("limit") or 10
         order_by = request.args.get("orderBy") or None
         order = parse_order(request.args.get("order"))
 
         service = AdminService()
-        paginate = service.list(query, page, per_pages, order_by, order)
+        paginate = service.list(search, page, per_pages, order_by, order)
 
         return jsonify(
             {

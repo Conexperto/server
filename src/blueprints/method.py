@@ -32,14 +32,14 @@ def index_method():
     GET: /api/v1/method
     """
     try:
-        query = request.args.get("query")
+        search = request.args.get("search")
         page = request.args.get("page") or 1
         per_page = request.args.get("limit") or 10
         order_by = request.args.get("orderBy")
         order = parse_order(request.args.get("order"))
 
         service = MethodService()
-        paginate = service.list(query, page, per_page, order_by, order)
+        paginate = service.list(search, page, per_page, order_by, order)
 
         return jsonify(
             {
