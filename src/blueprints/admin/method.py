@@ -38,14 +38,14 @@ def index_method_admin():
     GET: /api/v1/admin/method
     """
     try:
-        query = request.args.get("query")
+        search = request.args.get("search")
         page = request.args.get("page") or 1
         per_pages = request.args.get("limit") or 10
         order_by = request.args.get("orderBy") or None
         order = parse_order(request.args.get("order"))
 
         service = MethodService()
-        methods = service.list(query, page, per_pages, order_by, order)
+        methods = service.list(search, page, per_pages, order_by, order)
 
         return jsonify({"success": True, "response": methods})
     except HandlerException as ex:

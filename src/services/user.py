@@ -6,11 +6,6 @@ from sqlalchemy import or_
 
 from src.exceptions import HandlerException
 from src.firebase import web_sdk
-from src.models import AssociationMethod
-from src.models import AssociationSpeciality
-from src.models import Method
-from src.models import Plan
-from src.models import Speciality
 from src.models import User
 from src.models import UserRecord
 
@@ -137,31 +132,29 @@ class UserService:
                 display_name=body["display_name"],
                 app=web_sdk,
             )
-            complete_register = (
-                body["complete_register"] if "complete_register" in body else False
-            )
+            complete_register = body.get("complete_register") or False
             user_record.make_claims({"complete_register": complete_register})
             user = User(
                 uid=user_record.uid,
                 email=user_record.email,
                 display_name=user_record.display_name,
-                phone_number=body["phone_number"],
+                phone_number=body.get("phone_number"),
                 name=body["name"],
                 lastname=body["lastname"],
-                headline=body["headline"],
-                about_me=body["about_me"],
+                headline=body.get("headline"),
+                about_me=body.get("about_me"),
                 complete_register=complete_register,
-                link_video=body["link_video"],
-                timezone=body["timezone"],
-                location=body["location"],
+                link_video=body.get("link_video"),
+                timezone=body.get("timezone"),
+                location=body.get("location"),
             )
 
             if "specialities" in body:
-                self.__create_speciality(user, body["specialities"])
+                user.append_specialities(body["specialities"])
             if "methods" in body:
-                self.__create_method(user, body["methods"])
+                user.append_methods(body["methods"])
             if "plans" in body:
-                self.__create_plan(user, body["plans"])
+                user.append_plans(body["plans"])
 
             user.add()
             user.save()
@@ -214,6 +207,26 @@ class UserService:
                     {"complete_register": body["complete_register"]}
                 )
 
+            if "specialities" in body:
+                if type(body["specialities"]) is not list:
+                    raise HandlerException(
+                        400, "Bad request: specialities should be array"
+                    )
+                user.update_specialities(body["specialities"])
+                user.append_specialities(body["specialities"])
+
+            if "methods" in body:
+                if type(body["methods"]) is not list:
+                    raise HandlerException(400, "Bad request: methods should be array")
+                user.update_methods(body["methods"])
+                user.append_methods(body["methods"])
+
+            if "plans" in body:
+                if type(body["plans"]) is not list:
+                    raise HandlerException(400, "Bad request: plans should be array")
+                user.update_plans(body["plans"])
+                user.append_plans(body["plans"])
+
             user.serialize(body)
             user.save()
 
@@ -254,6 +267,26 @@ class UserService:
                 user_record.make_claims(
                     {"complete_register": body["complete_register"]}
                 )
+
+            if "specialities" in body:
+                if type(body["specialities"]) is not list:
+                    raise HandlerException(
+                        400, "Bad request: specialities should be array"
+                    )
+                user.update_specialities(body["specialities"])
+                user.append_specialities(body["specialities"])
+
+            if "methods" in body:
+                if type(body["methods"]) is not list:
+                    raise HandlerException(400, "Bad request: methods should be array")
+                user.update_methods(body["methods"])
+                user.append_methods(body["methods"])
+
+            if "plans" in body:
+                if type(body["plans"]) is not list:
+                    raise HandlerException(400, "Bad request: plans should be array")
+                user.update_plans(body["plans"])
+                user.append_plans(body["plans"])
 
             user.serialize(body)
             user.save()
@@ -308,59 +341,3 @@ class UserService:
         user.delete()
 
         return {"uid": user_record.uid}
-
-    def __create_ass_speciality(self, user, identifiers):
-        """
-        Associate Specialities to the User
-
-        Args:
-            user: User
-            identifiers: List of _id associated with the speciality
-
-        Returns: void
-        """
-        specialities = Speciality.query.filter(Speciality.id.in_(identifiers)).all()
-        for speciality in specialities:
-            ass_speciality = AssociationSpeciality()
-            ass_speciality.speciality.append(speciality)
-            user.specialities.append(ass_speciality)
-
-    def __create_ass_method(self, user, methods):
-        """
-        Associate Methods to the User
-
-        Args:
-            user: User
-            methods (list<dict>):
-                method (str): identifier the method
-                link (str): method link
-
-        Returns: void
-        """
-        identifiers = [item["method"] for item in methods]
-        _methods = Method.query.filter(Method.id.in_(identifiers)).all()
-        for _method in _methods:
-            link = next(
-                [item["link"] for item in methods if item["method"] == _method.id], None
-            )
-            if not link:
-                continue
-            ass_method = AssociationMethod(link=link)
-            ass_method.method.append(_method)
-        user.methods.append(ass_method)
-
-    def __create_plan(self, user, plans):
-        """
-        Creates plans and associates them to the User
-
-        Args:
-            user: User
-            plans (list<dict>):
-                duration (int): Duration
-                price (int): Price
-                coin (str): Coin
-
-        Returns: void
-        """
-        for duration, price, coin in plans:
-            user.plans.append(Plan(duration=duration, price=price, coin=coin))

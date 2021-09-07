@@ -36,14 +36,14 @@ def index_user_admin():
     GET: /api/v1/admin/user
     """
     try:
-        query = request.args.get("query")
+        search = request.args.get("search")
         page = request.args.get("page") or 1
         per_pages = request.args.get("per_pages")
         order_by = request.args.get("orderBy")
         order = parse_order(request.args.get("order"))
 
         service = UserService()
-        users = service.list(query, page, per_pages, order_by, order)
+        users = service.list(search, page, per_pages, order_by, order)
 
         return jsonify({"success": True, "response": users})
     except HandlerException as ex:

@@ -23,4 +23,6 @@ class Plan(BaseMixin, db.Model):
     price = Column(Integer, nullable=False)
     coin = Column(String, default="USD")
     disabled = Column(Boolean, default=False)
-    user_id = Column(Integer, ForeignKey("user.id"))
+    user_id = Column(
+        Integer, ForeignKey("user.id", ondelete="CASCADE", onupdate="CASCADE")
+    )
