@@ -38,14 +38,14 @@ def index_speciality_admin():
     GET: /api/v1/admin/speciality
     """
     try:
-        query = request.args.get("query")
+        search = request.args.get("search")
         page = request.args.get("page") or 1
         per_pages = request.args.get("limit") or 10
         order_by = request.args.get("orderBy") or None
         order = parse_order(request.args.get("order"))
 
         service = SpecialityService()
-        specialities = service.list(query, page, per_pages, order_by, order)
+        specialities = service.list(search, page, per_pages, order_by, order)
 
         return jsonify({"success": True, "response": specialities})
     except HandlerException as ex:

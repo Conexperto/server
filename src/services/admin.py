@@ -1,4 +1,5 @@
 """ src.services.admin """
+from flask import current_app
 from sqlalchemy import asc
 from sqlalchemy import desc
 from sqlalchemy import or_
@@ -132,11 +133,10 @@ class AdminService:
                 password=body["password"],
                 display_name=body["display_name"],
                 phone_number=body["phone_number"],
+                photo_url=body.get("photo_url"),
                 app=admin_sdk,
             )
-            privileges = (
-                body["privileges"] if "privileges" in body else Privileges.User.value
-            )
+            privileges = body.get("privileges") or Privileges.User.value
             user_record.make_claims({"admin": True, "access_level": privileges})
             user = Admin(
                 uid=user_record.uid,
@@ -146,6 +146,7 @@ class AdminService:
                 name=body["name"],
                 lastname=body["lastname"],
                 privileges=body["privileges"],
+                photo_url=body.get("photo_url"),
             )
             user.add()
             user.save()
@@ -278,6 +279,8 @@ class AdminService:
                 401, "Logged user can't modify own profile in this endpoint"
             )
 
+        current_app.logger.info(user_auth["b"].privileges)
+        current_app.logger.info(user.privileges)
         if not user_auth["b"].has_access(user.privileges, True):
             raise HandlerException(
                 401,

@@ -16,12 +16,12 @@ def index_suggestion():
     GET: /api/v1/search/suggestions
     """
     try:
-        query = request.args.get("query")
+        search = request.args.get("search")
 
         service = SearchService()
-        items = service.suggestions(query)
+        items = service.suggestions(search)
 
-        return jsonify({"success": True, "query": query, "response": items})
+        return jsonify({"success": True, "search": search, "response": items})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
@@ -34,7 +34,7 @@ def index_search():
     GET: /api/v1/search
     """
     try:
-        query = request.args.get("query")
+        search = request.args.get("search")
         speciality = request.args.get("speciality")
         page = request.args.get("page") or 1
         per_page = request.args.get("limit") or 10
@@ -42,12 +42,12 @@ def index_search():
         order = parse_order(request.args.get("order"))
 
         service = SearchService()
-        paginate = service.list(query, speciality, page, per_page, order_by, order)
+        paginate = service.list(search, speciality, page, per_page, order_by, order)
 
         return jsonify(
             {
                 "success": True,
-                "query": query,
+                "search": search,
                 "response": paginate.items,
                 "total": paginate.total,
                 "page": paginate.page,
@@ -67,14 +67,14 @@ def index_search_speciality():
     GET: /api/v1/search/speciality
     """
     try:
-        query = request.args.get("query")
+        search = request.args.get("search")
         page = request.args.get("page") or 1
         per_page = request.args.get("limit") or 10
         order_by = request.args.get("orderBy") or None
         order = parse_order(request.args.get("order"))
 
         service = SearchService()
-        paginate = service.speciality(query, page, per_page, order_by, order)
+        paginate = service.speciality(search, page, per_page, order_by, order)
 
         return jsonify(
             {
