@@ -35,8 +35,10 @@ class BaseMixin(AuditMixin):
         try:
             db.session.add(self)
         except IntegrityError as ex:
+            db.session.rollback()
             raise HandlerException(400, "Bad request" + str(ex))
         except SQLAlchemyError:
+            db.session.rollback()
             raise HandlerException(500, "Error in add function")
 
     def save(self):
@@ -44,8 +46,10 @@ class BaseMixin(AuditMixin):
         try:
             db.session.commit()
         except IntegrityError as ex:
+            db.session.rollback()
             raise HandlerException(400, "Bad request" + str(ex))
         except SQLAlchemyError:
+            db.session.rollback()
             raise HandlerException(500, "Error in add function")
 
     def delete(self):
@@ -54,6 +58,7 @@ class BaseMixin(AuditMixin):
             db.session.delete(self)
             db.session.commit()
         except SQLAlchemyError:
+            db.session.rollback()
             raise HandlerException(500, "Error in add function")
 
     def serialize(self, obj):

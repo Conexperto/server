@@ -39,13 +39,6 @@ def index_speciality():
         order_by = request.args.get("orderBy") or None
         order = parse_order(request.args.get("order"))
 
-        if str(order).isnumeric():
-            order = int(order)
-            if order == 1:
-                order = "asc"
-            if order == -1:
-                order = "desc"
-
         service = SpecialityService()
         paginate = service.list(search, page, per_pages, order_by, order)
 
