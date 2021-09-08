@@ -45,6 +45,7 @@ class BaseMixin(AuditMixin):
         """save"""
         try:
             db.session.commit()
+            db.session.refresh(self)
         except IntegrityError as ex:
             db.session.rollback()
             raise HandlerException(400, "Bad request" + str(ex))
