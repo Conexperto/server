@@ -21,7 +21,7 @@ class AssociationMethod(BaseMixin, db.Model):
     __tablename__ = "association_expert_to_method"
 
     left_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
-    right_id = Column(Integer, ForeignKey("method.id"), primary_key=True)
+    right_id = Column(Integer, ForeignKey("method.id"), unique=True, primary_key=True)
     link = Column(String, nullable=False)
     disabled = Column(Boolean, default=False)
     method = relationship("Method")
