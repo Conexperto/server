@@ -1,110 +1,111 @@
 """ src.services.association_method """
-from flask import abort
-
 from src.db import db
+from src.exceptions import HandlerException
 from src.models import AssociationMethod
 
 
-class AssociationExpertToMethodService:
+class AssociationUserToMethodService:
     """
     AssociationExpertToMethodService contains all CRUD operations
     """
 
-    def get_expert(self, expert_id):
+    def get_by_user(self, user_id):
         """
-        Get Expert
+        Get association between User and Method
 
         Args:
-            expert_id (int): Expert id
+            user_id (int): User.id
 
-        Returns: (Method&Expert)
+        Returns: AssociationMethod
         """
-        association = AssociationMethod.query.filter_by(left_id=expert_id).all()
+        association = AssociationMethod.query.filter_by(left_id=user_id).all()
 
         if not association:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found association")
 
         return association
 
-    def get_method(self, method_id):
+    def get_by_method(self, method_id):
         """
-        Get Method
+        Get association between User and Method
 
         Args:
-            method_id (int): Method id
+            method_id (int): Method.id
 
-        Returns: (Method&Expert)
+        Returns: AssociationMethod
         """
         association = AssociationMethod.query.filter_by(right_id=method_id).all()
 
         if not association:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found association")
 
         return association
 
-    def create(self, expert_id, method_id, link):
+    def create(self, user_id, method_id, link):
         """
-        Create association method expert
+        Create association between User and Method
 
         Args:
-            expert_id (int): Expert id
-            method_id (int): Method id
+            user_id (int): User.id
+            method_id (int): Method.id
             link (str): Link method
 
-        Returns: (Method&Expert)
+        Returns: AssociationMethod
         """
-        association = AssociationMethod(
-            left_id=expert_id, right_id=method_id, link=link
-        )
+        association = AssociationMethod(left_id=user_id, right_id=method_id, link=link)
 
         association.add()
         association.save()
 
         return association
 
-    def create_many(self, expert_id, body):
+    def create_many(self, user_id, methods):
         """
-        Create many association method expert
+        Create many association between User and Method
 
         Args:
-            expert_id (int): Expert id
-            body (dict):
-                method (int): Method id
+            user_id (int): User.id
+            methods (list<dict>):
+                method (int): Method.id
                 link (str): Link method
+
+        Returns: List<AssociationMethod>
         """
         mappings_create = []
         pipe = []
 
-        if not isinstance(body, list):
-            pipe.append(body)
+        if not isinstance(methods, list):
+            pipe.append(methods)
         else:
-            pipe = body
+            pipe = methods
 
         for p in pipe:
             ass_method = AssociationMethod(
-                left_id=expert_id, right_id=p["method"], link=p["link"]
+                left_id=user_id, right_id=p["method"], link=p["link"]
             )
             mappings_create.append(ass_method)
 
         db.session.bulk_insert_mappings(AssociationMethod, mappings_create)
 
-    def update(self, _id, expert_id, method_id, link):
+        return mappings_create
+
+    def update(self, _id, user_id, method_id, link):
         """
-        Update association method expert
+        Update association between User and Method
 
         Args:
-            expert_id (int): Expert id
-            method_id (int): Method id
+            user_id (int): User.id
+            method_id (int): Method.id
             link (str): Link method
 
-        Returns: (Method&Expert)
+        Returns: AssociationMethod
         """
         association = AssociationMethod.query.get(_id)
 
         if not association:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found association")
 
-        association.left_id = expert_id
+        association.left_id = user_id
         association.right_id = method_id
         association.link = link
 
@@ -114,7 +115,7 @@ class AssociationExpertToMethodService:
 
     def disabled(self, _id):
         """
-        Disabled association method expert
+        Disabled association between User and Method
 
         Args:
             _id (int): AssociationMethod id
@@ -122,7 +123,7 @@ class AssociationExpertToMethodService:
         association = AssociationMethod.query.get(_id)
 
         if not association:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found association")
 
         association.disabled = not association.disabled
         association.save()
@@ -133,57 +134,12 @@ class AssociationExpertToMethodService:
 
         Args:
             _id (int): AssociationMethod id
+
+        Returns: void
         """
         association = AssociationMethod.query.get(_id)
 
         if not association:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found association")
 
         association.delete()
-
-    def update_or_create_and_delete_many(self, expert_id, body):
-        """
-        Update or create and delete many AssociationMethod
-
-        Args:
-            expert_id (int): Expert id
-            body (dict):
-                method (int): Method id
-                link (str): Link method
-        """
-        mappings_create = []
-        mappings_update = []
-        mappings_delete = []
-        pipe = []
-
-        if not isinstance(body, list):
-            pipe.append(body)
-        else:
-            pipe = body
-
-        for p in pipe:
-            if hasattr(p, "id"):
-                if hasattr(p, "delete"):
-                    mappings_delete.append({"id": p["id"]})
-                    continue
-
-                update = {"id": p["id"]}
-
-                if hasattr(p, "method"):
-                    update.update({"right_id": p["method"]})
-                if hasattr(p, "link"):
-                    update.update({"link": p["link"]})
-
-                mappings_update.append(update)
-                continue
-
-            mappings_create.append(
-                {
-                    "left_id": expert_id,
-                    "right_id": p["method"],
-                    "link": p["link"],
-                }
-            )
-
-        db.session.bulk_update_mappings(AssociationMethod, mappings_update)
-        db.session.bulk_insert_mappings(AssociationMethod, mappings_create)
