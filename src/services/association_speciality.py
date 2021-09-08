@@ -1,107 +1,109 @@
 """ src.services.association_speciality """
-from flask import abort
-
 from src.db import db
+from src.exceptions import HandlerException
 from src.models import AssociationSpeciality
 
 
-class AssociationExpertToSpecialityService:
+class AssociationUserToSpecialityService:
     """
-    AssociationExpertToMethodService contains all CRUD operations
+    AssociationUserToMethodService contains all CRUD operations
     """
 
-    def get_expert(self, expert_id):
+    def get_by_user(self, user_id):
         """
-        Get Expert
+        Get association between User and Speciality
 
         Args:
-            expert_id (int): Expert id
+            user_id (int): User.id
 
-        Returns: (Speciality&Expert)
+        Returns: AssociationSpeciality
         """
-        association = AssociationSpeciality.query.filter_by(left_id=expert_id).all()
+        association = AssociationSpeciality.query.filter_by(left_id=user_id).all()
 
         if not association:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found association")
 
         return association
 
     def get_speciality(self, speciality_id):
         """
-        Get Speciality
+        Get association between User and Speciality
 
         Args:
-            speciality_id (int): Speciality id
+            speciality_id (int): Speciality.id
 
-        Returns: (Speciality&Expert)
+        Returns: AssociationSpeciality
         """
         association = AssociationSpeciality.query.filter_by(
             right_id=speciality_id
         ).all()
 
         if not association:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found association")
 
         return association
 
-    def create(self, expert_id, speciality_id):
+    def create(self, user_id, speciality_id):
         """
-        Create association speciality expert
+        Create association between User and Speciality
 
         Args:
-            expert_id (int): Expert id
+            user_id (int): User id
             speciality_id (int): Speciality id
 
-        Returns: (Speciality&Expert)
+        Returns: AssociationSpeciality
         """
-        association = AssociationSpeciality(left_id=expert_id, right_id=speciality_id)
+        association = AssociationSpeciality(left_id=user_id, right_id=speciality_id)
 
         association.add()
         association.save()
 
         return association
 
-    def create_many(self, expert_id, body):
+    def create_many(self, user_id, specialities):
         """
-        Create many association speciality expert
+        Create many association between User and Speciality
 
         Args:
-            expert_id (int): Expert id
-            body (dict):
-                speciality (int): Speciality id
+            user_id (int): User.id
+            specialities (list<int>): List Speciality.id
+
+        Returns: List<AssociationSpeciality>
         """
         mappings_create = []
         pipe = []
 
-        if not isinstance(body, list):
-            pipe.append(body)
+        if not isinstance(specialities, list):
+            pipe.append(specialities)
         else:
-            pipe = body
+            pipe = specialities
 
         for p in pipe:
             ass_speciality = AssociationSpeciality(
-                left_id=expert_id, right_id=p["speciality"]
+                left_id=user_id, right_id=p["speciality"]
             )
             mappings_create.append(ass_speciality)
 
         db.session.bulk_insert_mappings(AssociationSpeciality, mappings_create)
 
-    def update(self, _id, expert_id, speciality_id):
+        return mappings_create
+
+    def update(self, _id, user_id, speciality_id):
         """
-        Update association speciality expert
+        Update association between User and Speciality
 
         Args:
-            expert_id (int): Expert id
-            speciality_id (int): Speciality id
+            user_id (int): User.id
+            speciality_id (int): Speciality.id
 
-        Returns: (Speciality&Expert)
+        Returns: AssociationSpeciality
         """
         association = AssociationSpeciality.query.get(_id)
 
         if not association:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found association")
 
-        association.left_id = expert_id
+        association.left_id = user_id
         association.right_id = speciality_id
 
         association.save()
@@ -110,67 +112,33 @@ class AssociationExpertToSpecialityService:
 
     def disabled(self, _id):
         """
-        Disabled association speciality expert
+        Disabled association between User and Speciality
 
         Args:
-            _id (int): AssociationSpeciality id
+            _id (int): AssociationSpeciality.id
+
+        Returns: void
         """
         association = AssociationSpeciality.query.get(_id)
 
         if not association:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found association")
 
         association.disabled = not association.disabled
         association.save()
 
     def delete(self, _id):
         """
-        Delete association speciality experto
+        Delete association between User and Speciality
 
         Args:
-            _id (int): AssociationSpeciality id
+            _id (int): AssociationSpeciality.id
+
+        Returns: void
         """
         association = AssociationSpeciality.query.get(_id)
 
         if not association:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found association")
 
         association.delete()
-
-    def update_or_create_and_delete_many(self, expert_id, body):
-        """
-        Update or create and delete many AssociationSpeciality
-
-        Args:
-            expert_id (int): Expert id
-            body (dict):
-                speciality (int): Speciality id
-        """
-        mappings_create = []
-        mappings_update = []
-        mappings_delete = []
-        pipe = []
-
-        if not isinstance(body, list):
-            pipe.append(body)
-        else:
-            pipe = body
-
-        for p in pipe:
-            if hasattr(p, "id"):
-                if hasattr(p, "delete"):
-                    mappings_delete.append({"id": p["id"]})
-                    continue
-
-                update = {"id": p["id"]}
-
-                if hasattr(p, "speciality"):
-                    update.update({"right_id": p["speciality"]})
-
-                mappings_update.append(update)
-                continue
-
-            mappings_create.append({"left_id": expert_id, "right_id": p["speciality"]})
-
-        db.session.bulk_update_mappings(AssociationSpeciality, mappings_update)
-        db.session.bulk_insert_mappings(AssociationSpeciality, mappings_create)
