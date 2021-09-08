@@ -1,5 +1,4 @@
 """ src.services.admin """
-from flask import current_app
 from sqlalchemy import asc
 from sqlalchemy import desc
 from sqlalchemy import or_
@@ -153,7 +152,9 @@ class AdminService:
 
             return {"uid": user_record.uid, "a": user_record, "b": user}
         except KeyError as ex:
-            raise HandlerException(400, "Unexpected response: " + str(ex))
+            raise HandlerException(
+                400, "Bad request, field {}".format(str(ex)), str(ex)
+            )
 
     def update(self, uid, body, user_auth):
         """
@@ -279,8 +280,6 @@ class AdminService:
                 401, "Logged user can't modify own profile in this endpoint"
             )
 
-        current_app.logger.info(user_auth["b"].privileges)
-        current_app.logger.info(user.privileges)
         if not user_auth["b"].has_access(user.privileges, True):
             raise HandlerException(
                 401,

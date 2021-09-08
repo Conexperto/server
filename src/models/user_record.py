@@ -57,16 +57,16 @@ class UserRecord(Record):
         """
         try:
             return auth.verify_id_token(id_token, app=app)
-        except auth.ExpiredIdTokenError:
-            raise HandlerException(401, "Expired IdToken")
-        except auth.RevokedIdTokenError:
-            raise HandlerException(401, "Revoked IdToken")
-        except auth.InvalidIdTokenError:
-            raise HandlerException(401, "Invalid IdToken")
-        except auth.TokenSignError:
-            raise HandlerException(401, "Token sign")
-        except auth.UnexpectedResponseError:
-            raise HandlerException(500, "Unexpected response")
+        except auth.ExpiredIdTokenError as ex:
+            raise HandlerException(401, "Expired IdToken", str(ex))
+        except auth.RevokedIdTokenError as ex:
+            raise HandlerException(401, "Revoked IdToken", str(ex))
+        except auth.InvalidIdTokenError as ex:
+            raise HandlerException(401, "Invalid IdToken", str(ex))
+        except auth.TokenSignError as ex:
+            raise HandlerException(401, "Token sign", str(ex))
+        except auth.UnexpectedResponseError as ex:
+            raise HandlerException(500, "Unexpected response", str(ex))
 
     @classmethod
     def get_user(cls, uid, app):
@@ -85,10 +85,10 @@ class UserRecord(Record):
         """
         try:
             return cls(auth.get_user(uid, app=app), app=app)
-        except auth.UserNotFoundError:
-            raise HandlerException(404, "User not found")
-        except auth.UnexpectedResponseError:
-            raise HandlerException(500, "Unexpected response")
+        except auth.UserNotFoundError as ex:
+            raise HandlerException(404, "User not found", str(ex))
+        except auth.UnexpectedResponseError as ex:
+            raise HandlerException(500, "Unexpected response", str(ex))
 
     @classmethod
     def create_user(cls, **kwargs):
@@ -113,12 +113,12 @@ class UserRecord(Record):
                 auth.create_user(**kwargs),
                 app=kwargs["app"],
             )
-        except auth.EmailAlreadyExistsError:
-            raise HandlerException(400, "Email already exists")
-        except auth.PhoneNumberAlreadyExistsError:
-            raise HandlerException(400, "PhoneNumber already exists")
-        except auth.UnexpectedResponseError:
-            raise HandlerException(500, "Unexpected response")
+        except auth.EmailAlreadyExistsError as ex:
+            raise HandlerException(400, "Email already exists", str(ex))
+        except auth.PhoneNumberAlreadyExistsError as ex:
+            raise HandlerException(400, "PhoneNumber already exists", str(ex))
+        except auth.UnexpectedResponseError as ex:
+            raise HandlerException(500, "Unexpected response", str(ex))
 
     def __init__(self, user_record, app):
         self.app = app
@@ -155,27 +155,28 @@ class UserRecord(Record):
             PhoneNumberAlreadyExistsError: Phone number already exists
         """
         try:
+            _repr_hide = [
+                "app",
+                "provider_data",
+                "custom_claims",
+                "tokens_valid_after_timestamp",
+            ]
             args = {"app": self.app}
 
             for k, v in self.__dict__.items():
-                if k in [
-                    "app",
-                    "provider_data",
-                    "custom_claims",
-                    "tokens_valid_after_timestamp",
-                ]:
+                if k in _repr_hide:
                     continue
                 if v is None:
                     continue
                 args[k] = v
 
             auth.update_user(**args)
-        except auth.EmailAlreadyExistsError:
-            raise HandlerException(400, "Email already exists")
-        except auth.PhoneNumberAlreadyExistsError:
-            raise HandlerException(400, "PhoneNumber already exists")
-        except auth.UnexpectedResponseError:
-            raise HandlerException(500, "Unexpected response")
+        except auth.EmailAlreadyExistsError as ex:
+            raise HandlerException(400, "Email already exists", str(ex))
+        except auth.PhoneNumberAlreadyExistsError as ex:
+            raise HandlerException(400, "PhoneNumber already exists", str(ex))
+        except auth.UnexpectedResponseError as ex:
+            raise HandlerException(500, "Unexpected response", str(ex))
 
     def delete_user(self):
         """
@@ -186,10 +187,10 @@ class UserRecord(Record):
         """
         try:
             auth.delete_user(uid=self.uid, app=self.app)
-        except auth.UserNotFoundError:
-            raise HandlerException(404, "User not found")
-        except auth.UnexpectedResponseError:
-            raise HandlerException(500, "Unexpected response")
+        except auth.UserNotFoundError as ex:
+            raise HandlerException(404, "User not found", str(ex))
+        except auth.UnexpectedResponseError as ex:
+            raise HandlerException(500, "Unexpected response", str(ex))
 
     def make_claims(self, claims=None):
         """
@@ -203,7 +204,7 @@ class UserRecord(Record):
         """
         try:
             auth.set_custom_user_claims(self.uid, claims or {}, app=self.app)
-        except auth.UserNotFoundError:
-            raise HandlerException(404, "User not found")
-        except auth.UnexpectedResponseError:
-            raise HandlerException(500, "Unexpected response")
+        except auth.UserNotFoundError as ex:
+            raise HandlerException(404, "User not found", str(ex))
+        except auth.UnexpectedResponseError as ex:
+            raise HandlerException(500, "Unexpected response", str(ex))

@@ -36,10 +36,10 @@ class BaseMixin(AuditMixin):
             db.session.add(self)
         except IntegrityError as ex:
             db.session.rollback()
-            raise HandlerException(400, "Bad request" + str(ex))
-        except SQLAlchemyError:
+            raise HandlerException(400, "Bad request", str(ex))
+        except SQLAlchemyError as ex:
             db.session.rollback()
-            raise HandlerException(500, "Error in add function")
+            raise HandlerException(500, "Unexpected response", str(ex))
 
     def save(self):
         """save"""
@@ -48,19 +48,19 @@ class BaseMixin(AuditMixin):
             db.session.refresh(self)
         except IntegrityError as ex:
             db.session.rollback()
-            raise HandlerException(400, "Bad request" + str(ex))
-        except SQLAlchemyError:
+            raise HandlerException(400, "Bad request", str(ex))
+        except SQLAlchemyError as ex:
             db.session.rollback()
-            raise HandlerException(500, "Error in add function")
+            raise HandlerException(500, "Unexpected response", str(ex))
 
     def delete(self):
         """delete"""
         try:
             db.session.delete(self)
             db.session.commit()
-        except SQLAlchemyError:
+        except SQLAlchemyError as ex:
             db.session.rollback()
-            raise HandlerException(500, "Error in add function")
+            raise HandlerException(500, "Unexpected response", str(ex))
 
     def serialize(self, obj):
         """serialize from json"""
