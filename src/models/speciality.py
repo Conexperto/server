@@ -21,7 +21,9 @@ class AssociationSpeciality(BaseMixin, db.Model):
     __tablename__ = "association_user_to_speciality"
 
     left_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
-    right_id = Column(Integer, ForeignKey("speciality.id"), primary_key=True)
+    right_id = Column(
+        Integer, ForeignKey("speciality.id"), unique=True, primary_key=True
+    )
     disabled = Column(Boolean, default=False)
     speciality = relationship("Speciality")
 
