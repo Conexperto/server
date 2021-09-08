@@ -49,7 +49,7 @@ def login_required(admin=False):
             except HandlerException as ex:
                 ex.abort()
             except Exception as ex:
-                HandlerException(500, "Unexpected response: " + str(ex)).abort()
+                HandlerException(500, "Unexpected response: ", str(ex)).abort()
 
             return func(*args, **kwargs)
 

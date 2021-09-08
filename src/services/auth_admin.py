@@ -98,7 +98,9 @@ class AuthAdminService:
 
             return {"uid": user_record.uid, "a": user_record, "b": user}
         except KeyError as ex:
-            raise HandlerException(400, "Bad request" + str(ex))
+            raise HandlerException(
+                400, "Bad request, field {}".format(str(ex)), str(ex)
+            )
 
     def update(self, user, body):
         """
