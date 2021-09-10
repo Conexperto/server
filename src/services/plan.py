@@ -107,7 +107,9 @@ class PlanService:
 
             return plan
         except KeyError as ex:
-            raise HandlerException(404, "Bad request: " + str(ex))
+            raise HandlerException(
+                400, "Bad request, field {}".format(str(ex)), str(ex)
+            )
 
     def create_many(self, expert_id, body):
         """
@@ -120,7 +122,7 @@ class PlanService:
                 coint (str): Coin
                 expert_id (int): Expert id
 
-        Returns: Plan
+        Returns: List<Plan>
         """
         try:
             mappings_create = []
@@ -139,8 +141,12 @@ class PlanService:
                 mappings_create.append(plan)
 
             db.session.bulk_insert_mappings(Plan, mappings_create)
+
+            return mappings_create
         except KeyError as ex:
-            raise HandlerException(404, "Bad request: " + str(ex))
+            raise HandlerException(
+                400, "Bad request: field {}".format(str(ex)), str(ex)
+            )
 
     def update(self, _id, body):
         """
