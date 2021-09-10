@@ -14,21 +14,21 @@ from src.services import SpecialityService
 router = Blueprint(name="SpecialityAdmin", import_name=__name__)
 
 
-@router.route("/<uid>", methods=["GET"])
+@router.route("/<int:_id>", methods=["GET"])
 @login_required(admin=True)
-def index_speciality_admin_one(uid):
+def index_speciality_admin_one(_id):
     """
-    GET: /api/v1/admin/speciality/<uid>
+    GET: /api/v1/admin/speciality/<int:_id>
     """
     try:
         service = SpecialityService()
-        speciality = service.get(uid)
+        speciality = service.get(_id)
 
         return jsonify({"success": True, "response": speciality})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
 @router.route("/", methods=["GET"])
@@ -51,7 +51,7 @@ def index_speciality_admin():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
 @router.route("/", methods=["POST"])
@@ -73,14 +73,14 @@ def register_speciality_admin():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
-@router.route("/<uid>", methods=["PUT"])
+@router.route("/<int:_id>", methods=["PUT"])
 @login_required(admin=True)
-def update_speciality_admin(uid):
+def update_speciality_admin(_id):
     """
-    PUT: /api/v1/admin/speciality/<uid>
+    PUT: /api/v1/admin/speciality/<int:_id>
     """
     try:
         body = request.get_json()
@@ -89,20 +89,20 @@ def update_speciality_admin(uid):
             raise HandlerException(400, "Not found body")
 
         service = SpecialityService()
-        speciality = service.update(uid, body)
+        speciality = service.update(_id, body)
 
         return jsonify({"success": True, "response": speciality})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
-@router.route("/<uid>", methods=["PATCH"])
+@router.route("/<int:_id>", methods=["PATCH"])
 @login_required(admin=True)
-def update_field_speciality_admin(uid):
+def update_field_speciality_admin(_id):
     """
-    PATCH: /api/v1/admin/speciality/<uid>
+    PATCH: /api/v1/admin/speciality/<int:_id>
     """
     try:
         body = request.get_json()
@@ -111,44 +111,44 @@ def update_field_speciality_admin(uid):
             raise HandlerException(400, "Not found body")
 
         service = SpecialityService()
-        speciality = service.update_field(uid, body)
+        speciality = service.update_field(_id, body)
 
         return jsonify({"success": True, "response": speciality})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
-@router.route("/disabled/<uid>", methods=["PATCH"])
+@router.route("/disabled/<int:_id>", methods=["PATCH"])
 @login_required(admin=True)
-def disabled_speciality_admin(uid):
+def disabled_speciality_admin(_id):
     """
-    PATCH: /api/v1/admin/speciality/disabled/<uid>
+    PATCH: /api/v1/admin/speciality/disabled/<int:_id>
     """
     try:
         service = SpecialityService()
-        speciality = service.disabled(uid)
+        speciality = service.disabled(_id)
 
         return jsonify({"success": True, "response": speciality})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
 @router.route("/<uid>", methods=["DELETE"])
 @login_required(admin=True)
-def delete_speciality_admin(uid):
+def delete_speciality_admin(_id):
     """
-    DELETE: /api/v1/admin/speciality/<uid>
+    DELETE: /api/v1/admin/speciality/<int:_id>
     """
     try:
         service = SpecialityService()
-        speciality = service.delete(uid)
+        speciality = service.delete(_id)
 
         return jsonify({"success": True, "response": speciality})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
