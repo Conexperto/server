@@ -22,10 +22,8 @@ schema = {
                         "email": {"type": "string"},
                         "email_verified": {"type": "boolean"},
                         "display_name": {"type": "string"},
-                        "phone_number": {
-                            "oneOf": [{"type": "string"}, {"type": "null"}]
-                        },
-                        "photo_url": {"oneOf": [{"type": "string"}, {"type": "null"}]},
+                        "phone_number": {"type": ["string", "null"]},
+                        "photo_url": {"type": ["string", "null"]},
                         "disabled": {"type": "boolean"},
                         "provider_data": {
                             "type": "array",
@@ -119,6 +117,7 @@ def search_user(client, auth, search):
         rv.headers["Content-Type"] == "application/json"
     ), "should be content type application/json"
     body = loads(rv.data)
+    print(body, search)
     validate(instance=body, schema=schema_list)
     return body["response"][0]["uid"]
 
