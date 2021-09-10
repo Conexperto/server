@@ -12,21 +12,21 @@ from src.services import PlanService
 router = Blueprint(name="PlanAdmin", import_name=__name__)
 
 
-@router.route("/<uid>", methods=["GET"])
+@router.route("/<int:_id>", methods=["GET"])
 @login_required(admin=True)
-def index_plan_admin_one(uid):
+def index_plan_admin_one(_id):
     """
-    GET: /api/v1/admin/plan/<uid>
+    GET: /api/v1/admin/plan/<int:_id>
     """
     try:
         service = PlanService()
-        plan = service.get(uid)
+        plan = service.get(_id)
 
         return jsonify({"success": True, "response": plan})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
 @router.route("/", methods=["GET"])
@@ -49,7 +49,7 @@ def index_plan_admin():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response:" + str(ex))
+        HandlerException(500, "Unexpected response:" + str(ex), str(ex))
 
 
 @router.route("/", methods=["POST"])
@@ -71,14 +71,14 @@ def register_plan_admin():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
-@router.route("/<uid>", methods=["PUT"])
+@router.route("/<int:_id>", methods=["PUT"])
 @login_required(admin=True)
-def update_plan_admin(uid):
+def update_plan_admin(_id):
     """
-    PUT: /api/v1/admin/plan/<uid>
+    PUT: /api/v1/admin/plan/<_id>
     """
     try:
         body = request.get_json()
@@ -87,20 +87,20 @@ def update_plan_admin(uid):
             raise HandlerException(400, "Not found body")
 
         service = PlanService()
-        plan = service.update(uid, body)
+        plan = service.update(_id, body)
 
         return jsonify({"success": True, "response": plan})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
-@router.route("/<uid>", methods=["PATCH"])
+@router.route("/<int:_id>", methods=["PATCH"])
 @login_required(admin=True)
-def update_field_plan_admin(uid):
+def update_field_plan_admin(_id):
     """
-    PATCH: /api/v1/admin/plan/<uid>
+    PATCH: /api/v1/admin/plan/<int:_id>
     """
     try:
         body = request.get_json()
@@ -109,44 +109,44 @@ def update_field_plan_admin(uid):
             raise HandlerException(400, "Not found body")
 
         service = PlanService()
-        plan = service.update_field(uid, body)
+        plan = service.update_field(_id, body)
 
         return jsonify({"success": True, "response": plan})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
-@router.route("/disabled/<uid>", methods=["PATCH"])
+@router.route("/disabled/<int:_id>", methods=["PATCH"])
 @login_required(admin=True)
-def disabled_plan_admin(uid):
+def disabled_plan_admin(_id):
     """
-    PATCH /api/v1/admin/plan/disabled/<uid>
+    PATCH /api/v1/admin/plan/disabled/<int:_id>
     """
     try:
         service = PlanService()
-        plan = service.disabled(uid)
+        plan = service.disabled(_id)
 
         return jsonify({"success": True, "response": plan})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
-@router.route("/<uid>", methods=["DELETE"])
+@router.route("/<int:_id>", methods=["DELETE"])
 @login_required(admin=True)
-def delete_plan_admin(uid):
+def delete_plan_admin(_id):
     """
-    DELETE: /api/v1/admin/plan/<uid>
+    DELETE: /api/v1/admin/plan/<int:_id>
     """
     try:
         service = PlanService()
-        plan = service.delete(uid)
+        plan = service.delete(_id)
 
         return jsonify({"success": True, "response": plan})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))

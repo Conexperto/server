@@ -39,7 +39,7 @@ def register_auth():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, str(ex)).abort()
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
 
 
 @router.route("/", methods=["PUT"])
@@ -61,7 +61,7 @@ def update_auth():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, str(ex)).abort()
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
 
 
 # @router.route("/expert", methods=["PUT"])
@@ -114,7 +114,7 @@ def update_field_auth():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, str(ex)).abort()
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
 
 
 @router.route("/disabled", methods=["PATCH"])
@@ -131,4 +131,4 @@ def disabled_auth():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, str(ex)).abort()
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
