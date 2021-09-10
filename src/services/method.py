@@ -2,6 +2,7 @@
 from sqlalchemy import asc
 from sqlalchemy import desc
 
+from src.db import db
 from src.exceptions import HandlerException
 from src.models import Method
 
@@ -99,7 +100,39 @@ class MethodService:
 
             return method
         except KeyError as ex:
-            raise HandlerException(400, "Unexpected response: " + str(ex))
+            raise HandlerException(
+                400, "Bad request, field {}".format(str(ex)), str(ex)
+            )
+
+    def create_many(self, body):
+        """
+        Create many methods
+
+        Args:
+            body (list<dict>):
+                name(str): Method.name
+
+        Returns: List<Method>
+        """
+        try:
+            mappings_create = []
+            pipe = body
+
+            if not isinstance(pipe, list):
+                pipe = [body]
+
+            for p in pipe:
+                method = Method(name=p["name"])
+                mappings_create.append(method)
+
+            db.session.bulk_insert_mappings(Method, mappings_create)
+
+            return mappings_create
+
+        except KeyError as ex:
+            raise HandlerException(
+                400, "Bad request, field {}".format(str(ex)), str(ex)
+            )
 
     def update(self, _id, body):
         """
@@ -121,6 +154,35 @@ class MethodService:
         method.save()
 
         return method
+
+    def update_many(self, body):
+        """
+        Update many Methods
+
+        Args:
+            body (list<dict>):
+                id (int): Speciality.id
+                name (str): Speciality.name
+
+        Returns: List<Method>
+        """
+        mappings_update = []
+        identifiers = [item["id"] for item in body]
+
+        __query = Method.query
+        _methods = __query.filter(Method.id.in_(identifiers)).all()
+
+        for _method in _methods:
+            index = next(
+                [index for (index, item) in enumerate(body) if item["id"] == _method.id]
+            )
+
+            _method.serialize(body[index])
+            mappings_update.append(_method)
+
+        db.session.bulk_update_mappings(Method, mappings_update)
+
+        return mappings_update
 
     def update_field(self, _id, body):
         """
