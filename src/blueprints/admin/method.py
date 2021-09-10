@@ -14,21 +14,21 @@ from src.services import MethodService
 router = Blueprint(name="MethodAdmin", import_name=__name__)
 
 
-@router.route("/<uid>", methods=["GET"])
+@router.route("/<int:_id>", methods=["GET"])
 @login_required(admin=True)
-def index_method_admin_one(uid):
+def index_method_admin_one(_id):
     """
-    GET: /api/v1/admin/method/<uid>
+    GET: /api/v1/admin/method/<int:_id>
     """
     try:
         service = MethodService()
-        method = service.get(uid)
+        method = service.get(_id)
 
         return jsonify({"success": True, "response": method})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
 @router.route("/", methods=["GET"])
@@ -51,7 +51,7 @@ def index_method_admin():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
 @router.route("/", methods=["POST"])
@@ -73,14 +73,14 @@ def register_method_admin():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
-@router.route("/<uid>", methods=["PUT"])
+@router.route("/<int:_id>", methods=["PUT"])
 @login_required(admin=True)
-def update_method_admin(uid):
+def update_method_admin(_id):
     """
-    PUT: /api/v1/admin/method/<uid>
+    PUT: /api/v1/admin/method/<int:_id>
     """
     try:
         body = request.get_json()
@@ -89,20 +89,20 @@ def update_method_admin(uid):
             raise HandlerException(400, "Not found body")
 
         service = MethodService()
-        method = service.update(uid, body)
+        method = service.update(_id, body)
 
         return jsonify({"success": True, "response": method})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
-@router.route("/<uid>", methods=["PATCH"])
+@router.route("/<int:_id>", methods=["PATCH"])
 @login_required(admin=True)
-def update_field_method_admin(uid):
+def update_field_method_admin(_id):
     """
-    PATCH: /api/v1/admin/method/<uid>
+    PATCH: /api/v1/admin/method/<int:_id>
     """
     try:
         body = request.get_json()
@@ -111,44 +111,44 @@ def update_field_method_admin(uid):
             raise HandlerException(400, "Not found body")
 
         service = MethodService()
-        method = service.update_field(uid, body)
+        method = service.update_field(_id, body)
 
         return jsonify({"success": True, "response": method})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
-@router.route("/disabled/<uid>", methods=["PATCH"])
+@router.route("/disabled/<int:_id>", methods=["PATCH"])
 @login_required(admin=True)
-def disabled_method_admin(uid):
+def disabled_method_admin(_id):
     """
-    PATCH: /api/v1/admin/method/disabled/<uid>
+    PATCH: /api/v1/admin/method/disabled/<int:_id>
     """
     try:
         service = MethodService()
-        method = service.disabled(uid)
+        method = service.disabled(_id)
 
         return jsonify({"success": True, "response": method})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
-@router.route("/<uid>", methods=["DELETE"])
+@router.route("/<int:_id>", methods=["DELETE"])
 @login_required(admin=True)
-def delete_method_admin(uid):
+def delete_method_admin(_id):
     """
-    DELETE: /api/v1/admin/method/<uid>
+    DELETE: /api/v1/admin/method/<int:_id>
     """
     try:
         service = MethodService()
-        method = service.delete(uid)
+        method = service.delete(_id)
 
         return jsonify({"success": True, "response": method})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))

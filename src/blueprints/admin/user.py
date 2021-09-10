@@ -26,7 +26,7 @@ def index_user_admin_one(uid):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
 @router.route("/", methods=["GET"])
@@ -49,7 +49,7 @@ def index_user_admin():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
 @router.route("/", methods=["POST"])
@@ -71,7 +71,7 @@ def register_user_admin():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
 @router.route("/<uid>", methods=["PUT"])
@@ -93,7 +93,7 @@ def update_user_admin(uid):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
 @router.route("/<uid>", methods=["PATCH"])
@@ -115,7 +115,7 @@ def update_field_user_admin(uid):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
 @router.route("/disabled/<uid>", methods=["PATCH"])
@@ -132,7 +132,7 @@ def disabled_user_admin(uid):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
 @router.route("/<uid>", methods=["DELETE"])
@@ -149,4 +149,4 @@ def delete_user_admin(uid):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex)), str(ex)

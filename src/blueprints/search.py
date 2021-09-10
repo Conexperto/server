@@ -25,7 +25,7 @@ def index_suggestion():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
 @router.route("/", methods=["GET"])
@@ -58,7 +58,7 @@ def index_search():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
 
 
 @router.route("/speciality", methods=["GET"])
@@ -89,4 +89,4 @@ def index_search_speciality():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex))
+        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
