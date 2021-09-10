@@ -3,6 +3,7 @@ from flask import abort
 from sqlalchemy import asc
 from sqlalchemy import desc
 
+from src.db import db
 from src.exceptions import HandlerException
 from src.models import Admin
 from src.models import Speciality
@@ -47,10 +48,10 @@ class SpecialityService:
 
     def get(self, _id):
         """
-        Get speciality by uid
+        Get speciality by id
 
         Args:
-            _id (str): Speciality id
+            _id (str): Speciality.id
 
         Returns: Speciality
         """
@@ -87,7 +88,7 @@ class SpecialityService:
 
         Args:
             body (dict):
-                name (str): Speciality name
+                name (str): Speciality.name
         Returns: Expert
         """
         try:
@@ -100,14 +101,46 @@ class SpecialityService:
         except KeyError as ex:
             raise HandlerException(404, "Bad request: " + str(ex))
 
+    def create_many(self, body):
+        """
+        Create many specialities
+
+        Args:
+            body (list<dict>):
+                name (str): Speciality.name
+
+        Returns: List<Speciality>
+        """
+        try:
+            mappings_create = []
+            pipe = body
+
+            if not isinstance(pipe, list):
+                pipe = [body]
+
+            for p in pipe:
+                speciality = Speciality(
+                    duration=p["duration"], price=p["price"], coin=p["coin"]
+                )
+                mappings_create.append(speciality)
+
+            db.session.bulk_insert_mappings(Speciality, mappings_create)
+
+            return mappings_create
+
+        except KeyError as ex:
+            raise HandlerException(
+                400, "Bad request, field {}".format(str(ex)), str(ex)
+            )
+
     def update(self, _id, body):
         """
         Update Speciality
 
         Args:
-            _id (int): Speciality id
+            _id (int): Speciality.id
             body (dict):
-                name (str): Speciality name
+                name (str): Speciality.name
 
         Returns: Speciality
         """
@@ -121,14 +154,46 @@ class SpecialityService:
 
         return speciality
 
+    def update_many(self, body):
+        """
+        Update many Specialities
+
+        Args:
+            body (list<dict>):
+                id (int): Speciality.id
+                name (str): Speciality.name
+
+        Returns: List<Speciality>
+        """
+        mappings_update = []
+        identifiers = [item["id"] for item in body]
+
+        __query = Speciality.query
+        _specialities = __query.filter(Speciality.id.in_(identifiers)).all()
+
+        for _speciality in _specialities:
+            index = next(
+                [
+                    index
+                    for (index, item) in enumerate(body)
+                    if item["id"] == _speciality.id
+                ]
+            )
+
+            _speciality.serialize(body[index])
+            mappings_update.append(_speciality)
+
+        db.session.bulk_update_mappings(Speciality, mappings_update)
+        return mappings_update
+
     def update_field(self, _id, body):
         """
         Update Speciality
 
         Args:
-            _id (int): Speciality uid
+            _id (int): Speciality._id
             body (dict):
-                name (str): Speciality name
+                name (str): Speciality.name
 
         Returns: Speciality
         """
