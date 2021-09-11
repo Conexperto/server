@@ -5,7 +5,6 @@ from inspect import getmembers
 from inspect import isclass
 
 import click
-from flask.cli import AppGroup
 from flask.cli import with_appcontext
 
 
