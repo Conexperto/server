@@ -1,4 +1,6 @@
 """ src.services.auth """
+from flask import current_app
+
 from src.exceptions import HandlerException
 from src.firebase import web_sdk
 from src.models import User
@@ -22,6 +24,7 @@ class AuthService:
             a (UserRecord): UserRecord
             b (User): User
         """
+
         decoded_token = UserRecord.verify_id_token(
             id_token, check_revoked=True, app=web_sdk
         )
@@ -75,6 +78,7 @@ class AuthService:
             user.add()
             user.save()
 
+            current_app.logger.info(user_record)
             return {"uid": user_record.uid, "a": user_record, "b": user}
         except KeyError as ex:
             raise HandlerException(
