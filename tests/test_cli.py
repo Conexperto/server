@@ -1,8 +1,6 @@
 """ tests.test_cli """
 import logging
 
-from src.db import db
-
 
 logger = logging.getLogger(__name__)
 
