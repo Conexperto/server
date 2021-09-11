@@ -41,7 +41,7 @@ class AdminService:
         __subquery = None
 
         if __order not in ["desc", "asc"]:
-            raise HandlerException(400, "Bad order, mest be desc or asc")
+            raise HandlerException(400, "Bad order, must be desc or asc")
 
         if not hasattr(Admin, __order_by):
             raise HandlerException(400, "Bad order_by, field not found")
