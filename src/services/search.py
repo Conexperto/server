@@ -1,10 +1,9 @@
-from flask import abort
 from sqlalchemy import asc
 from sqlalchemy import desc
 from sqlalchemy import or_
-from sqlalchemy.orm import load_only
 
 from src.db import db
+from src.exceptions import HandlerException
 from src.models import AssociationSpeciality
 from src.models import Expert
 from src.models import Speciality
@@ -13,22 +12,26 @@ from src.models import User
 
 class SearchService:
     def sort(self, order_by, order):
-        __order_by = ""
-        __query = None
+        """
+        Make sort query
+        """
+        __order = order or "asc"
+        __order_by = order_by or "id"
+        __subquery = None
 
-        if not order in ["desc", "asc"]:
-            return
+        if order not in ["desc", "asc"]:
+            raise HandlerException(400, "Bad order, must be desc or asc")
 
-        if not hasattr(User, order_by):
-            return
+        if not hasattr(User, __order_by):
+            raise HandlerException(400, "Bad order_by, field not found")
 
-        if order == "asc":
-            __query = asc(order_by)
-        if order == "desc":
-            __query = desc(order_by)
+        if __order == "asc":
+            __subquery = asc(__order_by)
+        if __order == "desc":
+            __subquery = desc(__order_by)
 
-        self.query = self.query.order_by(__query)
-        return self.query
+        self.__query = self.__query.order_by(__subquery)
+        return self.__query
 
     def projection(self):
         result = []
@@ -112,7 +115,7 @@ class SearchService:
             User.query.join(Expert).join(AssociationSpeciality).join(Speciality)
         )
 
-        if speciality != None:
+        if speciality is not None:
             self.filterBySpeciality(speciality)
 
         self.filter(fragment)
