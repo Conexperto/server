@@ -1,9 +1,11 @@
 """ tests.confauth """
+import logging
 import os
 
 import requests
 
 
+logger = logging.getLogger(__name__)
 URI = "http://emulator:9099/identitytoolkit.googleapis.com/v1/accounts:{}?key={}"
 
 
@@ -17,7 +19,10 @@ class AuthActions(object):
     def login(self, email, password):
         uri = URI.format("signInWithPassword", self._key)
         payload = {"email": email, "password": password, "returnSecureToken": True}
+        logger.info(uri)
+        logger.info(payload)
         rv = requests.post(uri, json=payload)
+        logger.info(rv.json())
         assert rv.status_code == 200, "Faild authentication"
         self._user = rv.json()
         self._token = self._user["idToken"]
