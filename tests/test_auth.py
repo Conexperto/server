@@ -178,7 +178,6 @@ def test_auth(client, auth):
 
 def test_auth_wrong_user(client, auth, login_user):
     rv = client.get("/auth", headers={"Authorization": "Bearer " + auth.token})
-    print(rv.data)
     assert rv.status_code == 404, "should be status code 200"
     assert rv.headers["Content-Type"] == "application/json"
     body = loads(rv.data)
