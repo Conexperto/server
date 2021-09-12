@@ -1,6 +1,7 @@
 """ src.seeds.user """
 from faker import Faker
 from firebase_admin import auth
+from flask import current_app
 
 from src.db import db
 from src.firebase import web_sdk
@@ -49,6 +50,8 @@ class UserSeed:
         for model in self.__models:
             model.add()
             model.save()
+
+        current_app.logger("Seed User")
 
     @classmethod
     def down(cls):
