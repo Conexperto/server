@@ -51,7 +51,7 @@ class UserSeed:
             model.add()
             model.save()
 
-        current_app.logger("Seed User")
+        current_app.logger.info("Seed User")
 
     @classmethod
     def down(cls):
