@@ -20,7 +20,6 @@ class AuthActions(object):
         uri = URI.format("signInWithPassword", self._key)
         payload = {"email": email, "password": password, "returnSecureToken": True}
         rv = requests.post(uri, json=payload)
-        logger.info(rv.json())
         assert rv.status_code == 200, "Faild authentication"
         self._user = rv.json()
         self._token = self._user["idToken"]
