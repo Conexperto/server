@@ -168,7 +168,7 @@ def test_auth_create_without_field(client):
 
 
 def test_auth(client, auth):
-    auth.login("test@conexperto.com", "token_test")
+    auth.login("test__@conexperto.com", "token_test")
     rv = client.get("/auth", headers={"Authorization": "Bearer " + auth.token})
     assert rv.status_code == 200, "should be status code 200"
     assert rv.headers["Content-Type"] == "application/json"
