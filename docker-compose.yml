@@ -11,7 +11,7 @@ services:
           - ./docker/db/pg-init-scripts:/docker-entrypoint-initdb.d
     emulator:
       container_name: cxp_emulator
-      image: frfernandezdev/firebase-emulators:1.0.0
+      image: frfernandezdev/firebase-emulators
       env_file: ./docker/emulator/emulator.conf
       ports:
         - "9099:9099"
