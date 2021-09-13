@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:latest-alpine
 
 RUN mkdir -p /srv/app
 WORKDIR /srv/app
