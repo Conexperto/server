@@ -1,4 +1,4 @@
-image: python:latest
+image: python:3
 
 stages:
   - format
@@ -27,7 +27,7 @@ cache:
 services:
   - name: postgres:13-alpine
     alias: cxp_db
-  - name: frfernandezdev/firebase-emulators:1.0.0
+  - name: frfernandezdev/firebase-emulators:latest
     alias: emulator
 
 format:
