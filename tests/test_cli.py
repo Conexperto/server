@@ -1,8 +1,4 @@
 """ tests.test_cli """
-import logging
-
-
-logger = logging.getLogger(__name__)
 
 
 def test_seed_user(runner):
