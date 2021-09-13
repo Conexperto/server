@@ -27,7 +27,7 @@ cache:
 services:
   - name: postgres:13-alpine
     alias: cxp_db
-  - name: frfernandezdev/firebase-emulators:latest
+  - name: frfernandezdev/firebase-emulators:1.0.0
     alias: emulator
 
 format:
