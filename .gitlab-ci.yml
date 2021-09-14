@@ -69,7 +69,7 @@ staging:
     - apt-get update -qy
     - apt-get install -y ruby-dev
     - gem install dpl
-    - dpl --provider=heroku --app=$HEROKU_APP_STAGING --api_key=$HEROKU_API_KEY
+    - dpl --provider=heroku --app=cxp-server-staging --api_key=86b9ba4c-6246-43fb-a080-5b4b5578e238
 
 prod:
   stage: deploy
@@ -81,4 +81,4 @@ prod:
     - apt-get update -qy
     - apt-get install -y ruby-dev
     - gem install dpl
-    - dpl --provider=heroku --app=$HEROKU_APP_PROD --api_key=$HEROKU_API_KEY
+    - dpl --provider=heroku --app=cxp-server-prod --api_key=$HEROKU_API_KEY
