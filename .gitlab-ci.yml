@@ -10,7 +10,7 @@ variables:
   POSTGRES_DB: "cxp_test"
   POSTGRES_USER: "cxp"
   POSTGRES_PASSWORD: "token.01"
-  DATABASE_URI: "postgresql+psycopg2://cxp:token.01@cxp_db:5432/cxp_test"
+  DATABASE_URL: "postgresql+psycopg2://cxp:token.01@cxp_db:5432/cxp_test"
   FIREBASE_TOKEN: "1//01oOxnx8H1x1bCgYIARAAGAESNwF-L9IrDYa8EKEGhP55_lSx5MzPI-76952cMi9esR06R45VTkqzwkYhx5x2ydqBArg1UzfqH54"
   FIREBASE_AUTH_EMULATOR_HOST: "emulator:9099"
   FIREBASE_PORT: "9099"
@@ -69,7 +69,7 @@ staging:
     - apt-get update -qy
     - apt-get install -y ruby-dev
     - gem install dpl
-    - dpl --provider=heroku --app=cxp-server-staging --api_key=86b9ba4c-6246-43fb-a080-5b4b5578e238
+    - dpl --provider=heroku --app=cxp-server-staging --api_key=$HEROKU_API_KEY
 
 prod:
   stage: deploy

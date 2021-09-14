@@ -2,19 +2,17 @@ setup:
   addons:
     - plan: heroku-postgresql
       as: cxp_db
+
 build:
   docker:
-    web: docker/api/Dockerfile
-  config:
-    FLASK_ENV: production
-    FLASK_DEBUG: True
-    TESTING: False
-    DATABASE_URI: postgresql+psycopg2://cxp:token.01@cxp_db:5432/cxp_dev
+    web: ./docker/api/Dockerfile
+
 release:
   image: web
   command:
     - flask db init
     - flask db migrate
     - flask db upgrade
+
 run:
   web: gunicorn 'wsgi:create_wsgi()' --log-file -
