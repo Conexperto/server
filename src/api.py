@@ -1,6 +1,7 @@
 """ src.api """
 import os
 
+from flask import current_app
 from flask import Flask
 from flask import jsonify
 from flask_cors import CORS
@@ -22,7 +23,8 @@ def create_api():
     """Initialize Application"""
     api = Flask(__name__)
 
-    api.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
+    api.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+    current_app.logger.info(api.config["SQLALCHEMY_DATABASE_URI"])
     api.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     api.config["JSON_SORT_KEYS"] = False
 
