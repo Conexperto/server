@@ -1,6 +1,5 @@
 """ tests.conftest """
 import logging
-import os
 
 import pytest
 
@@ -18,10 +17,6 @@ def api():
     Initialize API
     """
     api = create_api()
-    api.config["TESTING"] = True
-    api.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
-    api.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    api.config["JSON_SORT_KEYS"] = False
 
     with api.app_context():
         db.init_app(api)
