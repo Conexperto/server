@@ -15,4 +15,4 @@ release:
     - flask db upgrade
 
 run:
-  web: gunicorn 'wsgi:create_wsgi()' --log-file -
+  web: gunicorn 'wsgi:create_wsgi()'
