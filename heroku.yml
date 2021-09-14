@@ -5,11 +5,12 @@ setup:
 
 build:
   docker:
-    web: ./docker/api/Dockerfile
+    web: Dockerfile
 
 release:
   image: web
   command:
+    - export FLASK_APP='src.api:create_api()'
     - flask db init
     - flask db migrate
     - flask db upgrade
