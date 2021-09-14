@@ -22,9 +22,12 @@ def create_api():
     """Initialize Application"""
     api = Flask(__name__)
 
-    api.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL").replace(
-        "://", "ql://", 1
-    )
+    db_url = os.getenv("DATABASE_URL")
+
+    if os.getenv("FLASK_ENV") == "production":
+        db_url.replace("postgres://", "postgresql://", 1)
+
+    api.config["SQLALCHEMY_DATABASE_URI"] = db_url
     api.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     api.config["JSON_SORT_KEYS"] = False
 
