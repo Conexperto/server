@@ -46,9 +46,9 @@ def __exists_seed(seeds, name):
 
 
 def __run_seed(seed, action):
-    if action == "down":
-        return seed.down()
     __instance = seed()
+    if action == "down":
+        return __instance.down()
     __instance.up()
 
 
