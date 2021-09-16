@@ -24,5 +24,5 @@ class Plan(BaseMixin, db.Model):
     coin = Column(String, default="USD")
     disabled = Column(Boolean, default=False)
     user_id = Column(
-        Integer, ForeignKey("user.id", ondelete="CASCADE", onupdate="CASCADE")
+        Integer, ForeignKey("user.id", ondelete="cascade", onupdate="cascade")
     )
