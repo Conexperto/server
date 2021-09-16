@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 44b0f3ef6d99
+Revision ID: df4e9f32aa40
 Revises: 
-Create Date: 2021-09-14 11:46:45.167368
+Create Date: 2021-09-15 20:17:25.024697
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '44b0f3ef6d99'
+revision = 'df4e9f32aa40'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -79,14 +79,14 @@ def upgrade():
     sa.UniqueConstraint('phone_number'),
     sa.UniqueConstraint('uid')
     )
-    op.create_table('association_expert_to_method',
+    op.create_table('association_user_to_method',
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('left_id', sa.Integer(), nullable=False),
     sa.Column('right_id', sa.Integer(), nullable=False),
     sa.Column('link', sa.String(), nullable=False),
     sa.Column('disabled', sa.Boolean(), nullable=True),
-    sa.ForeignKeyConstraint(['left_id'], ['user.id'], ),
+    sa.ForeignKeyConstraint(['left_id'], ['user.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['right_id'], ['method.id'], ),
     sa.PrimaryKeyConstraint('left_id', 'right_id'),
     sa.UniqueConstraint('right_id')
@@ -97,7 +97,7 @@ def upgrade():
     sa.Column('left_id', sa.Integer(), nullable=False),
     sa.Column('right_id', sa.Integer(), nullable=False),
     sa.Column('disabled', sa.Boolean(), nullable=True),
-    sa.ForeignKeyConstraint(['left_id'], ['user.id'], ),
+    sa.ForeignKeyConstraint(['left_id'], ['user.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['right_id'], ['speciality.id'], ),
     sa.PrimaryKeyConstraint('left_id', 'right_id'),
     sa.UniqueConstraint('right_id')
@@ -111,7 +111,7 @@ def upgrade():
     sa.Column('coin', sa.String(), nullable=True),
     sa.Column('disabled', sa.Boolean(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['user.id'], onupdate='CASCADE', ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], onupdate='cascade', ondelete='cascade'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('session',
@@ -145,7 +145,7 @@ def downgrade():
     op.drop_table('session')
     op.drop_table('plan')
     op.drop_table('association_user_to_speciality')
-    op.drop_table('association_expert_to_method')
+    op.drop_table('association_user_to_method')
     op.drop_table('user')
     op.drop_table('speciality')
     op.drop_table('method')

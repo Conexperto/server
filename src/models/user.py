@@ -43,9 +43,9 @@ class User(BaseMixin, db.Model):
     timezone = Column(String)
     link_video = Column(String)
     location = Column(String)
-    plans = relationship("Plan", cascade="all, delete", passive_deletes=True)
-    specialities = relationship("AssociationSpeciality", cascade="all, delete")
-    methods = relationship("AssociationMethod", cascade="all, delete")
+    plans = relationship("Plan", passive_deletes=True)
+    specialities = relationship("AssociationSpeciality", passive_deletes=True)
+    methods = relationship("AssociationMethod", passive_deletes=True)
 
     def append_specialities(self, identifiers):
         """
@@ -115,9 +115,7 @@ class User(BaseMixin, db.Model):
             if not any(_item.id == item["id"] for _item in self.plans):
                 continue
 
-            plan = Plan(
-                duration=item["duration"], price=item["price"], coin=item["coin"]
-            )
+            plan = Plan(duration=item["duration"], price=item["price"])
             self.plans.append(plan)
 
     def update_specialities(self, ass_specialities):

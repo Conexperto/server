@@ -12,6 +12,9 @@ from src.models import UserRecord
 faker = Faker()
 
 
+payload = []
+
+
 class AdminSeed:
     """
     AdminSeed
