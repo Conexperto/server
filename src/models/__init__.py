@@ -4,7 +4,6 @@ from src.models.admin import Privileges
 from src.models.method import AssociationMethod
 from src.models.method import Method
 from src.models.plan import Plan
-from src.models.session import Session
 from src.models.speciality import AssociationSpeciality
 from src.models.speciality import Speciality
 from src.models.user import User
@@ -17,7 +16,6 @@ __all__ = [
     "AssociationSpeciality",
     "Method",
     "Plan",
-    "Session",
     "Speciality",
     "User",
     "UserRecord",
