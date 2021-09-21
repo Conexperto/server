@@ -6,10 +6,5 @@ build:
   docker:
     web: Dockerfile
 
-release:
-  image: web
-  command:
-    - flask db upgrade
-
 run:
   web: gunicorn 'wsgi:create_wsgi()'
