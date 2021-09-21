@@ -24,6 +24,9 @@ def api():
 
     yield api
 
+    auth = AuthActions()
+    auth.drop_all()
+
     with api.app_context():
         db.drop_all()
 
@@ -51,9 +54,7 @@ def auth(runner):
     """
     runner.invoke(args=["seed", "admin", "up"])
     runner.invoke(args=["seed", "user", "up"])
-    yield AuthActions()
-    runner.invoke(args=["seed", "admin", "down"])
-    runner.invoke(args=["seed", "user", "down"])
+    return AuthActions()
 
 
 @pytest.fixture
@@ -94,3 +95,23 @@ def login_superroot(auth):
     Fixture for login user with superroot privileges
     """
     auth.login("superroot@adminconexperto.com", "token_superroot")
+
+
+@pytest.fixture(scope="module")
+def seed_speciality(runner):
+    """
+    Fixture seed speciality
+    """
+    runner.invoke(args=["seed", "speciality", "up"])
+    yield
+    runner.invoke(args=["seed", "speciality", "down"])
+
+
+@pytest.fixture(scope="module")
+def seed_method(runner):
+    """
+    Fixture seed method
+    """
+    runner.invoke(args=["seed", "method", "up"])
+    yield
+    runner.invoke(args=["seed", "method", "down"])
