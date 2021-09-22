@@ -23,7 +23,7 @@ class AssociationMethod(BaseMixin, db.Model):
     left_id = Column(
         Integer, ForeignKey("user.id", ondelete="CASCADE"), primary_key=True
     )
-    right_id = Column(Integer, ForeignKey("method.id"), unique=True, primary_key=True)
+    right_id = Column(Integer, ForeignKey("method.id"), primary_key=True)
     link = Column(String, nullable=False)
     disabled = Column(Boolean, default=False)
     method = relationship("Method")
@@ -37,5 +37,5 @@ class Method(BaseMixin, db.Model):
     __tablename__ = "method"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, unique=True)
     disabled = Column(Boolean, default=False)
