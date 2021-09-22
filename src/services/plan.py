@@ -172,6 +172,39 @@ class PlanService:
 
         return plan
 
+    def update_many(self, body):
+        """
+        Update many plans
+
+        Args:
+            body (list<dict>):
+                id (int): Plan.id
+                duration (int): Duration
+                price (int): Price
+                coint (str): Coin
+                user_id (int): User.id
+
+        Returns: List<Plan>
+        """
+        mappings_update = []
+        identifiers = [item["id"] for item in body]
+
+        __query = Plan.query
+        plans = __query.filter(Plan.id.in_(identifiers)).all()
+
+        for plan in plans:
+            index = next(
+                [index for (index, item) in enumerate(body) if item["id"] == plan.id]
+            )
+
+            plan.serialize(body[index])
+            mappings_update.append(plan)
+
+        db.session.bulk_save_objects(mappings_update, update_changed_only=True)
+        db.session.commit()
+
+        return mappings_update
+
     def update_field(self, _id, body):
         """
         Update Plan
