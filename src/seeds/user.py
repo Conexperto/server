@@ -1,8 +1,11 @@
 """ src.seeds.user """
+import logging
+
 from faker import Faker
 from firebase_admin import auth
 
 from src.db import db
+from src.exceptions import HandlerException
 from src.firebase import web_sdk
 from src.models import AssociationMethod
 from src.models import AssociationSpeciality
@@ -13,6 +16,7 @@ from src.models import User
 from src.models import UserRecord
 
 
+logger = logging.getLogger(__name__)
 faker = Faker()
 
 
@@ -30,14 +34,9 @@ payload = {
     "timezone": "GMT",
     "link_video": "https://youtube.com/asdcvfgb",
     "location": "Argentina",
-    "specialities": [
-        AssociationSpeciality(speciality=Speciality(name="Developer")),
-        AssociationSpeciality(speciality=Speciality(name="Startups")),
-    ],
-    "methods": [
-        AssociationMethod(link="https://skype.com/user", method=Method(name="YouMeet"))
-    ],
-    "plans": [Plan(duration=60, price=15)],
+    "specialities": ["Reporter", "Lawyer"],
+    "methods": [{"link": "https://skype.com/user", "method": "YouMeet"}],
+    "plans": [{"duration": 60, "price": 15}],
 }
 
 
@@ -60,9 +59,8 @@ class UserSeed:
             )
             user_record.make_claims({"complete_register": payload["complete_register"]})
 
-            payload["uid"] = user_record.uid
             user = User(
-                uid=payload["uid"],
+                uid=user_record.uid,
                 display_name=payload["display_name"],
                 email=payload["email"],
                 phone_number=payload["phone_number"],
@@ -75,42 +73,52 @@ class UserSeed:
                 timezone=payload["timezone"],
                 link_video=payload["link_video"],
                 location=payload["location"],
-                specialities=payload["specialities"],
-                methods=payload["methods"],
-                plans=payload["plans"],
             )
+
+            for item in payload["specialities"]:
+                ass_speciality = AssociationSpeciality()
+                ass_speciality.speciality = Speciality(name=item)
+                user.specialities.append(ass_speciality)
+
+            for item in payload["methods"]:
+                ass_method = AssociationMethod(link=item["link"])
+                ass_method.method = Method(name=item["method"])
+                user.methods.append(ass_method)
+
+            for item in payload["plans"]:
+                plan = Plan(duration=item["duration"], price=item["price"])
+                user.plans.append(plan)
 
             user.add()
             user.save()
-
-            print("Ok")
-            exit(0)
+        except HandlerException as ex:
+            print(ex.message, "up")
         except Exception as ex:
-            print(ex)
-            exit(1)
+            print(ex, "error")
 
     def down(self):
         """down"""
+
         try:
             user_record = auth.get_user_by_email(payload["email"], app=web_sdk)
             auth.delete_user(user_record.uid, app=web_sdk)
 
             user = User.query.filter_by(uid=user_record.uid).first()
-            identifiers_specialities = [
-                item.speciality.id for item in user.specialities
-            ]
-            identifiers_methods = [item.method.id for item in user.methods]
 
             user.delete()
 
+            identifiers_specialities = [
+                item.speciality.id for item in user.specialities
+            ]
             db.session.query(Speciality).filter(
                 Speciality.id.in_(identifiers_specialities)
             ).delete()
-            db.session.query(Method).filter(Method.id.in_(identifiers_methods)).delete()
-            db.session.commit()
 
-            print("Ok")
-            exit(0)
+            identifiers_methods = [item.method.id for item in user.methods]
+            db.session.query(Method).filter(Method.id.in_(identifiers_methods)).delete()
+
+            db.commit()
+        except HandlerException as ex:
+            print(ex.message, "down")
         except Exception as ex:
-            print(ex, "here")
-            exit(1)
+            print(ex, "error")
