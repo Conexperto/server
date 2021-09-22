@@ -24,9 +24,7 @@ def api():
 
     yield api
 
-    auth = AuthActions()
-    auth.drop_all()
-
+    AuthActions.drop_all()
     with api.app_context():
         db.drop_all()
 
@@ -103,8 +101,6 @@ def seed_speciality(runner):
     Fixture seed speciality
     """
     runner.invoke(args=["seed", "speciality", "up"])
-    yield
-    runner.invoke(args=["seed", "speciality", "down"])
 
 
 @pytest.fixture(scope="module")
@@ -113,5 +109,3 @@ def seed_method(runner):
     Fixture seed method
     """
     runner.invoke(args=["seed", "method", "up"])
-    yield
-    runner.invoke(args=["seed", "method", "down"])
