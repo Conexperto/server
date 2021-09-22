@@ -3,6 +3,7 @@ from faker import Faker
 from firebase_admin import auth
 
 from src.db import db
+from src.exceptions import HandlerException
 from src.firebase import admin_sdk
 from src.models import Admin
 from src.models import Privileges
@@ -91,12 +92,10 @@ class AdminSeed:
                 to_create.append(user)
             db.session.bulk_save_objects(to_create)
             db.session.commit()
-
-            print("Ok")
-            exit(0)
+        except HandlerException as ex:
+            print(ex.message)
         except Exception as ex:
-            print(ex)
-            exit(1)
+            print(ex, "error")
 
     def down(self):
         """down"""
@@ -112,8 +111,7 @@ class AdminSeed:
                 synchronize_session=False
             )
             db.session.commit()
-            print("Ok")
-            exit(0)
+        except HandlerException as ex:
+            print(ex.message)
         except Exception as ex:
-            print(ex)
-            exit(1)
+            print(ex, "error")
