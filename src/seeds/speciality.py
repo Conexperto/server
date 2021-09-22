@@ -2,6 +2,7 @@
 from faker import Faker
 
 from src.db import db
+from src.exceptions import HandlerException
 from src.models import Speciality
 
 
@@ -29,16 +30,26 @@ class SpecialitySeed:
 
     def up(self):
         """up"""
-        to_create = []
-        for item in payload:
-            speciality = Speciality(name=item)
-            to_create.append(speciality)
-        db.session.bulk_save_objects(to_create)
-        db.session.commit()
+        try:
+            to_create = []
+            for item in payload:
+                speciality = Speciality(name=item)
+                to_create.append(speciality)
+            db.session.bulk_save_objects(to_create)
+            db.session.commit()
+        except HandlerException as ex:
+            print(ex.message)
+        except Exception as ex:
+            print(ex, "error")
 
     def down(self):
         """down"""
-        db.session.query(Speciality).filter(Speciality.name.in_(payload)).delete(
-            synchronize_session=False
-        )
-        db.session.commit()
+        try:
+            db.session.query(Speciality).filter(Speciality.name.in_(payload)).delete(
+                synchronize_session=False
+            )
+            db.session.commit()
+        except HandlerException as ex:
+            print(ex.message)
+        except Exception as ex:
+            print(ex, "error")
