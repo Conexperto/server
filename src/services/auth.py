@@ -1,6 +1,4 @@
 """ src.services.auth """
-from flask import current_app
-
 from src.exceptions import HandlerException
 from src.firebase import web_sdk
 from src.models import User
@@ -78,7 +76,6 @@ class AuthService:
             user.add()
             user.save()
 
-            current_app.logger.info(user_record)
             return {"uid": user_record.uid, "a": user_record, "b": user}
         except KeyError as ex:
             raise HandlerException(
@@ -119,6 +116,21 @@ class AuthService:
         if "complete_register" in body:
             user_record.make_claims({"complete_register": body["complete_register"]})
 
+        if "specialities" in body:
+            if not isinstance(body["specialities"], list):
+                raise HandlerException(400, "Bad request: specialities should be array")
+            _user.update_specialities(body["specialities"])
+
+        if "methods" in body:
+            if not isinstance(body["methods"], list):
+                raise HandlerException(400, "Bad request: methods should be array")
+            _user.update_methods(body["methods"])
+
+        if "plans" in body:
+            if not isinstance(body["plans"], list):
+                raise HandlerException(400, "Bad request: plans should be array")
+            _user.update_plans(body["plans"])
+
         _user.serialize(body)
         _user.save()
 
@@ -157,6 +169,21 @@ class AuthService:
 
         if "complete_register" in body:
             user_record.make_claims({"complete_register": body["complete_register"]})
+
+        if "specialities" in body:
+            if not isinstance(body["specialities"], list):
+                raise HandlerException(400, "Bad request: specialities should be array")
+            user.update_specialities(body["specialities"])
+
+        if "methods" in body:
+            if not isinstance(body["methods"], list):
+                raise HandlerException(400, "Bad request: methods should be array")
+            user.update_methods(body["methods"])
+
+        if "plans" in body:
+            if not isinstance(body["plans"], list):
+                raise HandlerException(400, "Bad request: plans should be array")
+            user.update_plans(body["plans"])
 
         _user.serialize(body)
         _user.save()
