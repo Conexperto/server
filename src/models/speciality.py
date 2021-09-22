@@ -24,7 +24,7 @@ class AssociationSpeciality(BaseMixin, db.Model):
         Integer, ForeignKey("user.id", ondelete="CASCADE"), primary_key=True
     )
     right_id = Column(
-        Integer, ForeignKey("speciality.id"), unique=True, primary_key=True
+        Integer, ForeignKey("speciality.id", ondelete="CASCADE"), primary_key=True
     )
     disabled = Column(Boolean, default=False)
     speciality = relationship("Speciality")
@@ -38,5 +38,5 @@ class Speciality(BaseMixin, db.Model):
     __tablename__ = "speciality"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, unique=True)
     disabled = Column(Boolean, default=False)
