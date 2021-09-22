@@ -85,7 +85,8 @@ class AssociationUserToMethodService:
             )
             mappings_create.append(ass_method)
 
-        db.session.bulk_insert_mappings(AssociationMethod, mappings_create)
+        db.session.bulk_save_objects(mappings_create, return_defaults=True)
+        db.session.commit()
 
         return mappings_create
 
