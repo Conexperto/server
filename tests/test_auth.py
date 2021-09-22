@@ -2,9 +2,11 @@
 import logging
 from json import loads
 
+from faker import Faker
 from jsonschema import validate
 
 
+faker = Faker()
 logger = logging.getLogger(__name__)
 
 schema = {
@@ -130,7 +132,41 @@ schema_error = {
 }
 
 
-def test_auth_create(client):
+def get_user(client, auth):
+    auth.login("test@conexperto.com", "token_test")
+    rv = client.get("/auth", headers={"Authorization": "Bearer " + auth.token})
+    assert rv.status_code == 200, "should be status code 200"
+    assert rv.headers["Content-Type"] == "application/json"
+    body = loads(rv.data)
+    validate(instance=body, schema=schema)
+    return body
+
+
+def get_speciality(client, auth):
+    auth.login("admin@adminconexperto.com", "token_admin")
+    headers = {"Authorization": "Bearer " + auth.token}
+    rv = client.get("/admin/speciality", headers=headers)
+    assert rv.status_code == 200, "should be status code 200"
+    assert (
+        rv.headers["Content-Type"] == "application/json"
+    ), "should be content type application/json"
+    body = loads(rv.data)
+    return body["response"]
+
+
+def get_method(client, auth):
+    auth.login("admin@adminconexperto.com", "token_admin")
+    headers = {"Authorization": "Bearer " + auth.token}
+    rv = client.get("/admin/method", headers=headers)
+    assert rv.status_code == 200, "should be status code 200"
+    assert (
+        rv.headers["Content-Type"] == "application/json"
+    ), "should be content type application/json"
+    body = loads(rv.data)
+    return body["response"]
+
+
+def test_auth_create(client, auth):
     """
     Endpoint: /auth
     Method: POST
@@ -265,7 +301,7 @@ def test_auth_create_extra_field(client):
     validate(instance=body, schema=schema_error)
 
 
-def test_auth_update(client, auth):
+def test_auth_update(client, auth, seed_speciality, seed_method):
     """
     Endpoint: /auth
     Method: PUT
@@ -281,12 +317,81 @@ def test_auth_update(client, auth):
         "lastname": "Testing",
         "headline": "Lorem ipsum",
         "about_me": "Lorem ipsum",
+        "link_video": "https://www.youtube.com",
+        "location": faker.country(),
+        "timezone": "GMT",
+        "specialities": [item["id"] for item in get_speciality(client, auth)[:3]],
+        "methods": [
+            {"id": item["id"], "link": faker.url()}
+            for item in get_method(client, auth)[:3]
+        ],
+        "plans": [{"duration": 60, "price": 15}],
     }
     rv = client.put("/auth", headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert rv.headers["Content-Type"] == "application/json"
     body = loads(rv.data)
     validate(instance=body, schema=schema)
+
+
+def test_auth_update_specialities(client, auth, seed_speciality):
+    """
+    Endpoint: /api/v1/auth/specialities
+    Method: PUT
+    Assert: status_code 200
+    Description:
+        Test update user specialities authenticated
+    """
+    auth.login("test@conexperto.com", "token_test")
+    headers = {"Authorization": "Bearer " + auth.token}
+    payload = [item["id"] for item in get_speciality(client, auth)[:6]]
+    rv = client.put("/auth/specialities", headers=headers, json=payload)
+    assert rv.status_code == 200, "should be status code 200"
+    assert rv.headers["Content-Type"] == "application/json"
+    body = loads(rv.data)
+    validate(instance=body, schema=schema)
+
+
+def test_auth_update_methods(client, auth, seed_method):
+    """
+    Endpoint: /api/v1/auth/specialities
+    Method: PUT
+    Assert: status_code 200
+    Description:
+        Test update user methods authenticated
+    """
+    auth.login("test@conexperto.com", "token_test")
+    headers = {"Authorization": "Bearer " + auth.token}
+    payload = [
+        {"link": faker.url(), "id": item["id"]} for item in get_method(client, auth)[:6]
+    ]
+    rv = client.put("/auth/methods", headers=headers, json=payload)
+    assert rv.status_code == 200, "should be status code 200"
+    assert rv.headers["Content-Type"] == "application/json"
+    body = loads(rv.data)
+    validate(instance=body, schema=schema)
+
+
+def test_auth_update_plans(client, auth):
+    """
+    Endpoint: /api/v1/auth/plans
+    Method: PUT
+    Assert: status_code 200
+    Description:
+        Test update user plans authenticated
+    """
+    auth.login("test@conexperto.com", "token_test")
+    headers = {"Authorization": "Bearer " + auth.token}
+    payload = [
+        *get_user(client, auth)["response"]["b"]["plans"],
+        {"duration": 120, "price": 12},
+    ]
+    rv = client.put("/auth/plans", headers=headers, json=payload)
+    assert rv.status_code == 200, "should be status code 200"
+    assert rv.headers["Content-Type"] == "application/json"
+    body = loads(rv.data)
+    validate(instance=body, schema=schema)
+    logger.info(body["response"]["b"]["plans"])
 
 
 def test_auth_update_duplicate_phone_number(client, auth):
