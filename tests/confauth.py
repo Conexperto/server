@@ -47,6 +47,7 @@ class AuthActions(object):
     def refresh_token(self):
         return self._refresh_token
 
+    @classmethod
     def drop_all(self):
         identifiers = []
         page = auth.list_users(app=admin_sdk)
