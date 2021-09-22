@@ -76,9 +76,7 @@ class MethodService:
         self.__query = Method.query
         self.search(search)
         self.sort(order_by, order)
-        paginate = self.__query.paginate(
-            int(page), int(per_pages) or 10, error_out=False
-        )
+        paginate = self.__query.paginate(int(page), int(per_pages), error_out=False)
 
         return paginate
 
@@ -125,9 +123,13 @@ class MethodService:
                 method = Method(name=p["name"])
                 mappings_create.append(method)
 
-            db.session.bulk_insert_mappings(Method, mappings_create)
+            db.session.bulk_save_objects(mappings_create, return_defaults=True)
+            db.session.commit()
 
-            return mappings_create
+            identifiers = [item.id for item in mappings_create]
+
+            methods_created = Method.query.filter(Method.id.in_(identifiers)).all()
+            return methods_created
 
         except KeyError as ex:
             raise HandlerException(
@@ -170,17 +172,18 @@ class MethodService:
         identifiers = [item["id"] for item in body]
 
         __query = Method.query
-        _methods = __query.filter(Method.id.in_(identifiers)).all()
+        methods = __query.filter(Method.id.in_(identifiers)).all()
 
-        for _method in _methods:
+        for method in methods:
             index = next(
-                [index for (index, item) in enumerate(body) if item["id"] == _method.id]
+                index for (index, item) in enumerate(body) if item["id"] == method.id
             )
 
-            _method.serialize(body[index])
-            mappings_update.append(_method)
+            method.serialize(body[index])
+            mappings_update.append(method)
 
-        db.session.bulk_update_mappings(Method, mappings_update)
+        db.session.bulk_save_objects(mappings_update)
+        db.session.commit()
 
         return mappings_update
 
@@ -224,6 +227,26 @@ class MethodService:
 
         return method
 
+    def disabled_many(self, body):
+        """
+        Disabled method many
+
+        Args:
+            body (list<int ): identifiers
+
+        Returns: Method
+        """
+        __query = Method.query
+        methods = __query.filter(Method.id.in_(body)).all()
+
+        for method in methods:
+            method.serialize({"disabled": not method.disabled})
+
+        db.session.bulk_save_objects(methods)
+        db.session.commit()
+
+        return methods
+
     def delete(self, _id):
         """
         Delete Method
@@ -242,3 +265,19 @@ class MethodService:
         method.delete()
 
         return {"id": method.id}
+
+    def delete_many(self, body):
+        """
+        Delete method many
+
+        Args:
+            body (list<int>): identifiers
+
+        Returns: identifiers
+        """
+        db.session.query(Method).filter(Method.id.in_(body)).delete(
+            synchronize_session=False
+        )
+        db.session.commit()
+
+        return body
