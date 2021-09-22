@@ -84,7 +84,8 @@ class AssociationUserToSpecialityService:
             )
             mappings_create.append(ass_speciality)
 
-        db.session.bulk_insert_mappings(AssociationSpeciality, mappings_create)
+        db.session.bulk_save_objects(mappings_create, return_defaults=True)
+        db.session.commit()
 
         return mappings_create
 
