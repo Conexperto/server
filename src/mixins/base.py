@@ -2,6 +2,9 @@
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.declarative import DeclarativeMeta
+from sqlalchemy.orm import class_mapper
+from sqlalchemy.orm import ColumnProperty
+from sqlalchemy.orm import RelationshipProperty
 
 from src.db import db
 from src.exceptions import HandlerException
@@ -77,22 +80,21 @@ class BaseMixin(AuditMixin):
         """deserialize to json"""
         res = dict()
 
-        for attr, col in self.__mapper__.c.items():
-            if attr in self._repr_hide:
+        for prop in class_mapper(self.__class__).iterate_properties:
+            if prop.key in self.__repr_hide:
                 continue
-            res[col.key] = getattr(self, attr)
-
-        for attr, relation in self.__mapper__.relationships.items():
-            if attr == str(backref):
-                continue
-            key = relation.key
-            value = getattr(self, attr)
-            if value is None:
-                res[key] = None
-            elif isinstance(value.__class__, DeclarativeMeta):
-                res[key] = value.deserialize(backref=self.__table__)
-            else:
-                res[key] = [i.deserialize(backref=self.__table__) for i in value]
+            if isinstance(prop, ColumnProperty):
+                res[prop.key] = getattr(self, prop.key)
+            if isinstance(prop, RelationshipProperty):
+                if prop.key == str(backref):
+                    continue
+                key, value = prop.key, getattr(self, prop.key)
+                if value is None:
+                    res[key] = None
+                elif isinstance(value.__class__, DeclarativeMeta):
+                    res[key] = value.deserialize(backref=self.__table__)
+                else:
+                    res[key] = [i.deserialize(backref=self.__table__) for i in value]
         return res
 
     def __iter__(self):
