@@ -37,13 +37,14 @@ def index_user():
     """
     try:
         search = request.args.get("search")
-        page = request.args.get("page") or 1
-        per_pages = request.args.get("limit") or 10
-        order_by = request.args.get("orderBy") or None
-        order = parse_order(request.args.get("order"))
+        filter_by = request.args
+        page = request.args.get("page", 1)
+        per_pages = request.args.get("limit", 10)
+        order_by = request.args.get("orderBy", None)
+        order = parse_order(request.args.get("order", None))
 
         service = UserService()
-        users = service.list(search, page, per_pages, order_by, order)
+        users = service.list(search, filter_by, page, per_pages, order_by, order)
 
         return jsonify({"success": True, "response": users})
     except HandlerException as ex:
