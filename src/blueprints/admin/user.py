@@ -36,14 +36,15 @@ def index_user_admin():
     GET: /api/v1/admin/user
     """
     try:
-        search = request.args.get("search")
-        page = request.args.get("page") or 1
-        per_pages = request.args.get("limit") or 10
-        order_by = request.args.get("orderBy") or None
-        order = parse_order(request.args.get("order"))
+        search = request.args.get("search", None)
+        filter_by = request.args
+        page = request.args.get("page", 1)
+        per_pages = request.args.get("limit", 10)
+        order_by = request.args.get("orderBy", None)
+        order = parse_order(request.args.get("order", None))
 
         service = UserService()
-        paginate = service.list(search, page, per_pages, order_by, order)
+        paginate = service.list(search, filter_by, page, per_pages, order_by, order)
 
         return jsonify(
             {
