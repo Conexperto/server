@@ -3,9 +3,11 @@ from flask import abort
 from sqlalchemy import asc
 from sqlalchemy import desc
 from sqlalchemy import or_
+from sqlalchemy.orm import class_mapper
 
 from src.exceptions import HandlerException
 from src.firebase import web_sdk
+from src.helpers import computed_operator
 from src.models import AssociationMethod
 from src.models import AssociationSpeciality
 from src.models import Method
@@ -26,6 +28,7 @@ class UserService:
         if search is None:
             return self.__query
 
+        searchstring = "{}".format(search)
         self.__query = (
             self.__query.join(AssociationSpeciality)
             .join(Speciality)
@@ -33,18 +36,28 @@ class UserService:
             .join(Method)
             .filter(
                 or_(
-                    User.display_name.like(f"%{search}%"),
-                    User.email.like(f"%{search}%"),
-                    User.name.like(f"%{search}%"),
-                    User.lastname.like(f"%{search}%"),
-                    User.headline.like(f"%{search}%"),
-                    User.about_me.like(f"%{search}%"),
-                    User.location.like(f"%{search}%"),
-                    Speciality.name.like(f"%{search}%"),
-                    Method.name.like(f"%{search}"),
+                    User.display_name.like(f"%{searchstring}%"),
+                    User.email.like(f"%{searchstring}%"),
+                    User.name.like(f"%{searchstring}%"),
+                    User.lastname.like(f"%{searchstring}%"),
+                    User.headline.like(f"%{searchstring}%"),
+                    User.about_me.like(f"%{searchstring}%"),
+                    User.location.like(f"%{searchstring}%"),
+                    Speciality.name.like(f"%{searchstring}%"),
+                    Method.name.like(f"%{searchstring}"),
                 )
             )
         )
+        return self.__query
+
+    def filter_by(self, filter_by):
+        filters = []
+        for k, v in filter_by.items():
+            mapper = class_mapper(User)
+            if not hasattr(mapper.columns, k):
+                continue
+            filters.append(computed_operator(mapper.columns[k], "{}".format(v)))
+        self.__query = self.__query.filter(*filters)
         return self.__query
 
     def sort(self, order_by, order):
@@ -89,7 +102,7 @@ class UserService:
 
         return {"uid": user_record.uid, "a": user_record, "b": user}
 
-    def list(self, search, page, per_pages, order_by, order):
+    def list(self, search, filter_by, page, per_pages, order_by, order):
         """
         Get list user
 
@@ -105,10 +118,9 @@ class UserService:
         """
         self.__query = User.query
         self.search(search)
+        self.filter_by(filter_by)
         self.sort(order_by, order)
-        paginate = self.__query.paginate(
-            int(page), int(per_pages) or 10, error_out=False
-        )
+        paginate = self.__query.paginate(int(page), int(per_pages), error_out=False)
 
         return paginate
 
