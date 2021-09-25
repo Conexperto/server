@@ -85,6 +85,10 @@ class BaseMixin(AuditMixin):
                 continue
             if isinstance(prop, ColumnProperty):
                 res[prop.key] = getattr(self, prop.key)
+
+        for prop in class_mapper(self.__class__).iterate_properties:
+            if prop.key in self.__repr_hide:
+                continue
             if isinstance(prop, RelationshipProperty):
                 if prop.key == str(backref):
                     continue
