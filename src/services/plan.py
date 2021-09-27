@@ -1,9 +1,11 @@
 """ src.services.plan """
 from sqlalchemy import asc
 from sqlalchemy import desc
+from sqlalchemy.orm import class_mapper
 
 from src.db import db
 from src.exceptions import HandlerException
+from src.helpers import computed_operator
 from src.models import Plan
 
 
@@ -20,6 +22,17 @@ class PlanService:
             return self.__query
 
         self.__query = self.__query.filter(Plan.name.like(f"%{search}"))
+        return self.__query
+
+    def filter_by(self, filter_by):
+        """filter by column of model"""
+        filters = []
+        for k, v in filter_by.items():
+            mapper = class_mapper(Plan)
+            if not hasattr(mapper.columns, k):
+                continue
+            filters.append(computed_operator(mapper.columns[k], "{}".format(v)))
+        self.__query = self.__query.filter(*filters)
         return self.__query
 
     def sort(self, order_by, order):
@@ -60,12 +73,13 @@ class PlanService:
 
         return plan
 
-    def list(self, search, page, per_pages, order_by, order):
+    def list(self, search, filter_by, page, per_pages, order_by, order):
         """
         Get list plan
 
         Args:
-            search (str)L Search
+            search (str): Search
+            filter_by: Filter by column of model
             page (int): Pagination position
             per_pages (int): Limit result by page
             order_by (str): Field by order
@@ -75,6 +89,7 @@ class PlanService:
         """
         self.__query = Plan.query
         self.search(search)
+        self.filter_by(filter_by)
         self.sort(order_by, order)
         paginate = self.__query.paginate(
             int(page), int(per_pages) or 10, error_out=False

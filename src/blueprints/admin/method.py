@@ -39,13 +39,14 @@ def index_method_admin():
     """
     try:
         search = request.args.get("search")
+        filter_by = request.args
         page = request.args.get("page") or 1
         per_pages = request.args.get("limit") or 10
         order_by = request.args.get("orderBy") or None
         order = parse_order(request.args.get("order"))
 
         service = MethodService()
-        paginate = service.list(search, page, per_pages, order_by, order)
+        paginate = service.list(search, filter_by, page, per_pages, order_by, order)
 
         return jsonify(
             {
