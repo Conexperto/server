@@ -1,8 +1,17 @@
 """ src.helpers.utils """
+import os
 import re
 from uuid import uuid4
 
-__all__ = ["inc", "dec", "generate_hash", "parse_order", "computed_operator"]
+__all__ = [
+    "inc",
+    "dec",
+    "generate_hash",
+    "parse_order",
+    "computed_operator",
+    "env_is_dev",
+    "env_is_prod",
+]
 
 
 def inc(i):
@@ -36,6 +45,14 @@ def parse_order(order):
     return order or None
 
 
+def env_is_dev():
+    return os.getenv("FLASK_ENV") == "development"
+
+
+def env_is_prod():
+    return os.getenv("FLASK_ENV") == "production"
+
+
 def computed_operator(column, v):
     """
     Computed operator, extracted from the query
@@ -47,21 +64,26 @@ def computed_operator(column, v):
 
     Returns operator binary
     """
-    if re.match(r"!=", v):
+    if re.match(r"^!", v):
         """__ne__"""
-        return column.__ne__(v)
+        val = re.sub(r"!", "", v)
+        return column.__ne__(val)
     if re.match(r">(?!=)", v):
         """__gt__"""
-        return column.__gt__(v)
+        val = re.sub(r">(?!=)", "", v)
+        return column.__gt__(val)
     if re.match(r"<(?!=)", v):
         """__lt__"""
-        return column.__lt__(v)
+        val = re.sub(r"<(?!=)", "", v)
+        return column.__lt__(val)
     if re.match(r">=", v):
         """__ge__"""
-        return column.__ge__(v)
+        val = re.sub(r">=", "", v)
+        return column.__ge__(val)
     if re.match(r"<=", v):
         """__le__"""
-        return column.__le__(v)
+        val = re.sub(r"<=", "", v)
+        return column.__le__(val)
     if re.match(r"(\w*),(\w*)", v):
         """between"""
         a, b = re.split(r",", v)
