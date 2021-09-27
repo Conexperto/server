@@ -107,8 +107,12 @@ class UserService:
         Get list user
 
         Args:
+            search (str): Search
+            filter_by: Filter by column in model
             page (int): Pagination position
             per_pages (int): Limit result by page
+            order_by (str): Field by order
+            order (str|int): desc or asc (1|-1)
 
         Returns: list
             uid (str): User uid
