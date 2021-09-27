@@ -649,6 +649,27 @@ def test_admin_disabled(client, auth, login_admin):
     assert body["response"]["b"]["disabled"] is True, "should be disabled True"
 
 
+def test_list_admin_disabled(client, auth, login_admin):
+    """
+    Endpoint: /admin?disabled=true
+    Method: GET
+    Assert: status_code = 200
+    Description:
+        Test list admin filter by disabled true
+    """
+    headers = {"Authorization": "Bearer " + auth.token}
+    rv = client.get("/admin", query_string={"disabled": True}, headers=headers)
+    assert rv.status_code == 200, "should be status code 200"
+    assert (
+        rv.headers["Content-Type"] == "application/json"
+    ), "should be content type application/json"
+    body = loads(rv.data)
+    validate(instance=body, schema=schema_list)
+
+    for item in body["response"]:
+        assert item["disabled"] is True, "should be disabled True"
+
+
 def test_admin_enabled(client, auth, login_admin):
     """
     Endpoint: /admin/disabled/<uid>
