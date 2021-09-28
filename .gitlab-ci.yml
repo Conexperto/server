@@ -36,7 +36,7 @@ format:
     - pip install black
     - pip install flake8
   script:
-    - black --config=.black .
+    - black --config .black .
     - flake8 .
 
 test:
