@@ -50,16 +50,22 @@ class User(BaseMixin, db.Model):
         passive_deletes=True,
     )
     methods = relationship(
-        "AssociationMethod", cascade="all, delete, delete-orphan", passive_deletes=True
+        "AssociationMethod",
+        cascade="all, delete, delete-orphan",
+        passive_deletes=True,
     )
 
     def __exists(self, _id, relationship, column):
-        return any(getattr(item, column) == _id for item in getattr(self, relationship))
+        return any(
+            getattr(item, column) == _id
+            for item in getattr(self, relationship)
+        )
 
     def __get_by_id(self, _id, relationship, column):
         return next(
             filter(
-                lambda item: getattr(item, column) == _id, getattr(self, relationship)
+                lambda item: getattr(item, column) == _id,
+                getattr(self, relationship),
             )
         )
 

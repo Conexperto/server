@@ -112,7 +112,9 @@ class SearchService:
         order="desc",
     ):
         self.query = (
-            User.query.join(Expert).join(AssociationSpeciality).join(Speciality)
+            User.query.join(Expert)
+            .join(AssociationSpeciality)
+            .join(Speciality)
         )
 
         if speciality is not None:
@@ -120,15 +122,21 @@ class SearchService:
 
         self.filter(fragment)
         self.sort(order_by, order)
-        return self.query.paginate(int(page), int(per_page) or 10, error_out=False)
+        return self.query.paginate(
+            int(page), int(per_page) or 10, error_out=False
+        )
 
-    def speciality(self, page=1, per_page=10, order_by="created_at", order="desc"):
+    def speciality(
+        self, page=1, per_page=10, order_by="created_at", order="desc"
+    ):
         self.query = db.session.query(Speciality.id, Speciality.name).filter(
             Speciality.disabled.is_(False)
         )
 
         self.sort(order_by, order)
-        paginate = self.query.paginate(int(page), int(per_page or 100), error_out=False)
+        paginate = self.query.paginate(
+            int(page), int(per_page or 100), error_out=False
+        )
 
         def projection(items):
             result = []

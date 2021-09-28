@@ -27,7 +27,9 @@ schema = {
                         "phone_number": {
                             "oneOf": [{"type": "string"}, {"type": "null"}]
                         },
-                        "photo_url": {"oneOf": [{"type": "string"}, {"type": "null"}]},
+                        "photo_url": {
+                            "oneOf": [{"type": "string"}, {"type": "null"}]
+                        },
                         "disabled": {"type": "boolean"},
                         "provider_data": {
                             "type": "array",
@@ -58,7 +60,11 @@ schema = {
                         "rating_average": {"type": "number"},
                         "rating_stars": {
                             "type": "array",
-                            "items": {"type": "number", "minItems": 5, "maxItems": 5},
+                            "items": {
+                                "type": "number",
+                                "minItems": 5,
+                                "maxItems": 5,
+                            },
                         },
                         "rating_votes": {"type": "number"},
                         "headline": {"type": ["string", "null"]},
@@ -320,7 +326,9 @@ def test_auth_update(client, auth, seed_speciality, seed_method):
         "link_video": "https://www.youtube.com",
         "location": faker.country(),
         "timezone": "GMT",
-        "specialities": [item["id"] for item in get_speciality(client, auth)[:3]],
+        "specialities": [
+            item["id"] for item in get_speciality(client, auth)[:3]
+        ],
         "methods": [
             {"id": item["id"], "link": faker.url()}
             for item in get_method(client, auth)[:3]
@@ -363,7 +371,8 @@ def test_auth_update_methods(client, auth, seed_method):
     auth.login("test@conexperto.com", "token_test")
     headers = {"Authorization": "Bearer " + auth.token}
     payload = [
-        {"link": faker.url(), "id": item["id"]} for item in get_method(client, auth)[:6]
+        {"link": faker.url(), "id": item["id"]}
+        for item in get_method(client, auth)[:6]
     ]
     rv = client.put("/auth/methods", headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"

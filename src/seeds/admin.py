@@ -104,7 +104,9 @@ class AdminSeed:
             users = []
             page = auth.list_users(app=admin_sdk)
             while page:
-                users.extend([item.uid for item in page.users if item.email in emails])
+                users.extend(
+                    [item.uid for item in page.users if item.email in emails]
+                )
                 page = page.get_next_page()
             auth.delete_users(users, app=admin_sdk)
             db.session.query(Admin).filter(Admin.uid.in_(users)).delete(

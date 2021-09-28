@@ -144,7 +144,9 @@ class UserRecord(Record):
             for provider in user_record.provider_data
         ]
         self.custom_claims = user_record.custom_claims
-        self.tokens_valid_after_timestamp = user_record.tokens_valid_after_timestamp
+        self.tokens_valid_after_timestamp = (
+            user_record.tokens_valid_after_timestamp
+        )
 
     def update_user(self):
         """

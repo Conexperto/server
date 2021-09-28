@@ -28,7 +28,9 @@ def index_method_admin_one(_id):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/", methods=["GET"])
@@ -46,7 +48,9 @@ def index_method_admin():
         order = parse_order(request.args.get("order"))
 
         service = MethodService()
-        paginate = service.list(search, filter_by, page, per_pages, order_by, order)
+        paginate = service.list(
+            search, filter_by, page, per_pages, order_by, order
+        )
 
         return jsonify(
             {
@@ -61,7 +65,9 @@ def index_method_admin():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/", methods=["POST"])
@@ -87,7 +93,9 @@ def register_method_admin():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/<int:_id>", methods=["PUT"])
@@ -109,7 +117,9 @@ def update_method_admin(_id):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/", methods=["PUT"])
@@ -131,7 +141,9 @@ def update_many_method_admin():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/<int:_id>", methods=["PATCH"])
@@ -153,7 +165,9 @@ def update_field_method_admin(_id):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/disabled/<int:_id>", methods=["PATCH"])
@@ -170,7 +184,9 @@ def disabled_method_admin(_id):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/disabled", methods=["PATCH"])
@@ -192,7 +208,9 @@ def disabled_many_speciality():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/<int:_id>", methods=["DELETE"])
@@ -209,7 +227,9 @@ def delete_method_admin(_id):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/", methods=["DELETE"])
@@ -231,4 +251,6 @@ def delete_many_speciality_admin():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()

@@ -57,7 +57,9 @@ class UserSeed:
                 phone_number=payload["phone_number"],
                 app=web_sdk,
             )
-            user_record.make_claims({"complete_register": payload["complete_register"]})
+            user_record.make_claims(
+                {"complete_register": payload["complete_register"]}
+            )
 
             user = User(
                 uid=user_record.uid,
@@ -115,7 +117,9 @@ class UserSeed:
             ).delete()
 
             identifiers_methods = [item.method.id for item in user.methods]
-            db.session.query(Method).filter(Method.id.in_(identifiers_methods)).delete()
+            db.session.query(Method).filter(
+                Method.id.in_(identifiers_methods)
+            ).delete()
 
             db.commit()
         except HandlerException as ex:

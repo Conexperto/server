@@ -22,7 +22,9 @@ class MethodService:
             return self.__query
 
         searchstring = "{}".format(search)
-        self.__query = self.__query.filter(Method.name.like(f"%{searchstring}"))
+        self.__query = self.__query.filter(
+            Method.name.like(f"%{searchstring}")
+        )
         return self.__query
 
     def filter_by(self, filter_by):
@@ -32,7 +34,9 @@ class MethodService:
             mapper = class_mapper(Method)
             if not hasattr(mapper.columns, k):
                 continue
-            filters.append(computed_operator(mapper.columns[k], "{}".format(v)))
+            filters.append(
+                computed_operator(mapper.columns[k], "{}".format(v))
+            )
         self.__query = self.__query.filter(*filters)
         return self.__query
 
@@ -92,7 +96,9 @@ class MethodService:
         self.search(search)
         self.filter_by(filter_by)
         self.sort(order_by, order)
-        paginate = self.__query.paginate(int(page), int(per_pages), error_out=False)
+        paginate = self.__query.paginate(
+            int(page), int(per_pages), error_out=False
+        )
 
         return paginate
 
@@ -144,7 +150,9 @@ class MethodService:
 
             identifiers = [item.id for item in mappings_create]
 
-            methods_created = Method.query.filter(Method.id.in_(identifiers)).all()
+            methods_created = Method.query.filter(
+                Method.id.in_(identifiers)
+            ).all()
             return methods_created
 
         except KeyError as ex:
@@ -192,7 +200,9 @@ class MethodService:
 
         for method in methods:
             index = next(
-                index for (index, item) in enumerate(body) if item["id"] == method.id
+                index
+                for (index, item) in enumerate(body)
+                if item["id"] == method.id
             )
 
             method.serialize(body[index])
