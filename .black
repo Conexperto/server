@@ -1,2 +1,3 @@
 line-length = 79
 include = '\.pyi?$'
+exclude = '\migrations'
