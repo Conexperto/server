@@ -39,8 +39,10 @@ def index_method():
         order_by = request.args.get("orderBy")
         order = parse_order(request.args.get("order"))
 
+        _filter_by = {"disabled": False, **filter_by}
+
         service = MethodService()
-        paginate = service.list(search, filter_by, page, per_page, order_by, order)
+        paginate = service.list(search, _filter_by, page, per_page, order_by, order)
 
         return jsonify(
             {
