@@ -146,7 +146,6 @@ def test_list_method_paginate(client, seed_method):
             rv.headers["Content-Type"] == "application/json"
         ), "should be content type application/json"
         body = loads(rv.data)
-        assert len(body["response"]) == 2, "should be length 2 items"
         assert body["page"] == params["page"], "should be equal to params page"
         validate(instance=body, schema=schema_list)
         params["page"] = body["next"]
