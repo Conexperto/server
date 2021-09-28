@@ -56,7 +56,9 @@ class UserService:
             mapper = class_mapper(User)
             if not hasattr(mapper.columns, k):
                 continue
-            filters.append(computed_operator(mapper.columns[k], "{}".format(v)))
+            filters.append(
+                computed_operator(mapper.columns[k], "{}".format(v))
+            )
         self.__query = self.__query.filter(*filters)
         return self.__query
 
@@ -124,7 +126,9 @@ class UserService:
         self.search(search)
         self.filter_by(filter_by)
         self.sort(order_by, order)
-        paginate = self.__query.paginate(int(page), int(per_pages), error_out=False)
+        paginate = self.__query.paginate(
+            int(page), int(per_pages), error_out=False
+        )
 
         return paginate
 
@@ -233,21 +237,29 @@ class UserService:
         user_record.update_user()
 
         if "complete_register" in body:
-            user_record.make_claims({"complete_register": body["complete_register"]})
+            user_record.make_claims(
+                {"complete_register": body["complete_register"]}
+            )
 
         if "specialities" in body:
             if not isinstance(body["specialities"], list):
-                raise HandlerException(400, "Bad request: specialities should be array")
+                raise HandlerException(
+                    400, "Bad request: specialities should be array"
+                )
             user.update_specialities(body["specialities"])
 
         if "methods" in body:
             if not isinstance(body["methods"], list):
-                raise HandlerException(400, "Bad request: methods should be array")
+                raise HandlerException(
+                    400, "Bad request: methods should be array"
+                )
             user.update_methods(body["methods"])
 
         if "plans" in body:
             if not isinstance(body["plans"], list):
-                raise HandlerException(400, "Bad request: plans should be array")
+                raise HandlerException(
+                    400, "Bad request: plans should be array"
+                )
             user.update_plans(body["plans"])
 
         user.serialize(body)
@@ -284,21 +296,29 @@ class UserService:
         user_record.update_user()
 
         if "complete_register" in body:
-            user_record.make_claims({"complete_register": body["complete_register"]})
+            user_record.make_claims(
+                {"complete_register": body["complete_register"]}
+            )
 
         if "specialities" in body:
             if not isinstance(body["specialities"], list):
-                raise HandlerException(400, "Bad request: specialities should be array")
+                raise HandlerException(
+                    400, "Bad request: specialities should be array"
+                )
             user.update_specialities(body["specialities"])
 
         if "methods" in body:
             if not isinstance(body["methods"], list):
-                raise HandlerException(400, "Bad request: methods should be array")
+                raise HandlerException(
+                    400, "Bad request: methods should be array"
+                )
             user.update_methods(body["methods"])
 
         if "plans" in body:
             if not isinstance(body["plans"], list):
-                raise HandlerException(400, "Bad request: plans should be array")
+                raise HandlerException(
+                    400, "Bad request: plans should be array"
+                )
             user.update_plans(body["plans"])
 
         user.serialize(body)

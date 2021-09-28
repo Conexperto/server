@@ -46,7 +46,9 @@ def index_user():
         _filter_by = {"disabled": False, **filter_by}
 
         service = UserService()
-        users = service.list(search, _filter_by, page, per_pages, order_by, order)
+        users = service.list(
+            search, _filter_by, page, per_pages, order_by, order
+        )
 
         return jsonify({"success": True, "response": users})
     except HandlerException as ex:

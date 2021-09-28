@@ -42,7 +42,9 @@ def index_method():
         _filter_by = {"disabled": False, **filter_by}
 
         service = MethodService()
-        paginate = service.list(search, _filter_by, page, per_page, order_by, order)
+        paginate = service.list(
+            search, _filter_by, page, per_page, order_by, order
+        )
 
         return jsonify(
             {

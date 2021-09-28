@@ -102,7 +102,10 @@ schema_delete = {
     "type": "object",
     "properties": {
         "success": {"type": "boolean"},
-        "response": {"type": "object", "properties": {"uid": {"type": "string"}}},
+        "response": {
+            "type": "object",
+            "properties": {"uid": {"type": "string"}},
+        },
     },
 }
 
@@ -605,7 +608,9 @@ def test_admin_list_user_order_asc(client, auth, login_admin):
     ), "should be content type application/json"
     body = loads(rv.data)
     validate(instance=body, schema=schema_list)
-    assert prove_order(body["response"], "asc"), "should be sorted in ascending order"
+    assert prove_order(
+        body["response"], "asc"
+    ), "should be sorted in ascending order"
 
 
 def test_admin_list_user_order_desc(client, auth, login_admin):
@@ -625,7 +630,9 @@ def test_admin_list_user_order_desc(client, auth, login_admin):
     ), "should be content type application/json"
     body = loads(rv.data)
     validate(instance=body, schema=schema_list)
-    assert prove_order(body["response"], "desc"), "should be sorted in descending order"
+    assert prove_order(
+        body["response"], "desc"
+    ), "should be sorted in descending order"
 
 
 def test_admin_disabled(client, auth, login_admin):
@@ -687,8 +694,12 @@ def test_admin_enabled(client, auth, login_admin):
     ), "should be content type application/json"
     body = loads(rv.data)
     validate(instance=body, schema=schema)
-    assert body["response"]["a"]["disabled"] is False, "should be disabled False"
-    assert body["response"]["b"]["disabled"] is False, "should be disabled False"
+    assert (
+        body["response"]["a"]["disabled"] is False
+    ), "should be disabled False"
+    assert (
+        body["response"]["b"]["disabled"] is False
+    ), "should be disabled False"
 
 
 def test_admin_disabled_wrong_auth(client, auth, login_user):

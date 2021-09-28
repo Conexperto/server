@@ -32,7 +32,9 @@ class SpecialityService:
             mapper = class_mapper(Speciality)
             if not hasattr(mapper.columns, k):
                 continue
-            filters.append(computed_operator(mapper.columns[k], "{}".format(v)))
+            filters.append(
+                computed_operator(mapper.columns[k], "{}".format(v))
+            )
         self.__query = self.__query.filter(*filters)
         return self.__query
 
@@ -92,7 +94,9 @@ class SpecialityService:
         self.search(search)
         self.filter_by(filter_by)
         self.sort(order_by, order)
-        paginate = self.__query.paginate(int(page), int(per_pages), error_out=False)
+        paginate = self.__query.paginate(
+            int(page), int(per_pages), error_out=False
+        )
 
         return paginate
 

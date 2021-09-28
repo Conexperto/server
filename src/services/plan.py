@@ -31,7 +31,9 @@ class PlanService:
             mapper = class_mapper(Plan)
             if not hasattr(mapper.columns, k):
                 continue
-            filters.append(computed_operator(mapper.columns[k], "{}".format(v)))
+            filters.append(
+                computed_operator(mapper.columns[k], "{}".format(v))
+            )
         self.__query = self.__query.filter(*filters)
         return self.__query
 
@@ -209,7 +211,11 @@ class PlanService:
 
         for plan in plans:
             index = next(
-                [index for (index, item) in enumerate(body) if item["id"] == plan.id]
+                [
+                    index
+                    for (index, item) in enumerate(body)
+                    if item["id"] == plan.id
+                ]
             )
 
             plan.serialize(body[index])
