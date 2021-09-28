@@ -18,7 +18,9 @@ class AssociationUserToSpecialityService:
 
         Returns: AssociationSpeciality
         """
-        association = AssociationSpeciality.query.filter_by(left_id=user_id).all()
+        association = AssociationSpeciality.query.filter_by(
+            left_id=user_id
+        ).all()
 
         if not association:
             raise HandlerException(404, "Not found association")
@@ -53,7 +55,9 @@ class AssociationUserToSpecialityService:
 
         Returns: AssociationSpeciality
         """
-        association = AssociationSpeciality(left_id=user_id, right_id=speciality_id)
+        association = AssociationSpeciality(
+            left_id=user_id, right_id=speciality_id
+        )
 
         association.add()
         association.save()

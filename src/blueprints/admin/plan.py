@@ -26,7 +26,9 @@ def index_plan_admin_one(_id):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/", methods=["GET"])
@@ -44,13 +46,17 @@ def index_plan_admin():
         order = parse_order(request.args.get("order"))
 
         service = PlanService()
-        plans = service.list(search, filter_by, page, per_pages, order_by, order)
+        plans = service.list(
+            search, filter_by, page, per_pages, order_by, order
+        )
 
         return jsonify({"success": True, "response": plans})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response:" + str(ex), str(ex)).abort()
+        HandlerException(
+            500, "Unexpected response:" + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/", methods=["POST"])
@@ -72,7 +78,9 @@ def register_plan_admin():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/<int:_id>", methods=["PUT"])
@@ -94,7 +102,9 @@ def update_plan_admin(_id):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/", methods=["PUT"])
@@ -116,7 +126,9 @@ def update_many_plan_admin():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/<int:_id>", methods=["PATCH"])
@@ -138,7 +150,9 @@ def update_field_plan_admin(_id):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/disabled/<int:_id>", methods=["PATCH"])
@@ -155,7 +169,9 @@ def disabled_plan_admin(_id):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/<int:_id>", methods=["DELETE"])
@@ -172,4 +188,6 @@ def delete_plan_admin(_id):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex)).abort()
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()

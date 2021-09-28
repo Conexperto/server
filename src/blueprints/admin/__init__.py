@@ -7,4 +7,12 @@ from src.blueprints.admin.speciality import router as speciality
 from src.blueprints.admin.user import router as user
 
 
-__all__ = ["admin", "auth_admin", "expert", "method", "plan", "speciality", "user"]
+__all__ = [
+    "admin",
+    "auth_admin",
+    "expert",
+    "method",
+    "plan",
+    "speciality",
+    "user",
+]

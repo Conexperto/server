@@ -45,9 +45,9 @@ class SpecialitySeed:
     def down(self):
         """down"""
         try:
-            db.session.query(Speciality).filter(Speciality.name.in_(payload)).delete(
-                synchronize_session=False
-            )
+            db.session.query(Speciality).filter(
+                Speciality.name.in_(payload)
+            ).delete(synchronize_session=False)
             db.session.commit()
         except HandlerException as ex:
             print(ex.message)

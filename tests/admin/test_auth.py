@@ -26,7 +26,9 @@ schema = {
                         "phone_number": {
                             "oneOf": [{"type": "string"}, {"type": "null"}]
                         },
-                        "photo_url": {"oneOf": [{"type": "string"}, {"type": "null"}]},
+                        "photo_url": {
+                            "oneOf": [{"type": "string"}, {"type": "null"}]
+                        },
                         "disabled": {"type": "boolean"},
                         "provider_data": {
                             "type": "array",
@@ -83,7 +85,9 @@ def test_auth_user(client, auth, login_user):
     Description:
         Test admin auth
     """
-    rv = client.get("/admin/auth", headers={"Authorization": "Bearer " + auth.token})
+    rv = client.get(
+        "/admin/auth", headers={"Authorization": "Bearer " + auth.token}
+    )
     assert rv.status_code == 200, "should be status code 200"
     body = loads(rv.data)
     validate(instance=body, schema=schema)
@@ -97,7 +101,9 @@ def test_auth_wrong_user(client, auth, login):
     Description:
         Test admin auth wrong user
     """
-    rv = client.get("/admin/auth", headers={"Authorization": "Bearer " + auth.token})
+    rv = client.get(
+        "/admin/auth", headers={"Authorization": "Bearer " + auth.token}
+    )
     assert rv.status_code == 404, "should be status code 404"
     body = loads(rv.data)
     validate(instance=body, schema=schema_error)

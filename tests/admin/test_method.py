@@ -31,7 +31,10 @@ schema_many = {
     "type": "object",
     "properties": {
         "success": {"type": "boolean"},
-        "response": {"type": "array", "items": schema["properties"]["response"]},
+        "response": {
+            "type": "array",
+            "items": schema["properties"]["response"],
+        },
     },
     "required": ["success", "response"],
 }
@@ -40,7 +43,10 @@ schema_list = {
     "type": "object",
     "properties": {
         "success": {"type": "boolean"},
-        "response": {"type": "array", "items": schema["properties"]["response"]},
+        "response": {
+            "type": "array",
+            "items": schema["properties"]["response"],
+        },
         "total": {"type": "number"},
         "page": {"type": "number"},
         "limit": {"type": "number"},
@@ -63,7 +69,10 @@ schema_delete = {
     "type": "object",
     "properties": {
         "success": {"type": "boolean"},
-        "response": {"type": "object", "properties": {"id": {"type": "number"}}},
+        "response": {
+            "type": "object",
+            "properties": {"id": {"type": "number"}},
+        },
     },
     "required": ["success", "response"],
 }
@@ -379,7 +388,9 @@ def test_list_method_desc(client, auth, login_admin, seed_method):
     ), "should be content type application/json"
     body = loads(rv.data)
     validate(instance=body, schema=schema_list)
-    assert prove_order(body["response"], "desc"), "should be sorted in descending order"
+    assert prove_order(
+        body["response"], "desc"
+    ), "should be sorted in descending order"
 
 
 def test_list_method_asc(client, auth, login_admin, seed_method):
@@ -399,7 +410,9 @@ def test_list_method_asc(client, auth, login_admin, seed_method):
     ), "should be content type application/json"
     body = loads(rv.data)
     validate(instance=body, schema=schema_list)
-    assert prove_order(body["response"], "desc"), "should be sorted in descending order"
+    assert prove_order(
+        body["response"], "desc"
+    ), "should be sorted in descending order"
 
 
 def test_method_disabled(client, auth, login_admin, seed_method):
@@ -412,7 +425,9 @@ def test_method_disabled(client, auth, login_admin, seed_method):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     method = search_method(client, auth, "Duo")
-    rv = client.patch("/admin/method/disabled/" + str(method[0]["id"]), headers=headers)
+    rv = client.patch(
+        "/admin/method/disabled/" + str(method[0]["id"]), headers=headers
+    )
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -431,7 +446,9 @@ def test_list_method_disabled(client, auth, login_admin, seed_method):
         Test list method filter by disabled true
     """
     headers = {"Authorization": "Bearer " + auth.token}
-    rv = client.get("/admin/method", query_string={"disabled": True}, headers=headers)
+    rv = client.get(
+        "/admin/method", query_string={"disabled": True}, headers=headers
+    )
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -453,7 +470,9 @@ def test_method_enabled(client, auth, login_admin, seed_method):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     method = search_method(client, auth, "Duo")
-    rv = client.patch("/admin/method/disabled/" + str(method[0]["id"]), headers=headers)
+    rv = client.patch(
+        "/admin/method/disabled/" + str(method[0]["id"]), headers=headers
+    )
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -486,7 +505,9 @@ def test_method_disabled_many(client, auth, login_admin, seed_method):
     validate(instance=body, schema=schema_many)
 
     for i in range(2):
-        assert body["response"][i]["disabled"] is True, "should be disabled True"
+        assert (
+            body["response"][i]["disabled"] is True
+        ), "should be disabled True"
 
 
 def test_method_enabled_many(client, auth, login_admin, seed_method):
@@ -511,7 +532,9 @@ def test_method_enabled_many(client, auth, login_admin, seed_method):
     validate(instance=body, schema=schema_many)
 
     for i in range(2):
-        assert body["response"][i]["disabled"] is False, "should be disabled False"
+        assert (
+            body["response"][i]["disabled"] is False
+        ), "should be disabled False"
 
 
 def test_method_delete(client, auth, login_admin, seed_method):
@@ -524,7 +547,9 @@ def test_method_delete(client, auth, login_admin, seed_method):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     method = search_method(client, auth, "Duo")
-    rv = client.delete("/admin/method/" + str(method[0]["id"]), headers=headers)
+    rv = client.delete(
+        "/admin/method/" + str(method[0]["id"]), headers=headers
+    )
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"

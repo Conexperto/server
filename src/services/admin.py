@@ -41,7 +41,9 @@ class AdminService:
             mapper = class_mapper(Admin)
             if not hasattr(mapper.columns, k):
                 continue
-            filters.append(computed_operator(mapper.columns[k], "{}".format(v)))
+            filters.append(
+                computed_operator(mapper.columns[k], "{}".format(v))
+            )
         self.__query = self.__query.filter(*filters)
         return self.__query
 
@@ -150,7 +152,9 @@ class AdminService:
                 app=admin_sdk,
             )
             privileges = body.get("privileges") or Privileges.User.value
-            user_record.make_claims({"admin": True, "access_level": privileges})
+            user_record.make_claims(
+                {"admin": True, "access_level": privileges}
+            )
             user = Admin(
                 uid=user_record.uid,
                 email=user_record.email,
@@ -213,7 +217,9 @@ class AdminService:
         user_record.update_user()
 
         if "privileges" in body:
-            user_record.make_claims({"admin": True, "access_level": body["privileges"]})
+            user_record.make_claims(
+                {"admin": True, "access_level": body["privileges"]}
+            )
 
         user.serialize(body)
         user.save()
@@ -263,7 +269,9 @@ class AdminService:
         user_record.update_user()
 
         if "privileges" in body:
-            user_record.make_claims({"admin": True, "access_level": body["privileges"]})
+            user_record.make_claims(
+                {"admin": True, "access_level": body["privileges"]}
+            )
 
         user.serialize(body)
         user.save()
