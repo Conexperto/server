@@ -8,12 +8,15 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 
 from src.blueprints import auth
+from src.blueprints import method
+from src.blueprints import speciality
+from src.blueprints import user
 from src.blueprints.admin import admin
 from src.blueprints.admin import auth_admin
-from src.blueprints.admin import method
-from src.blueprints.admin import plan
-from src.blueprints.admin import speciality
-from src.blueprints.admin import user
+from src.blueprints.admin import method as method_admin
+from src.blueprints.admin import plan as plan_admin
+from src.blueprints.admin import speciality as speciality_admin
+from src.blueprints.admin import user as user_admin
 from src.db import db
 from src.helpers import JSONSerializable
 from src.seed import seed
@@ -44,12 +47,15 @@ def create_api():
 
     api.register_blueprint(auth_admin, url_prefix="/admin/auth")
     api.register_blueprint(admin, url_prefix="/admin")
-    api.register_blueprint(user, url_prefix="/admin/user")
-    api.register_blueprint(method, url_prefix="/admin/method")
-    api.register_blueprint(plan, url_prefix="/admin/plan")
-    api.register_blueprint(speciality, url_prefix="/admin/speciality")
+    api.register_blueprint(user_admin, url_prefix="/admin/user")
+    api.register_blueprint(method_admin, url_prefix="/admin/method")
+    api.register_blueprint(plan_admin, url_prefix="/admin/plan")
+    api.register_blueprint(speciality_admin, url_prefix="/admin/speciality")
 
     api.register_blueprint(auth, url_prefix="/auth")
+    api.register_blueprint(user, url_prefix="/user")
+    api.register_blueprint(speciality, url_prefix="/speciality")
+    api.register_blueprint(method, url_prefix="/method")
 
     # Handler Errors HTTP
     def error_handler(err, msg, detail=None):
