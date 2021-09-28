@@ -114,7 +114,10 @@ schema_delete = {
     "type": "object",
     "properties": {
         "success": {"type": "boolean"},
-        "response": {"type": "object", "properties": {"uid": {"type": "string"}}},
+        "response": {
+            "type": "object",
+            "properties": {"uid": {"type": "string"}},
+        },
     },
 }
 
@@ -197,9 +200,12 @@ def test_create_user(client, auth, login_admin, seed_speciality, seed_method):
         "location": faker.country(),
         "plans": [{"duration": 60, "price": 15}],
     }
-    payload["specialities"] = [item["id"] for item in get_speciality(client, auth)[:3]]
+    payload["specialities"] = [
+        item["id"] for item in get_speciality(client, auth)[:3]
+    ]
     payload["methods"] = [
-        {"id": item["id"], "link": faker.url()} for item in get_method(client, auth)[:3]
+        {"id": item["id"], "link": faker.url()}
+        for item in get_method(client, auth)[:3]
     ]
     rv = client.post("/admin/user", headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
@@ -210,7 +216,9 @@ def test_create_user(client, auth, login_admin, seed_speciality, seed_method):
     validate(instance=body, schema=schema)
 
 
-def test_create_user_duplicate(client, auth, login_admin, seed_speciality, seed_method):
+def test_create_user_duplicate(
+    client, auth, login_admin, seed_speciality, seed_method
+):
     """
     Endpoint: /admin/user
     Method: POST
@@ -234,9 +242,12 @@ def test_create_user_duplicate(client, auth, login_admin, seed_speciality, seed_
         "link_video": "https://youtube.com/asvasdasd",
         "plans": [{"duration": 60, "price": 15}],
     }
-    payload["specialities"] = [item["id"] for item in get_speciality(client, auth)]
+    payload["specialities"] = [
+        item["id"] for item in get_speciality(client, auth)
+    ]
     payload["methods"] = [
-        {"id": item["id"], "link": faker.url()} for item in get_method(client, auth)
+        {"id": item["id"], "link": faker.url()}
+        for item in get_method(client, auth)
     ]
     rv = client.post("/admin/user", headers=headers, json=payload)
     assert rv.status_code == 400, "should be status code 400"
@@ -272,9 +283,12 @@ def test_create_user_without_field(
         "link_video": "https://youtube.com/asvasdasd",
         "plans": [{"duration": 60, "price": 15}],
     }
-    payload["specialities"] = [item["id"] for item in get_speciality(client, auth)]
+    payload["specialities"] = [
+        item["id"] for item in get_speciality(client, auth)
+    ]
     payload["methods"] = [
-        {"id": item["id"], "link": faker.url()} for item in get_method(client, auth)
+        {"id": item["id"], "link": faker.url()}
+        for item in get_method(client, auth)
     ]
     rv = client.post("/admin/user", headers=headers, json=payload)
     assert rv.status_code == 400, "should be status code 400"
@@ -343,9 +357,12 @@ def test_create_user_wrong_token(
         "link_video": "https://youtube.com/asvasdasd",
         "plans": [{"duration": 60, "price": 15}],
     }
-    payload["specialities"] = [item["id"] for item in get_speciality(client, auth)]
+    payload["specialities"] = [
+        item["id"] for item in get_speciality(client, auth)
+    ]
     payload["methods"] = [
-        {"id": item["id"], "link": faker.url()} for item in get_method(client, auth)
+        {"id": item["id"], "link": faker.url()}
+        for item in get_method(client, auth)
     ]
     rv = client.post("/admin/user", headers=headers, json=payload)
     assert rv.status_code == 400, "should be status code 400"
@@ -368,7 +385,9 @@ def test_update_user(client, auth, login_admin, seed_speciality, seed_method):
     payload = {
         "display_name": "user",
         "name": "user",
-        "specialities": [item["id"] for item in get_speciality(client, auth)[3:6]],
+        "specialities": [
+            item["id"] for item in get_speciality(client, auth)[3:6]
+        ],
         "methods": [
             {"id": item["id"], "link": faker.url()}
             for item in get_method(client, auth)[3:6]
@@ -383,7 +402,9 @@ def test_update_user(client, auth, login_admin, seed_speciality, seed_method):
     )
     payload["plans"].append({"id": user[0]["plans"][0]["id"], "price": 20})
 
-    rv = client.put("/admin/user/" + user[0]["uid"], headers=headers, json=payload)
+    rv = client.put(
+        "/admin/user/" + user[0]["uid"], headers=headers, json=payload
+    )
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -424,7 +445,9 @@ def test_update_user(client, auth, login_admin, seed_speciality, seed_method):
         ), "should be equal to payload methods link"
 
 
-def test_update_user_field(client, auth, login_admin, seed_speciality, seed_method):
+def test_update_user_field(
+    client, auth, login_admin, seed_speciality, seed_method
+):
     """
     Endpoint: /admin/user/<uid>
     Method: PUT
@@ -434,10 +457,14 @@ def test_update_user_field(client, auth, login_admin, seed_speciality, seed_meth
     """
     headers = {"Authorization": "Bearer " + auth.token}
     payload = {
-        "specialities": [item["id"] for item in get_speciality(client, auth)[3:6]]
+        "specialities": [
+            item["id"] for item in get_speciality(client, auth)[3:6]
+        ]
     }
     user = search_user(client, auth, "user@common.com")
-    rv = client.put("/admin/user/" + user[0]["uid"], headers=headers, json=payload)
+    rv = client.put(
+        "/admin/user/" + user[0]["uid"], headers=headers, json=payload
+    )
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -490,7 +517,9 @@ def test_list_user(client, auth, login_admin, seed_speciality, seed_method):
     validate(instance=body, schema=schema_list)
 
 
-def test_list_user_search(client, auth, login_admin, seed_speciality, seed_method):
+def test_list_user_search(
+    client, auth, login_admin, seed_speciality, seed_method
+):
     """
     Endpoint: /admin/user
     Method: GET
@@ -511,7 +540,9 @@ def test_list_user_search(client, auth, login_admin, seed_speciality, seed_metho
     validate(instance=body, schema=schema_list)
 
 
-def test_list_user_paginate(client, auth, login_admin, seed_speciality, seed_method):
+def test_list_user_paginate(
+    client, auth, login_admin, seed_speciality, seed_method
+):
     """
     Endpoint: /admin/user
     Method: GET
@@ -534,7 +565,9 @@ def test_list_user_paginate(client, auth, login_admin, seed_speciality, seed_met
             return
 
 
-def test_list_user_order_asc(client, auth, login_admin, seed_speciality, seed_method):
+def test_list_user_order_asc(
+    client, auth, login_admin, seed_speciality, seed_method
+):
     """
     Endpoint: /admin/user
     Method: GET
@@ -551,10 +584,14 @@ def test_list_user_order_asc(client, auth, login_admin, seed_speciality, seed_me
     ), "should be content type application/json"
     body = loads(rv.data)
     validate(instance=body, schema=schema_list)
-    assert prove_order(body["response"], "asc"), "should be sorted in ascending order"
+    assert prove_order(
+        body["response"], "asc"
+    ), "should be sorted in ascending order"
 
 
-def test_list_user_order_desc(client, auth, login_admin, seed_speciality, seed_method):
+def test_list_user_order_desc(
+    client, auth, login_admin, seed_speciality, seed_method
+):
     """
     Endpoint: /admin/user
     Method: GET
@@ -571,10 +608,14 @@ def test_list_user_order_desc(client, auth, login_admin, seed_speciality, seed_m
     ), "should be content type application/json"
     body = loads(rv.data)
     validate(instance=body, schema=schema_list)
-    assert prove_order(body["response"], "desc"), "should be sorted in descending order"
+    assert prove_order(
+        body["response"], "desc"
+    ), "should be sorted in descending order"
 
 
-def test_user_disabled(client, auth, login_admin, seed_speciality, seed_method):
+def test_user_disabled(
+    client, auth, login_admin, seed_speciality, seed_method
+):
     """
     Endpoint: /admin/user/disabled/<uid>
     Method: PATCH
@@ -584,7 +625,9 @@ def test_user_disabled(client, auth, login_admin, seed_speciality, seed_method):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     user = search_user(client, auth, "user@common.com")
-    rv = client.patch("/admin/user/disabled/" + user[0]["uid"], headers=headers)
+    rv = client.patch(
+        "/admin/user/disabled/" + user[0]["uid"], headers=headers
+    )
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -595,7 +638,9 @@ def test_user_disabled(client, auth, login_admin, seed_speciality, seed_method):
     assert body["response"]["b"]["disabled"] is True, "should be disabled True"
 
 
-def test_list_user_disabled(client, auth, login_admin, seed_speciality, seed_method):
+def test_list_user_disabled(
+    client, auth, login_admin, seed_speciality, seed_method
+):
     """
     Endpoint: /admin/user?disabled=true
     Method: GET
@@ -604,7 +649,9 @@ def test_list_user_disabled(client, auth, login_admin, seed_speciality, seed_met
         Test list user filter by disabled true
     """
     headers = {"Authorization": "Bearer " + auth.token}
-    rv = client.get("/admin/user", query_string={"disabled": True}, headers=headers)
+    rv = client.get(
+        "/admin/user", query_string={"disabled": True}, headers=headers
+    )
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -626,15 +673,21 @@ def test_user_enabled(client, auth, login_admin, seed_speciality, seed_method):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     user = search_user(client, auth, "user@common.com")
-    rv = client.patch("/admin/user/disabled/" + user[0]["uid"], headers=headers)
+    rv = client.patch(
+        "/admin/user/disabled/" + user[0]["uid"], headers=headers
+    )
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
     ), "should be content type application/json"
     body = loads(rv.data)
     validate(instance=body, schema=schema)
-    assert body["response"]["a"]["disabled"] is False, "should be disabled False"
-    assert body["response"]["b"]["disabled"] is False, "should be disabled False"
+    assert (
+        body["response"]["a"]["disabled"] is False
+    ), "should be disabled False"
+    assert (
+        body["response"]["b"]["disabled"] is False
+    ), "should be disabled False"
 
 
 def test_user_delete(client, auth, login_admin, seed_speciality, seed_method):

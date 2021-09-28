@@ -29,7 +29,10 @@ schema_list = {
     "type": "object",
     "properties": {
         "success": {"type": "boolean"},
-        "response": {"type": "array", "items": schema["properties"]["response"]},
+        "response": {
+            "type": "array",
+            "items": schema["properties"]["response"],
+        },
         "total": {"type": "number"},
         "page": {"type": "number"},
         "limit": {"type": "number"},
@@ -169,7 +172,9 @@ def test_list_speciality_desc(client, seed_speciality):
     ), "should be content type application/json"
     body = loads(rv.data)
     validate(instance=body, schema=schema_list)
-    assert prove_order(body["response"], "desc"), "should be sorted in descending order"
+    assert prove_order(
+        body["response"], "desc"
+    ), "should be sorted in descending order"
 
 
 def test_list_speciality_asc(client, seed_speciality):
@@ -188,4 +193,6 @@ def test_list_speciality_asc(client, seed_speciality):
     ), "should be content type application/json"
     body = loads(rv.data)
     validate(instance=body, schema=schema_list)
-    assert prove_order(body["response"], "desc"), "should be sorted in descending order"
+    assert prove_order(
+        body["response"], "desc"
+    ), "should be sorted in descending order"

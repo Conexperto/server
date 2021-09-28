@@ -31,7 +31,10 @@ schema_many = {
     "type": "object",
     "properties": {
         "success": {"type": "boolean"},
-        "response": {"type": "array", "items": schema["properties"]["response"]},
+        "response": {
+            "type": "array",
+            "items": schema["properties"]["response"],
+        },
     },
     "required": ["success", "response"],
 }
@@ -40,7 +43,10 @@ schema_list = {
     "type": "object",
     "properties": {
         "success": {"type": "boolean"},
-        "response": {"type": "array", "items": schema["properties"]["response"]},
+        "response": {
+            "type": "array",
+            "items": schema["properties"]["response"],
+        },
         "total": {"type": "number"},
         "page": {"type": "number"},
         "limit": {"type": "number"},
@@ -63,7 +69,10 @@ schema_delete = {
     "type": "object",
     "properties": {
         "success": {"type": "boolean"},
-        "response": {"type": "object", "properties": {"id": {"type": "number"}}},
+        "response": {
+            "type": "object",
+            "properties": {"id": {"type": "number"}},
+        },
     },
     "required": ["success", "response"],
 }
@@ -145,7 +154,9 @@ def test_create_many_speciality(client, auth, login_admin, seed_speciality):
     validate(instance=body, schema=schema_many)
 
 
-def test_create_speciality_duplicate(client, auth, login_admin, seed_speciality):
+def test_create_speciality_duplicate(
+    client, auth, login_admin, seed_speciality
+):
     """
     Endpoint: /admin/speciality
     Method: POST
@@ -164,7 +175,9 @@ def test_create_speciality_duplicate(client, auth, login_admin, seed_speciality)
     validate(instance=body, schema=schema_error)
 
 
-def test_create_speciality_without_field(client, auth, login_admin, seed_speciality):
+def test_create_speciality_without_field(
+    client, auth, login_admin, seed_speciality
+):
     """
     Endpoint: /admin/speciality
     Method: POST
@@ -183,7 +196,9 @@ def test_create_speciality_without_field(client, auth, login_admin, seed_special
     validate(instance=body, schema=schema_error)
 
 
-def test_create_speciality_without_headers(client, auth, login_admin, seed_speciality):
+def test_create_speciality_without_headers(
+    client, auth, login_admin, seed_speciality
+):
     """
     Endpoint: /admin/speciality
     Method: POST
@@ -213,7 +228,9 @@ def test_update_speciality(client, auth, login_admin, seed_speciality):
     payload = {"name": "Speciality"}
     speciality = search_speciality(client, auth, "Teacher")
     rv = client.put(
-        "/admin/speciality/" + str(speciality[0]["id"]), headers=headers, json=payload
+        "/admin/speciality/" + str(speciality[0]["id"]),
+        headers=headers,
+        json=payload,
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -239,7 +256,9 @@ def test_update_speciality_field(client, auth, login_admin, seed_speciality):
     payload = {"name": "Teacher"}
     speciality = search_speciality(client, auth, "Speciality")
     rv = client.patch(
-        "/admin/speciality/" + str(speciality[0]["id"]), headers=headers, json=payload
+        "/admin/speciality/" + str(speciality[0]["id"]),
+        headers=headers,
+        json=payload,
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -291,7 +310,9 @@ def test_get_speciality(client, auth, login_admin, seed_speciality):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     speciality = search_speciality(client, auth, "Medic")
-    rv = client.get("/admin/speciality/" + str(speciality[0]["id"]), headers=headers)
+    rv = client.get(
+        "/admin/speciality/" + str(speciality[0]["id"]), headers=headers
+    )
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -380,7 +401,9 @@ def test_list_speciality_desc(client, auth, login_admin, seed_speciality):
     ), "should be content type application/json"
     body = loads(rv.data)
     validate(instance=body, schema=schema_list)
-    assert prove_order(body["response"], "desc"), "should be sorted in descending order"
+    assert prove_order(
+        body["response"], "desc"
+    ), "should be sorted in descending order"
 
 
 def test_list_speciality_asc(client, auth, login_admin, seed_speciality):
@@ -400,7 +423,9 @@ def test_list_speciality_asc(client, auth, login_admin, seed_speciality):
     ), "should be content type application/json"
     body = loads(rv.data)
     validate(instance=body, schema=schema_list)
-    assert prove_order(body["response"], "desc"), "should be sorted in descending order"
+    assert prove_order(
+        body["response"], "desc"
+    ), "should be sorted in descending order"
 
 
 def test_speciality_disabled(client, auth, login_admin, seed_speciality):
@@ -414,7 +439,8 @@ def test_speciality_disabled(client, auth, login_admin, seed_speciality):
     headers = {"Authorization": "Bearer " + auth.token}
     speciality = search_speciality(client, auth, "Medic")
     rv = client.patch(
-        "/admin/speciality/disabled/" + str(speciality[0]["id"]), headers=headers
+        "/admin/speciality/disabled/" + str(speciality[0]["id"]),
+        headers=headers,
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -459,7 +485,8 @@ def test_speciality_enabled(client, auth, login_admin, seed_speciality):
     headers = {"Authorization": "Bearer " + auth.token}
     speciality = search_speciality(client, auth, "Medic")
     rv = client.patch(
-        "/admin/speciality/disabled/" + str(speciality[0]["id"]), headers=headers
+        "/admin/speciality/disabled/" + str(speciality[0]["id"]),
+        headers=headers,
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -484,7 +511,9 @@ def test_speciality_disabled_many(client, auth, login_admin, seed_speciality):
     specialities = search_speciality(client, auth, "")
     payload = [item["id"] for item in specialities[3:5]]
 
-    rv = client.patch("/admin/speciality/disabled", headers=headers, json=payload)
+    rv = client.patch(
+        "/admin/speciality/disabled", headers=headers, json=payload
+    )
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -493,7 +522,9 @@ def test_speciality_disabled_many(client, auth, login_admin, seed_speciality):
     validate(instance=body, schema=schema_many)
 
     for i in range(2):
-        assert body["response"][i]["disabled"] is True, "should be disabled True"
+        assert (
+            body["response"][i]["disabled"] is True
+        ), "should be disabled True"
 
 
 def test_speciality_enabled_many(client, auth, login_admin, seed_speciality):
@@ -509,7 +540,9 @@ def test_speciality_enabled_many(client, auth, login_admin, seed_speciality):
     specialities = search_speciality(client, auth, "")
     payload = [item["id"] for item in specialities[3:5]]
 
-    rv = client.patch("/admin/speciality/disabled", headers=headers, json=payload)
+    rv = client.patch(
+        "/admin/speciality/disabled", headers=headers, json=payload
+    )
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -518,7 +551,9 @@ def test_speciality_enabled_many(client, auth, login_admin, seed_speciality):
     validate(instance=body, schema=schema_many)
 
     for i in range(2):
-        assert body["response"][i]["disabled"] is False, "should be disabled False"
+        assert (
+            body["response"][i]["disabled"] is False
+        ), "should be disabled False"
 
 
 def test_speciality_delete(client, auth, login_admin, seed_speciality):
@@ -531,7 +566,9 @@ def test_speciality_delete(client, auth, login_admin, seed_speciality):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     speciality = search_speciality(client, auth, "Medic")
-    rv = client.delete("/admin/speciality/" + str(speciality[0]["id"]), headers=headers)
+    rv = client.delete(
+        "/admin/speciality/" + str(speciality[0]["id"]), headers=headers
+    )
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"

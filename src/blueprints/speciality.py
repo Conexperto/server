@@ -43,7 +43,9 @@ def index_speciality():
         _filter_by = {"disabled": False, **filter_by}
 
         service = SpecialityService()
-        paginate = service.list(search, _filter_by, page, per_pages, order_by, order)
+        paginate = service.list(
+            search, _filter_by, page, per_pages, order_by, order
+        )
 
         return jsonify(
             {

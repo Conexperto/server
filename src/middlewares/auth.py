@@ -72,7 +72,9 @@ def has_access(access_level, strict=False):
             user = g.admin["b"]
 
             if not user.has_access(access_level.value, strict):
-                HandlerException(401, "You not enough permissions to access").abort()
+                HandlerException(
+                    401, "You not enough permissions to access"
+                ).abort()
 
             return func(*args, **kwargs)
 

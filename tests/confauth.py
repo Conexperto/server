@@ -9,7 +9,9 @@ from src.firebase import admin_sdk
 
 
 logger = logging.getLogger(__name__)
-URI = "http://emulator:9099/identitytoolkit.googleapis.com/v1/accounts:{}?key={}"
+URI = (
+    "http://emulator:9099/identitytoolkit.googleapis.com/v1/accounts:{}?key={}"
+)
 
 
 class AuthActions(object):
@@ -21,7 +23,11 @@ class AuthActions(object):
 
     def login(self, email, password):
         uri = URI.format("signInWithPassword", self._key)
-        payload = {"email": email, "password": password, "returnSecureToken": True}
+        payload = {
+            "email": email,
+            "password": password,
+            "returnSecureToken": True,
+        }
         rv = requests.post(uri, json=payload)
         assert rv.status_code == 200, "Faild authentication"
         self._user = rv.json()

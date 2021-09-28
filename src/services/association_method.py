@@ -34,7 +34,9 @@ class AssociationUserToMethodService:
 
         Returns: AssociationMethod
         """
-        association = AssociationMethod.query.filter_by(right_id=method_id).all()
+        association = AssociationMethod.query.filter_by(
+            right_id=method_id
+        ).all()
 
         if not association:
             raise HandlerException(404, "Not found association")
@@ -52,7 +54,9 @@ class AssociationUserToMethodService:
 
         Returns: AssociationMethod
         """
-        association = AssociationMethod(left_id=user_id, right_id=method_id, link=link)
+        association = AssociationMethod(
+            left_id=user_id, right_id=method_id, link=link
+        )
 
         association.add()
         association.save()

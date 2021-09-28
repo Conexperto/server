@@ -98,7 +98,9 @@ class BaseMixin(AuditMixin):
                 elif isinstance(value.__class__, DeclarativeMeta):
                     res[key] = value.deserialize(backref=self.__table__)
                 else:
-                    res[key] = [i.deserialize(backref=self.__table__) for i in value]
+                    res[key] = [
+                        i.deserialize(backref=self.__table__) for i in value
+                    ]
         return res
 
     def __iter__(self):
