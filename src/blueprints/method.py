@@ -32,12 +32,12 @@ def index_method():
     GET: /api/v1/method
     """
     try:
-        search = request.args.get("search")
+        search = request.args.get("search", None)
         filter_by = request.args
-        page = request.args.get("page") or 1
-        per_page = request.args.get("limit") or 10
-        order_by = request.args.get("orderBy")
-        order = parse_order(request.args.get("order"))
+        page = request.args.get("page", 1)
+        per_page = request.args.get("limit", 10)
+        order_by = request.args.get("orderBy", None)
+        order = parse_order(request.args.get("order", None))
 
         _filter_by = {"disabled": False, **filter_by}
 
