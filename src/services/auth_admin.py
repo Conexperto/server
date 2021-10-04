@@ -24,9 +24,11 @@ class AuthAdminService:
             b (User): Admin
         """
         decoded_token = UserRecord.verify_id_token(
-            id_token, check_revoked=True, app=admin_sdk
+            id_token, check_revoked=True, auth=admin_sdk.auth
         )
-        user_record = UserRecord.get_user(decoded_token["uid"], app=admin_sdk)
+        user_record = UserRecord.get_user(
+            decoded_token["uid"], auth=admin_sdk.auth
+        )
 
         if user_record.disabled:
             raise HandlerException(401, "Account disabled")

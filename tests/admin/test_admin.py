@@ -111,10 +111,10 @@ schema_delete = {
 
 
 def search_user(client, auth, search):
-    auth.login("admin@adminconexperto.com", "token_admin")
+    auth.login("admin@adminconexperto.com", "token_admin", "admin")
     headers = {"Authorization": "Bearer " + auth.token}
     params = {"search": search}
-    rv = client.get("/admin", query_string=params, headers=headers)
+    rv = client.get("/admins", query_string=params, headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -135,13 +135,13 @@ def prove_order(items, order):
 
 def paginate(client, auth, params):
     headers = {"Authorization": "Bearer " + auth.token}
-    rv = client.get("/admin", query_string=params, headers=headers)
+    rv = client.get("/admins", query_string=params, headers=headers)
     return rv
 
 
 def test_admin_create_user(client, auth, login_admin):
     """
-    Endpoint: /admin
+    Endpoint: /admins
     Method: POST
     Assert: status_code = 200
     Description:
@@ -157,7 +157,7 @@ def test_admin_create_user(client, auth, login_admin):
         "lastname": "Testing",
         "privileges": 3,
     }
-    rv = client.post("/admin", headers=headers, json=payload)
+    rv = client.post("/admins", headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -168,7 +168,7 @@ def test_admin_create_user(client, auth, login_admin):
 
 def test_admin_create_user_duplicate(client, auth, login_admin):
     """
-    Endpoint: /admin
+    Endpoint: /admins
     Method: POST
     Assert: status_code = 400
     Description:
@@ -184,7 +184,7 @@ def test_admin_create_user_duplicate(client, auth, login_admin):
         "lastname": "Testing",
         "privileges": 3,
     }
-    rv = client.post("/admin", headers=headers, json=payload)
+    rv = client.post("/admins", headers=headers, json=payload)
     assert rv.status_code == 400, "should be status code 400"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -195,7 +195,7 @@ def test_admin_create_user_duplicate(client, auth, login_admin):
 
 def test_admin_create_user_without_field(client, auth, login_admin):
     """
-    Endpoint: /admin
+    Endpoint: /admins
     Method: POST
     Assert: status_code = 400
     Description:
@@ -205,7 +205,7 @@ def test_admin_create_user_without_field(client, auth, login_admin):
     payload = {
         "email": "test@adminconexperto.com",
     }
-    rv = client.post("/admin", headers=headers, json=payload)
+    rv = client.post("/admins", headers=headers, json=payload)
     assert rv.status_code == 400, "should be status code 300"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -216,7 +216,7 @@ def test_admin_create_user_without_field(client, auth, login_admin):
 
 def test_admin_create_admin(client, auth, login_root):
     """
-    Endpoint: /admin
+    Endpoint: /admins
     Method: POST
     Assert: status_code = 200
     Description:
@@ -232,7 +232,7 @@ def test_admin_create_admin(client, auth, login_root):
         "lastname": "Testing",
         "privileges": 2,
     }
-    rv = client.post("/admin", headers=headers, json=payload)
+    rv = client.post("/admins", headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -243,7 +243,7 @@ def test_admin_create_admin(client, auth, login_root):
 
 def test_admin_create_admin_without_headers(client):
     """
-    Endpoint: /admin
+    Endpoint: /admins
     Method: POST
     Assert: status_code = 400
     Description:
@@ -258,7 +258,7 @@ def test_admin_create_admin_without_headers(client):
         "lastname": "Testing",
         "privileges": 1,
     }
-    rv = client.post("/admin", json=payload)
+    rv = client.post("/admins", json=payload)
     assert rv.status_code == 400, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -269,7 +269,7 @@ def test_admin_create_admin_without_headers(client):
 
 def test_admin_create_admin_wrong_token(client):
     """
-    Endpoint: /admin
+    Endpoint: /admins
     Method: POST
     Assert: status_code = 401
     Description:
@@ -285,7 +285,7 @@ def test_admin_create_admin_wrong_token(client):
         "lastname": "Testing",
         "privileges": 1,
     }
-    rv = client.post("/admin", headers=headers, json=payload)
+    rv = client.post("/admins", headers=headers, json=payload)
     assert rv.status_code == 400, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -296,7 +296,7 @@ def test_admin_create_admin_wrong_token(client):
 
 def test_admin_create_root(client, auth, login_superroot):
     """
-    Endpoint: /admin
+    Endpoint: /admins
     Method: POST
     Assert: status_code = 200
     Description:
@@ -312,7 +312,7 @@ def test_admin_create_root(client, auth, login_superroot):
         "lastname": "Testing",
         "privileges": 1,
     }
-    rv = client.post("/admin", headers=headers, json=payload)
+    rv = client.post("/admins", headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -323,7 +323,7 @@ def test_admin_create_root(client, auth, login_superroot):
 
 def test_admin_create_root_wrong_auth(client, auth, login_admin):
     """
-    Endpoint: /admin
+    Endpoint: /admins
     Method: POST
     Assert: status_code = 401
     Description:
@@ -339,7 +339,7 @@ def test_admin_create_root_wrong_auth(client, auth, login_admin):
         "lastname": "Testing",
         "privileges": 1,
     }
-    rv = client.post("/admin", headers=headers, json=payload)
+    rv = client.post("/admins", headers=headers, json=payload)
     assert rv.status_code == 401, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -350,7 +350,7 @@ def test_admin_create_root_wrong_auth(client, auth, login_admin):
 
 def test_admin_create_superroot(client, auth, login_superroot):
     """
-    Endpoint: /admin
+    Endpoint: /admins
     Method: POST
     Assert: status_code = 200
     Description:
@@ -366,7 +366,7 @@ def test_admin_create_superroot(client, auth, login_superroot):
         "lastname": "Testing",
         "privileges": 0,
     }
-    rv = client.post("/admin", headers=headers, json=payload)
+    rv = client.post("/admins", headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -377,7 +377,7 @@ def test_admin_create_superroot(client, auth, login_superroot):
 
 def test_admin_create_superroot_wrong_auth(client, auth, login_admin):
     """
-    Endpoint: /admin
+    Endpoint: /admins
     Method: POST
     Assert: status_code = 401
     Description:
@@ -393,7 +393,7 @@ def test_admin_create_superroot_wrong_auth(client, auth, login_admin):
         "lastname": "Testing",
         "privileges": 0,
     }
-    rv = client.post("/admin", headers=headers, json=payload)
+    rv = client.post("/admins", headers=headers, json=payload)
     assert rv.status_code == 401, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -404,7 +404,7 @@ def test_admin_create_superroot_wrong_auth(client, auth, login_admin):
 
 def test_admin_update_user(client, auth, login_admin):
     """
-    Endpoint: /admin/<uid>
+    Endpoint: /admins/<uid>
     Method: PUT
     Assert: status_code = 200
     Description:
@@ -417,7 +417,7 @@ def test_admin_update_user(client, auth, login_admin):
         "lastname": "Testing SuperRoot",
     }
     identifier = search_user(client, auth, "test@adminconexperto.com")
-    rv = client.put("/admin/" + identifier, headers=headers, json=payload)
+    rv = client.put("/admins/" + identifier, headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -428,7 +428,7 @@ def test_admin_update_user(client, auth, login_admin):
 
 def test_admin_update_user_duplicate_phone_number(client, auth, login_admin):
     """
-    Endpoint: /admin/<uid>
+    Endpoint: /admins/<uid>
     Method: PUT
     Assert: status_code = 200
     Description:
@@ -439,7 +439,7 @@ def test_admin_update_user_duplicate_phone_number(client, auth, login_admin):
         "phone_number": "+13200000000",
     }
     identifier = search_user(client, auth, "test@adminconexperto.com")
-    rv = client.put("/admin/" + identifier, headers=headers, json=payload)
+    rv = client.put("/admins/" + identifier, headers=headers, json=payload)
     assert rv.status_code == 400, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -450,7 +450,7 @@ def test_admin_update_user_duplicate_phone_number(client, auth, login_admin):
 
 def test_admin_update_field(client, auth, login_admin):
     """
-    Endpoint: /admin/<uid>
+    Endpoint: /admins/<uid>
     Method: PATCH
     Assert: status_code = 200
     Description:
@@ -461,7 +461,7 @@ def test_admin_update_field(client, auth, login_admin):
         "display_name": "Testing SuperRoot",
     }
     identifier = search_user(client, auth, "test@adminconexperto.com")
-    rv = client.patch("/admin/" + identifier, headers=headers, json=payload)
+    rv = client.patch("/admins/" + identifier, headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -472,7 +472,7 @@ def test_admin_update_field(client, auth, login_admin):
 
 def test_admin_update_field_duplicate_phone_number(client, auth, login_admin):
     """
-    Endpoint: /admin/<uid>
+    Endpoint: /admins/<uid>
     Method: PATCH
     Assert: status_code = 400
     Description:
@@ -483,7 +483,7 @@ def test_admin_update_field_duplicate_phone_number(client, auth, login_admin):
         "phone_number": "+13200000000",
     }
     identifier = search_user(client, auth, "test@adminconexperto.com")
-    rv = client.patch("/admin/" + identifier, headers=headers, json=payload)
+    rv = client.patch("/admins/" + identifier, headers=headers, json=payload)
     assert rv.status_code == 400, "should be status code 400"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -494,14 +494,14 @@ def test_admin_update_field_duplicate_phone_number(client, auth, login_admin):
 
 def test_admin_get_user(client, auth, login_admin):
     """
-    Endpoint: /admin/<uid>
+    Endpoint: /admins/<uid>
     Method: GET
     Assert: status_code = 200
     Description:
         Test get by uid admin
     """
     headers = {"Authorization": "Bearer " + auth.token}
-    rv = client.get("/admin/" + auth.user["localId"], headers=headers)
+    rv = client.get("/admins/" + auth.user["localId"], headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -512,14 +512,14 @@ def test_admin_get_user(client, auth, login_admin):
 
 def test_admin_get_user_wrong_auth(client, auth, login_user):
     """
-    Endpoint: /admin/<uid>
+    Endpoint: /admins/<uid>
     Method: GET
     Assert: status_code = 401
     Description:
         Test get by uid admin with wrong auth
     """
     headers = {"Authorization": "Bearer " + auth.token}
-    rv = client.get("/admin/" + auth.user["localId"], headers=headers)
+    rv = client.get("/admins/" + auth.user["localId"], headers=headers)
     assert rv.status_code == 401, "should be status code 401"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -530,14 +530,14 @@ def test_admin_get_user_wrong_auth(client, auth, login_user):
 
 def test_admin_list_user(client, auth, login_admin):
     """
-    Endpoint: /admin
+    Endpoint: /admins
     Method: GET
     Assert: status_code = 200
     Description:
         Test list admin
     """
     headers = {"Authorization": "Bearer " + auth.token}
-    rv = client.get("/admin", headers=headers)
+    rv = client.get("/admins", headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -548,7 +548,7 @@ def test_admin_list_user(client, auth, login_admin):
 
 def test_admin_list_user_search(client, auth, login_admin):
     """
-    Endpoint: /admin
+    Endpoint: /admins
     Method: GET
     Assert: status_code = 200
     Description:
@@ -558,7 +558,7 @@ def test_admin_list_user_search(client, auth, login_admin):
     params = {
         "search": "test_admin@admin",
     }
-    rv = client.get("/admin", query_string=params, headers=headers)
+    rv = client.get("/admins", query_string=params, headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -569,7 +569,7 @@ def test_admin_list_user_search(client, auth, login_admin):
 
 def test_admin_list_user_paginate(client, auth, login_admin):
     """
-    Endpoint: /admin
+    Endpoint: /admins
     Method: GET
     Assert: status_code = 200
     Description:
@@ -593,7 +593,7 @@ def test_admin_list_user_paginate(client, auth, login_admin):
 
 def test_admin_list_user_order_asc(client, auth, login_admin):
     """
-    Endpoint: /admin
+    Endpoint: /admins
     Method: GET
     Assert: status_code = 200
     Description:
@@ -601,7 +601,7 @@ def test_admin_list_user_order_asc(client, auth, login_admin):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     params = {"orderBy": "id", "order": "asc"}
-    rv = client.get("/admin", query_string=params, headers=headers)
+    rv = client.get("/admins", query_string=params, headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -615,7 +615,7 @@ def test_admin_list_user_order_asc(client, auth, login_admin):
 
 def test_admin_list_user_order_desc(client, auth, login_admin):
     """
-    Endpoint: /admin
+    Endpoint: /admins
     Method: GET
     Assert: status_code = 200
     Description:
@@ -623,7 +623,7 @@ def test_admin_list_user_order_desc(client, auth, login_admin):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     params = {"orderBy": "id", "order": "desc"}
-    rv = client.get("/admin", query_string=params, headers=headers)
+    rv = client.get("/admins", query_string=params, headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -637,7 +637,7 @@ def test_admin_list_user_order_desc(client, auth, login_admin):
 
 def test_admin_disabled(client, auth, login_admin):
     """
-    Endpoint: /admin/disabled/<uid>
+    Endpoint: /admins/disabled/<uid>
     Method: PATCH
     Assert: status_code = 200
     Description:
@@ -645,7 +645,7 @@ def test_admin_disabled(client, auth, login_admin):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     identifier = search_user(client, auth, "test@adminconexperto.com")
-    rv = client.patch("/admin/disabled/" + identifier, headers=headers)
+    rv = client.patch("/admins/disabled/" + identifier, headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -658,14 +658,16 @@ def test_admin_disabled(client, auth, login_admin):
 
 def test_list_admin_disabled(client, auth, login_admin):
     """
-    Endpoint: /admin?disabled=true
+    Endpoint: /admins?disabled=true
     Method: GET
     Assert: status_code = 200
     Description:
         Test list admin filter by disabled true
     """
     headers = {"Authorization": "Bearer " + auth.token}
-    rv = client.get("/admin", query_string={"disabled": True}, headers=headers)
+    rv = client.get(
+        "/admins", query_string={"disabled": True}, headers=headers
+    )
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -679,7 +681,7 @@ def test_list_admin_disabled(client, auth, login_admin):
 
 def test_admin_enabled(client, auth, login_admin):
     """
-    Endpoint: /admin/disabled/<uid>
+    Endpoint: /admins/disabled/<uid>
     Method: PATCH
     Assert: status_code = 200
     Description:
@@ -687,7 +689,7 @@ def test_admin_enabled(client, auth, login_admin):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     identifier = search_user(client, auth, "test@adminconexperto.com")
-    rv = client.patch("/admin/disabled/" + identifier, headers=headers)
+    rv = client.patch("/admins/disabled/" + identifier, headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -704,7 +706,7 @@ def test_admin_enabled(client, auth, login_admin):
 
 def test_admin_disabled_wrong_auth(client, auth, login_user):
     """
-    Endpoint: /admin/disabled/<uid>
+    Endpoint: /admins/disabled/<uid>
     Method: PATCH
     Assert: status_code = 401
     Description:
@@ -712,7 +714,7 @@ def test_admin_disabled_wrong_auth(client, auth, login_user):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     identifier = search_user(client, auth, "test@adminconexperto.com")
-    rv = client.patch("/admin/disabled/" + identifier, headers=headers)
+    rv = client.patch("/admins/disabled/" + identifier, headers=headers)
     assert rv.status_code == 401, "should be status code 401"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -723,7 +725,7 @@ def test_admin_disabled_wrong_auth(client, auth, login_user):
 
 def test_admin_disabled_user_root_wrong_auth(client, auth, login_admin):
     """
-    Endpoint: /admin/disabled
+    Endpoint: /admins/disabled
     Method: PATCH
     Assert: status_code == 401
     Description:
@@ -731,7 +733,7 @@ def test_admin_disabled_user_root_wrong_auth(client, auth, login_admin):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     identifier = search_user(client, auth, "test_root@adminconexperto.com")
-    rv = client.patch("/admin/disabled/" + identifier, headers=headers)
+    rv = client.patch("/admins/disabled/" + identifier, headers=headers)
     assert rv.status_code == 401, "should be status code 401"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -742,7 +744,7 @@ def test_admin_disabled_user_root_wrong_auth(client, auth, login_admin):
 
 def test_admin_delete(client, auth, login_admin):
     """
-    Endpoint: /admin/<uid>
+    Endpoint: /admins/<uid>
     Method: DELETE
     Assert: status_code = 200
     Description:
@@ -750,7 +752,7 @@ def test_admin_delete(client, auth, login_admin):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     identifier = search_user(client, auth, "test@adminconexperto.com")
-    rv = client.delete("/admin/" + identifier, headers=headers)
+    rv = client.delete("/admins/" + identifier, headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -761,7 +763,7 @@ def test_admin_delete(client, auth, login_admin):
 
 def test_admin_delete_wrong_auth(client, auth, login_user):
     """
-    Endpoint: /admin/<uid>
+    Endpoint: /admins/<uid>
     Method: DELETE
     Assert: status_code = 200
     Description:
@@ -769,7 +771,7 @@ def test_admin_delete_wrong_auth(client, auth, login_user):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     identifier = search_user(client, auth, "test_root@adminconexperto.com")
-    rv = client.delete("/admin/" + identifier, headers=headers)
+    rv = client.delete("/admins/" + identifier, headers=headers)
     assert rv.status_code == 401, "should be status code 401"
     assert (
         rv.headers["Content-Type"] == "application/json"

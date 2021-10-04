@@ -123,10 +123,10 @@ schema_delete = {
 
 
 def search_user(client, auth, search):
-    auth.login("admin@adminconexperto.com", "token_admin")
+    auth.login("admin@adminconexperto.com", "token_admin", "admin")
     headers = {"Authorization": "Bearer " + auth.token}
     params = {"search": search}
-    rv = client.get("/admin/user", query_string=params, headers=headers)
+    rv = client.get("/admin/users", query_string=params, headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -137,9 +137,9 @@ def search_user(client, auth, search):
 
 
 def get_speciality(client, auth):
-    auth.login("admin@adminconexperto.com", "token_admin")
+    auth.login("admin@adminconexperto.com", "token_admin", "admin")
     headers = {"Authorization": "Bearer " + auth.token}
-    rv = client.get("/admin/speciality", headers=headers)
+    rv = client.get("/admin/specialities", headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -149,9 +149,9 @@ def get_speciality(client, auth):
 
 
 def get_method(client, auth):
-    auth.login("admin@adminconexperto.com", "token_admin")
+    auth.login("admin@adminconexperto.com", "token_admin", "admin")
     headers = {"Authorization": "Bearer " + auth.token}
-    rv = client.get("/admin/method", headers=headers)
+    rv = client.get("/admin/methods", headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -171,13 +171,13 @@ def prove_order(items, order):
 
 def paginate(client, auth, params):
     headers = {"Authorization": "Bearer " + auth.token}
-    rv = client.get("/admin/user", query_string=params, headers=headers)
+    rv = client.get("/admin/users", query_string=params, headers=headers)
     return rv
 
 
 def test_create_user(client, auth, login_admin, seed_speciality, seed_method):
     """
-    Endpoint: /admin/user
+    Endpoint: /admin/users
     Method: POST
     Assert: status_code = 200
     Description:
@@ -207,7 +207,7 @@ def test_create_user(client, auth, login_admin, seed_speciality, seed_method):
         {"id": item["id"], "link": faker.url()}
         for item in get_method(client, auth)[:3]
     ]
-    rv = client.post("/admin/user", headers=headers, json=payload)
+    rv = client.post("/admin/users", headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -220,7 +220,7 @@ def test_create_user_duplicate(
     client, auth, login_admin, seed_speciality, seed_method
 ):
     """
-    Endpoint: /admin/user
+    Endpoint: /admin/users
     Method: POST
     Assert: status_code = 400
     Description:
@@ -249,7 +249,7 @@ def test_create_user_duplicate(
         {"id": item["id"], "link": faker.url()}
         for item in get_method(client, auth)
     ]
-    rv = client.post("/admin/user", headers=headers, json=payload)
+    rv = client.post("/admin/users", headers=headers, json=payload)
     assert rv.status_code == 400, "should be status code 400"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -262,7 +262,7 @@ def test_create_user_without_field(
     client, auth, login_admin, seed_speciality, seed_method
 ):
     """
-    Endpoint: /admin/user
+    Endpoint: /admin/users
     Method: POST
     Assert: status_code = 400
     Description:
@@ -290,7 +290,7 @@ def test_create_user_without_field(
         {"id": item["id"], "link": faker.url()}
         for item in get_method(client, auth)
     ]
-    rv = client.post("/admin/user", headers=headers, json=payload)
+    rv = client.post("/admin/users", headers=headers, json=payload)
     assert rv.status_code == 400, "should be status code 400"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -301,7 +301,7 @@ def test_create_user_without_field(
 
 def test_create_user_without_headers(client):
     """
-    Endpoint: /admin/user
+    Endpoint: /admin/users
     Method: POST
     Assert: status_code = 400
     Description:
@@ -322,7 +322,7 @@ def test_create_user_without_headers(client):
         "link_video": "https://youtube.com/asvasdasd",
         "plans": [{"duration": 60, "price": 15}],
     }
-    rv = client.post("/admin/user", json=payload)
+    rv = client.post("/admin/users", json=payload)
     assert rv.status_code == 400, "should be status code 400"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -335,7 +335,7 @@ def test_create_user_wrong_token(
     client, auth, login_admin, seed_speciality, seed_method
 ):
     """
-    Endpoint: /admin/user
+    Endpoint: /admin/users
     Method: POST
     Assert: status_code = 400
     Description:
@@ -364,7 +364,7 @@ def test_create_user_wrong_token(
         {"id": item["id"], "link": faker.url()}
         for item in get_method(client, auth)
     ]
-    rv = client.post("/admin/user", headers=headers, json=payload)
+    rv = client.post("/admin/users", headers=headers, json=payload)
     assert rv.status_code == 400, "should be status code 400"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -375,7 +375,7 @@ def test_create_user_wrong_token(
 
 def test_update_user(client, auth, login_admin, seed_speciality, seed_method):
     """
-    Endpoint: /admin/user/<uid>
+    Endpoint: /admin/users/<uid>
     Method: PUT
     Assert: status_code = 200
     Description:
@@ -403,7 +403,7 @@ def test_update_user(client, auth, login_admin, seed_speciality, seed_method):
     payload["plans"].append({"id": user[0]["plans"][0]["id"], "price": 20})
 
     rv = client.put(
-        "/admin/user/" + user[0]["uid"], headers=headers, json=payload
+        "/admin/users/" + user[0]["uid"], headers=headers, json=payload
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -449,7 +449,7 @@ def test_update_user_field(
     client, auth, login_admin, seed_speciality, seed_method
 ):
     """
-    Endpoint: /admin/user/<uid>
+    Endpoint: /admin/users/<uid>
     Method: PUT
     Assert: status_code = 200
     Description:
@@ -463,7 +463,7 @@ def test_update_user_field(
     }
     user = search_user(client, auth, "user@common.com")
     rv = client.put(
-        "/admin/user/" + user[0]["uid"], headers=headers, json=payload
+        "/admin/users/" + user[0]["uid"], headers=headers, json=payload
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -482,7 +482,7 @@ def test_update_user_field(
 
 def test_get_user(client, auth, login_admin, seed_speciality, seed_method):
     """
-    Endpoint: /admin/user/<uid>
+    Endpoint: /admin/users/<uid>
     Method: GET
     Assert: status_code = 200
     Description:
@@ -490,7 +490,7 @@ def test_get_user(client, auth, login_admin, seed_speciality, seed_method):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     user = search_user(client, auth, "user@common.com")
-    rv = client.get("/admin/user/" + user[0]["uid"], headers=headers)
+    rv = client.get("/admin/users/" + user[0]["uid"], headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -501,14 +501,14 @@ def test_get_user(client, auth, login_admin, seed_speciality, seed_method):
 
 def test_list_user(client, auth, login_admin, seed_speciality, seed_method):
     """
-    Endpoint: /admin/user
+    Endpoint: /admin/users
     Method: GET
     Assert: status_code = 200
     Description:
         Test list user
     """
     headers = {"Authorization": "Bearer " + auth.token}
-    rv = client.get("/admin/user", headers=headers)
+    rv = client.get("/admin/users", headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -521,7 +521,7 @@ def test_list_user_search(
     client, auth, login_admin, seed_speciality, seed_method
 ):
     """
-    Endpoint: /admin/user
+    Endpoint: /admin/users
     Method: GET
     Assert: status_code = 200
     Description:
@@ -531,7 +531,7 @@ def test_list_user_search(
     params = {
         "search": "Startups",
     }
-    rv = client.get("/admin/user", query_string=params, headers=headers)
+    rv = client.get("/admin/users", query_string=params, headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -544,7 +544,7 @@ def test_list_user_paginate(
     client, auth, login_admin, seed_speciality, seed_method
 ):
     """
-    Endpoint: /admin/user
+    Endpoint: /admin/users
     Method: GET
     Assert: status_code = 200
     Description:
@@ -569,7 +569,7 @@ def test_list_user_order_asc(
     client, auth, login_admin, seed_speciality, seed_method
 ):
     """
-    Endpoint: /admin/user
+    Endpoint: /admin/users
     Method: GET
     Assert: status_code = 200
     Description:
@@ -577,7 +577,7 @@ def test_list_user_order_asc(
     """
     headers = {"Authorization": "Bearer " + auth.token}
     params = {"orderBy": "id", "order": "asc"}
-    rv = client.get("/admin/user", query_string=params, headers=headers)
+    rv = client.get("/admin/users", query_string=params, headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -593,7 +593,7 @@ def test_list_user_order_desc(
     client, auth, login_admin, seed_speciality, seed_method
 ):
     """
-    Endpoint: /admin/user
+    Endpoint: /admin/users
     Method: GET
     Assert: status_code = 200
     Description:
@@ -601,7 +601,7 @@ def test_list_user_order_desc(
     """
     headers = {"Authorization": "Bearer " + auth.token}
     params = {"orderBy": "id", "order": "desc"}
-    rv = client.get("/admin/user", query_string=params, headers=headers)
+    rv = client.get("/admin/users", query_string=params, headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -617,7 +617,7 @@ def test_user_disabled(
     client, auth, login_admin, seed_speciality, seed_method
 ):
     """
-    Endpoint: /admin/user/disabled/<uid>
+    Endpoint: /admin/users/disabled/<uid>
     Method: PATCH
     Assert: status_code = 200
     Description:
@@ -626,7 +626,7 @@ def test_user_disabled(
     headers = {"Authorization": "Bearer " + auth.token}
     user = search_user(client, auth, "user@common.com")
     rv = client.patch(
-        "/admin/user/disabled/" + user[0]["uid"], headers=headers
+        "/admin/users/disabled/" + user[0]["uid"], headers=headers
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -642,7 +642,7 @@ def test_list_user_disabled(
     client, auth, login_admin, seed_speciality, seed_method
 ):
     """
-    Endpoint: /admin/user?disabled=true
+    Endpoint: /admin/users?disabled=true
     Method: GET
     Assert: status_code = 200
     Description:
@@ -650,7 +650,7 @@ def test_list_user_disabled(
     """
     headers = {"Authorization": "Bearer " + auth.token}
     rv = client.get(
-        "/admin/user", query_string={"disabled": True}, headers=headers
+        "/admin/users", query_string={"disabled": True}, headers=headers
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -665,7 +665,7 @@ def test_list_user_disabled(
 
 def test_user_enabled(client, auth, login_admin, seed_speciality, seed_method):
     """
-    Endpoint: /admin/user/disabled/<uid>
+    Endpoint: /admin/users/disabled/<uid>
     Method: PATCH
     Assert: status_code = 200
     Description:
@@ -674,7 +674,7 @@ def test_user_enabled(client, auth, login_admin, seed_speciality, seed_method):
     headers = {"Authorization": "Bearer " + auth.token}
     user = search_user(client, auth, "user@common.com")
     rv = client.patch(
-        "/admin/user/disabled/" + user[0]["uid"], headers=headers
+        "/admin/users/disabled/" + user[0]["uid"], headers=headers
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -692,7 +692,7 @@ def test_user_enabled(client, auth, login_admin, seed_speciality, seed_method):
 
 def test_user_delete(client, auth, login_admin, seed_speciality, seed_method):
     """
-    Endpoint: /admin/user/<uid>
+    Endpoint: /admin/users/<uid>
     Method: DELETE
     Assert: status_code = 200
     Description:
@@ -700,7 +700,7 @@ def test_user_delete(client, auth, login_admin, seed_speciality, seed_method):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     user = search_user(client, auth, "user@common.com")
-    rv = client.delete("/admin/user/" + user[0]["uid"], headers=headers)
+    rv = client.delete("/admin/users/" + user[0]["uid"], headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"

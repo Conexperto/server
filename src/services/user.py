@@ -96,7 +96,7 @@ class UserService:
             a (UserRecord): UserRecord
             b (User): User
         """
-        user_record = UserRecord.get_user(uid, app=web_sdk)
+        user_record = UserRecord.get_user(uid, auth=web_sdk.auth)
         user = User.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:
@@ -165,7 +165,7 @@ class UserService:
                 email=body["email"],
                 password=body["password"],
                 display_name=body["display_name"],
-                app=web_sdk,
+                auth=web_sdk.auth,
             )
             complete_register = body.get("complete_register") or False
             user_record.make_claims({"complete_register": complete_register})
@@ -227,7 +227,7 @@ class UserService:
             a (UserRecord): UserRecord
             b (User): User
         """
-        user_record = UserRecord.get_user(uid, app=web_sdk)
+        user_record = UserRecord.get_user(uid, auth=web_sdk.auth)
         user = User.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:
@@ -286,7 +286,7 @@ class UserService:
             a (UserRecord): UserRecord
             b (User): User
         """
-        user_record = UserRecord.get_user(uid, app=web_sdk)
+        user_record = UserRecord.get_user(uid, auth=web_sdk.auth)
         user = User.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:
@@ -338,7 +338,7 @@ class UserService:
             a (UserRecord): UserRecord
             b (User): User
         """
-        user_record = UserRecord.get_user(uid, app=web_sdk)
+        user_record = UserRecord.get_user(uid, auth=web_sdk.auth)
         user = User.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:
@@ -362,7 +362,7 @@ class UserService:
         Returns: dict
             uid (str): User uid
         """
-        user_record = UserRecord.get_user(uid, app=web_sdk)
+        user_record = UserRecord.get_user(uid, auth=web_sdk.auth)
         user = User.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:

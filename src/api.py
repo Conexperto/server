@@ -46,16 +46,16 @@ def create_api():
         db.init_app(api)
 
     api.register_blueprint(auth_admin, url_prefix="/admin/auth")
-    api.register_blueprint(admin, url_prefix="/admin")
-    api.register_blueprint(user_admin, url_prefix="/admin/user")
-    api.register_blueprint(method_admin, url_prefix="/admin/method")
-    api.register_blueprint(plan_admin, url_prefix="/admin/plan")
-    api.register_blueprint(speciality_admin, url_prefix="/admin/speciality")
+    api.register_blueprint(admin, url_prefix="/admins")
+    api.register_blueprint(user_admin, url_prefix="/admin/users")
+    api.register_blueprint(method_admin, url_prefix="/admin/methods")
+    api.register_blueprint(plan_admin, url_prefix="/admin/plans")
+    api.register_blueprint(speciality_admin, url_prefix="/admin/specialities")
 
     api.register_blueprint(auth, url_prefix="/auth")
-    api.register_blueprint(user, url_prefix="/user")
-    api.register_blueprint(speciality, url_prefix="/speciality")
-    api.register_blueprint(method, url_prefix="/method")
+    api.register_blueprint(user, url_prefix="/users")
+    api.register_blueprint(speciality, url_prefix="/specialities")
+    api.register_blueprint(method, url_prefix="/methods")
 
     # Handler Errors HTTP
     def error_handler(err, msg, detail=None):
