@@ -1,37 +1,32 @@
-image: python:3
-
-stages:
-  - format
-  - test
-  - deploy
-
-variables:
-  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-  POSTGRES_DB: "cxp_test"
-  POSTGRES_USER: "cxp"
-  POSTGRES_PASSWORD: "token.01"
-  DATABASE_URL: "postgresql+psycopg2://cxp:token.01@cxp_db:5432/cxp_test"
-
-  FIREBASE_PROJECT: "conexperto-admin"
-  FIREBASE_TOKEN: "1//01oOxnx8H1x1bCgYIARAAGAESNwF-L9IrDYa8EKEGhP55_lSx5MzPI-76952cMi9esR06R45VTkqzwkYhx5x2ydqBArg1UzfqH54"
-  FIREBASE_AUTH_EMULATOR_ADMIN_HOST: "emulator_admin:9099"
-  FIREBASE_AUTH_EMULATOR_WEB_HOST: "emulator_web:9098"
-  FIREBASE_API_KEY_ADMIN: "AIzaSyD4uyFMfi35s6nae3gjZfB_Wd1hMmNF7_w"
-  FIREBASE_API_KEY_WEB: "AIzaSyAe2EVtNNEZ8QZ9WKoGkPqFENCsajQeai4"
-
-  TESTING: "True"
-
-cache:
-  key: "$CI_COMMIT_REF_SLUG"
-  paths:
-    - .cache/pip
-    - .venv/
-
-services:
-  - name: postgres:13-alpine
-    alias: cxp_db
-  - name: frfernandezdev/firebase-emulators:latest
-    alias: emulator_admin
+default:
+  image: python:3
+  stages:
+    - format
+    - test
+    - deploy
+  variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+    POSTGRES_DB: "cxp_test"
+    POSTGRES_USER: "cxp"
+    POSTGRES_PASSWORD: "token.01"
+    DATABASE_URL: "postgresql+psycopg2://cxp:token.01@cxp_db:5432/cxp_test"
+    FIREBASE_PROJECT: "conexperto-admin"
+    FIREBASE_TOKEN: "1//01oOxnx8H1x1bCgYIARAAGAESNwF-L9IrDYa8EKEGhP55_lSx5MzPI-76952cMi9esR06R45VTkqzwkYhx5x2ydqBArg1UzfqH54"
+    FIREBASE_AUTH_EMULATOR_ADMIN_HOST: "emulator_admin:9099"
+    FIREBASE_AUTH_EMULATOR_WEB_HOST: "emulator_web:9098"
+    FIREBASE_API_KEY_ADMIN: "AIzaSyD4uyFMfi35s6nae3gjZfB_Wd1hMmNF7_w"
+    FIREBASE_API_KEY_WEB: "AIzaSyAe2EVtNNEZ8QZ9WKoGkPqFENCsajQeai4"
+    TESTING: "True"
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - .cache/pip
+      - .venv/
+  services:
+    - name: postgres:13-alpine
+      alias: cxp_db
+    - name: frfernandezdev/firebase-emulators:latest
+      alias: emulator_admin
 
 format:
   stage: format
