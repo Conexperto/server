@@ -88,10 +88,10 @@ schema_delete_many = {
 
 
 def search_method(client, auth, search):
-    auth.login("admin@adminconexperto.com", "token_admin")
+    auth.login("admin@adminconexperto.com", "token_admin", "admin")
     headers = {"Authorization": "Bearer " + auth.token}
     params = {"search": search}
-    rv = client.get("/admin/method", query_string=params, headers=headers)
+    rv = client.get("/admin/methods", query_string=params, headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -112,13 +112,13 @@ def prove_order(items, order):
 
 def paginate(client, auth, params):
     headers = {"Authorization": "Bearer " + auth.token}
-    rv = client.get("/admin/method", query_string=params, headers=headers)
+    rv = client.get("/admin/methods", query_string=params, headers=headers)
     return rv
 
 
 def test_create_method(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method
+    Endpoint: /admin/methods
     Method: POST
     Assert: status_code = 200
     Description:
@@ -126,7 +126,7 @@ def test_create_method(client, auth, login_admin, seed_method):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     payload = {"name": "Snapchat"}
-    rv = client.post("/admin/method", headers=headers, json=payload)
+    rv = client.post("/admin/methods", headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -137,7 +137,7 @@ def test_create_method(client, auth, login_admin, seed_method):
 
 def test_create_many_method(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method
+    Endpoint: /admin/methods
     Method: POST
     Assert: status_code = 200
     Description:
@@ -145,7 +145,7 @@ def test_create_many_method(client, auth, login_admin, seed_method):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     payload = [{"name": "Duo"}, {"name": "Meet"}]
-    rv = client.post("/admin/method", headers=headers, json=payload)
+    rv = client.post("/admin/methods", headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -156,7 +156,7 @@ def test_create_many_method(client, auth, login_admin, seed_method):
 
 def test_create_method_duplicate(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method
+    Endpoint: /admin/methods
     Method: POST
     Assert: status_code = 400
     Description:
@@ -164,7 +164,7 @@ def test_create_method_duplicate(client, auth, login_admin, seed_method):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     payload = {"name": "Snapchat"}
-    rv = client.post("/admin/method", headers=headers, json=payload)
+    rv = client.post("/admin/methods", headers=headers, json=payload)
     assert rv.status_code == 400, "should be status code 400"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -175,7 +175,7 @@ def test_create_method_duplicate(client, auth, login_admin, seed_method):
 
 def test_create_method_without_field(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method
+    Endpoint: /admin/methods
     Method: POST
     Assert: status_code = 400
     Description:
@@ -183,7 +183,7 @@ def test_create_method_without_field(client, auth, login_admin, seed_method):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     payload = {}
-    rv = client.post("/admin/method", headers=headers, json=payload)
+    rv = client.post("/admin/methods", headers=headers, json=payload)
     assert rv.status_code == 400, "should be status code 400"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -194,14 +194,14 @@ def test_create_method_without_field(client, auth, login_admin, seed_method):
 
 def test_create_method_without_headers(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method
+    Endpoint: /admin/methods
     Method: POST
     Assert: status_code = 400
     Description:
         Test create method without headers
     """
     payload = {"name": "Snapchat"}
-    rv = client.post("/admin/method", json=payload)
+    rv = client.post("/admin/methods", json=payload)
     assert rv.status_code == 400, "should be status code 400"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -212,7 +212,7 @@ def test_create_method_without_headers(client, auth, login_admin, seed_method):
 
 def test_update_method(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method/<id>
+    Endpoint: /admin/methods/<id>
     Method: PUT
     Assert: status_code = 200
     Description:
@@ -222,7 +222,7 @@ def test_update_method(client, auth, login_admin, seed_method):
     payload = {"name": "Method"}
     method = search_method(client, auth, "Snapchat")
     rv = client.put(
-        "/admin/method/" + str(method[0]["id"]), headers=headers, json=payload
+        "/admin/methods/" + str(method[0]["id"]), headers=headers, json=payload
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -238,7 +238,7 @@ def test_update_method(client, auth, login_admin, seed_method):
 
 def test_update_method_field(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method/<id>
+    Endpoint: /admin/methods/<id>
     Method: PATCH
     Assert: status_code = 200
     Description:
@@ -248,7 +248,7 @@ def test_update_method_field(client, auth, login_admin, seed_method):
     payload = {"name": "Snapchat"}
     method = search_method(client, auth, "Method")
     rv = client.patch(
-        "/admin/method/" + str(method[0]["id"]), headers=headers, json=payload
+        "/admin/methods/" + str(method[0]["id"]), headers=headers, json=payload
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -264,7 +264,7 @@ def test_update_method_field(client, auth, login_admin, seed_method):
 
 def test_update_many_method(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method
+    Endpoint: /admin/methods
     Method: PUT
     Assert: status_code = 200
     Description:
@@ -276,7 +276,7 @@ def test_update_many_method(client, auth, login_admin, seed_method):
         {"id": method[0]["id"], "name": "Meet You"},
         {"id": method[1]["id"], "name": "Room Only"},
     ]
-    rv = client.put("/admin/method", headers=headers, json=payload)
+    rv = client.put("/admin/methods", headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -292,7 +292,7 @@ def test_update_many_method(client, auth, login_admin, seed_method):
 
 def test_get_method(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method/<id>
+    Endpoint: /admin/methods/<id>
     Method: GET
     Assert: status_code = 200
     Description:
@@ -300,7 +300,7 @@ def test_get_method(client, auth, login_admin, seed_method):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     method = search_method(client, auth, "Duo")
-    rv = client.get("/admin/method/" + str(method[0]["id"]), headers=headers)
+    rv = client.get("/admin/methods/" + str(method[0]["id"]), headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -311,14 +311,14 @@ def test_get_method(client, auth, login_admin, seed_method):
 
 def test_list_method(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method
+    Endpoint: /admin/methods
     Method: GET
     Assert: status_code = 200
     Description:
         Test list method
     """
     headers = {"Authorization": "Bearer " + auth.token}
-    rv = client.get("/admin/method", headers=headers)
+    rv = client.get("/admin/methods", headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -329,7 +329,7 @@ def test_list_method(client, auth, login_admin, seed_method):
 
 def test_list_method_search(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method
+    Endpoint: /admin/methods
     Method: GET
     Assert: status_code = 200
     Description:
@@ -339,7 +339,7 @@ def test_list_method_search(client, auth, login_admin, seed_method):
     params = {
         "search": "Skype",
     }
-    rv = client.get("/admin/method", query_string=params, headers=headers)
+    rv = client.get("/admin/methods", query_string=params, headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -350,7 +350,7 @@ def test_list_method_search(client, auth, login_admin, seed_method):
 
 def test_list_method_paginate(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method
+    Endpoint: /admin/methods
     Method: GET
     Assert: status_code = 200
     Description:
@@ -373,7 +373,7 @@ def test_list_method_paginate(client, auth, login_admin, seed_method):
 
 def test_list_method_desc(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method
+    Endpoint: /admin/methods
     Method: GET
     Assert: status_code = 200
     Description:
@@ -381,7 +381,7 @@ def test_list_method_desc(client, auth, login_admin, seed_method):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     params = {"orderBy": "id", "order": "desc"}
-    rv = client.get("/admin/method", query_string=params, headers=headers)
+    rv = client.get("/admin/methods", query_string=params, headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -395,7 +395,7 @@ def test_list_method_desc(client, auth, login_admin, seed_method):
 
 def test_list_method_asc(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method
+    Endpoint: /admin/methods
     Method: GET
     Assert: status_code = 200
     Description:
@@ -403,7 +403,7 @@ def test_list_method_asc(client, auth, login_admin, seed_method):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     params = {"orderBy": "id", "order": "desc"}
-    rv = client.get("/admin/method", query_string=params, headers=headers)
+    rv = client.get("/admin/methods", query_string=params, headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -417,7 +417,7 @@ def test_list_method_asc(client, auth, login_admin, seed_method):
 
 def test_method_disabled(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method/disabled/<id>
+    Endpoint: /admin/methods/disabled/<id>
     Method: PATCH
     Assert: status_code = 200
     Description:
@@ -426,7 +426,7 @@ def test_method_disabled(client, auth, login_admin, seed_method):
     headers = {"Authorization": "Bearer " + auth.token}
     method = search_method(client, auth, "Duo")
     rv = client.patch(
-        "/admin/method/disabled/" + str(method[0]["id"]), headers=headers
+        "/admin/methods/disabled/" + str(method[0]["id"]), headers=headers
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -439,7 +439,7 @@ def test_method_disabled(client, auth, login_admin, seed_method):
 
 def test_list_method_disabled(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method?disabled=true
+    Endpoint: /admin/methods?disabled=true
     Method: GET
     Assert: status_code = 200
     Description:
@@ -447,7 +447,7 @@ def test_list_method_disabled(client, auth, login_admin, seed_method):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     rv = client.get(
-        "/admin/method", query_string={"disabled": True}, headers=headers
+        "/admin/methods", query_string={"disabled": True}, headers=headers
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -462,7 +462,7 @@ def test_list_method_disabled(client, auth, login_admin, seed_method):
 
 def test_method_enabled(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method/disabled/<id>
+    Endpoint: /admin/methods/disabled/<id>
     Method: PATCH
     Assert: status_code = 200
     Description:
@@ -471,7 +471,7 @@ def test_method_enabled(client, auth, login_admin, seed_method):
     headers = {"Authorization": "Bearer " + auth.token}
     method = search_method(client, auth, "Duo")
     rv = client.patch(
-        "/admin/method/disabled/" + str(method[0]["id"]), headers=headers
+        "/admin/methods/disabled/" + str(method[0]["id"]), headers=headers
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -485,7 +485,7 @@ def test_method_enabled(client, auth, login_admin, seed_method):
 
 def test_method_disabled_many(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method/disabled
+    Endpoint: /admin/methods/disabled
     Method: PATCH
     Assert: status_code = 200
     Description:
@@ -496,7 +496,7 @@ def test_method_disabled_many(client, auth, login_admin, seed_method):
     methods = search_method(client, auth, "")
     payload = [item["id"] for item in methods[3:5]]
 
-    rv = client.patch("/admin/method/disabled", headers=headers, json=payload)
+    rv = client.patch("/admin/methods/disabled", headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -512,7 +512,7 @@ def test_method_disabled_many(client, auth, login_admin, seed_method):
 
 def test_method_enabled_many(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method/disabled
+    Endpoint: /admin/methods/disabled
     Method: PATCH
     Assert: status_code = 200
     Description:
@@ -523,7 +523,7 @@ def test_method_enabled_many(client, auth, login_admin, seed_method):
     methods = search_method(client, auth, "")
     payload = [item["id"] for item in methods[3:5]]
 
-    rv = client.patch("/admin/method/disabled", headers=headers, json=payload)
+    rv = client.patch("/admin/methods/disabled", headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -539,7 +539,7 @@ def test_method_enabled_many(client, auth, login_admin, seed_method):
 
 def test_method_delete(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method/<id>
+    Endpoint: /admin/methods/<id>
     Method: DELETE
     Assert: status_code = 200
     Description:
@@ -548,7 +548,7 @@ def test_method_delete(client, auth, login_admin, seed_method):
     headers = {"Authorization": "Bearer " + auth.token}
     method = search_method(client, auth, "Duo")
     rv = client.delete(
-        "/admin/method/" + str(method[0]["id"]), headers=headers
+        "/admin/methods/" + str(method[0]["id"]), headers=headers
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -560,7 +560,7 @@ def test_method_delete(client, auth, login_admin, seed_method):
 
 def test_method_delete_many(client, auth, login_admin, seed_method):
     """
-    Endpoint: /admin/method
+    Endpoint: /admin/methods
     Method: DELETE
     Assert: status_code = 200
     Description:
@@ -571,7 +571,7 @@ def test_method_delete_many(client, auth, login_admin, seed_method):
     methods = search_method(client, auth, "")
     payload = [item["id"] for item in methods[3:5]]
 
-    rv = client.delete("/admin/method", headers=headers, json=payload)
+    rv = client.delete("/admin/methods", headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"

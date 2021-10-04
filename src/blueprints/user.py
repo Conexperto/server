@@ -5,35 +5,34 @@ from flask import request
 
 from src.exceptions import HandlerException
 from src.helpers import parse_order
-from src.middlewares import login_required
 from src.services import UserService
 
 
-router = Blueprint(name="User", import_name=__name__)
+router = Blueprint(name="Users", import_name=__name__)
 
 
-@router.route("/<int:_id>", methods=["GET"])
-@login_required()
-def index_user_one(_id):
+@router.route("/<uid>", methods=["GET"])
+def index_user_one(uid):
     """
-    GET: /api/v1/user/<int:_id>
+    GET: /api/v1/users/<uid>
     """
     try:
         service = UserService()
-        user = service.get(_id)
+        user = service.get(uid)
 
         return jsonify({"success": True, "response": user})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/", methods=["GET"])
-@login_required()
 def index_user():
     """
-    GET: /api/v1/user
+    GET: /api/v1/users
     """
     try:
         search = request.args.get("search", None)
@@ -46,12 +45,23 @@ def index_user():
         _filter_by = {"disabled": False, **filter_by}
 
         service = UserService()
-        users = service.list(
+        paginate = service.list(
             search, _filter_by, page, per_pages, order_by, order
         )
 
-        return jsonify({"success": True, "response": users})
+        return jsonify(
+            {
+                "success": True,
+                "response": paginate.items,
+                "total": paginate.total,
+                "page": paginate.page,
+                "limit": paginate.per_page,
+                "next": paginate.next_num,
+            }
+        )
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()

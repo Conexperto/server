@@ -24,10 +24,12 @@ class AuthService:
         """
 
         decoded_token = UserRecord.verify_id_token(
-            id_token, check_revoked=True, app=web_sdk
+            id_token, check_revoked=True, auth=web_sdk.auth
         )
 
-        user_record = UserRecord.get_user(decoded_token["uid"], app=web_sdk)
+        user_record = UserRecord.get_user(
+            decoded_token["uid"], auth=web_sdk.auth
+        )
 
         if user_record.disabled:
             raise HandlerException(401, "Account disabled")
@@ -64,7 +66,7 @@ class AuthService:
                 email=body["email"],
                 password=body["password"],
                 display_name=body["display_name"],
-                app=web_sdk,
+                auth=web_sdk.auth,
             )
             user_record.make_claims({"complete_register": False})
 

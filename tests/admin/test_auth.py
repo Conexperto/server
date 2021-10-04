@@ -93,22 +93,6 @@ def test_auth_user(client, auth, login_user):
     validate(instance=body, schema=schema)
 
 
-def test_auth_wrong_user(client, auth, login):
-    """
-    Endpoint: /admin/auth
-    Method: GET
-    Assert: status_code == 404
-    Description:
-        Test admin auth wrong user
-    """
-    rv = client.get(
-        "/admin/auth", headers={"Authorization": "Bearer " + auth.token}
-    )
-    assert rv.status_code == 404, "should be status code 404"
-    body = loads(rv.data)
-    validate(instance=body, schema=schema_error)
-
-
 def test_auth_without_headers(client):
     """
     Endpoint: /admin/auth
