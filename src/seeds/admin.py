@@ -1,6 +1,5 @@
 """ src.seeds.admin """
 from faker import Faker
-from firebase_admin import auth
 
 from src.db import db
 from src.exceptions import HandlerException
@@ -74,7 +73,7 @@ class AdminSeed:
                     password=item["password"],
                     display_name=item["display_name"],
                     phone_number=item["phone_number"],
-                    app=admin_sdk,
+                    auth=admin_sdk.auth,
                 )
                 user_record.make_claims(
                     {"admin": True, "access_level": item["privileges"]}
@@ -90,6 +89,7 @@ class AdminSeed:
                     privileges=item["privileges"],
                 )
                 to_create.append(user)
+
             db.session.bulk_save_objects(to_create)
             db.session.commit()
         except HandlerException as ex:
@@ -102,13 +102,13 @@ class AdminSeed:
         try:
             emails = [item["email"] for item in payload]
             users = []
-            page = auth.list_users(app=admin_sdk)
+            page = admin_sdk.auth.list_users()
             while page:
                 users.extend(
                     [item.uid for item in page.users if item.email in emails]
                 )
                 page = page.get_next_page()
-            auth.delete_users(users, app=admin_sdk)
+            admin_sdk.auth.delete_users(users)
             db.session.query(Admin).filter(Admin.uid.in_(users)).delete(
                 synchronize_session=False
             )

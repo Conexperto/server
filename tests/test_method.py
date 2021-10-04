@@ -54,7 +54,7 @@ schema_error = {
 
 def search_method(client, search):
     params = {"search": search}
-    rv = client.get("/method", query_string=params)
+    rv = client.get("/methods", query_string=params)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -74,20 +74,20 @@ def prove_order(items, order):
 
 
 def paginate(client, params):
-    rv = client.get("/method", query_string=params)
+    rv = client.get("/methods", query_string=params)
     return rv
 
 
 def test_get_method(client, seed_method):
     """
-    Endpoint: /method/<id>
+    Endpoint: /methods/<id>
     Method: GET
     Assert: status_code = 200
     Description:
         Test get by method id
     """
     method = search_method(client, "Skype")
-    rv = client.get("/method/" + str(method[0]["id"]))
+    rv = client.get("/methods/" + str(method[0]["id"]))
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -98,13 +98,13 @@ def test_get_method(client, seed_method):
 
 def test_list_method(client, seed_method):
     """
-    Endpoint: /method
+    Endpoint: /methods
     Method: GET
     Assert: status_code = 200
     Description:
         Test list method
     """
-    rv = client.get("/method")
+    rv = client.get("/methods")
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -115,7 +115,7 @@ def test_list_method(client, seed_method):
 
 def test_list_method_search(client, seed_method):
     """
-    Endpoint: /method
+    Endpoint: /methods
     Method: GET
     Assert: status_code = 200
     Description:
@@ -124,7 +124,7 @@ def test_list_method_search(client, seed_method):
     params = {
         "search": "Skype",
     }
-    rv = client.get("/method", query_string=params)
+    rv = client.get("/methods", query_string=params)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -135,7 +135,7 @@ def test_list_method_search(client, seed_method):
 
 def test_list_method_paginate(client, seed_method):
     """
-    Endpoint: /method
+    Endpoint: /methods
     Method: GET
     Assert: status_code = 200
     Description:
@@ -158,14 +158,14 @@ def test_list_method_paginate(client, seed_method):
 
 def test_list_method_desc(client, seed_method):
     """
-    Endpoint: /method
+    Endpoint: /methods
     Method: GET
     Assert: status_code = 200
     Description:
         Test list method with order desc
     """
     params = {"orderBy": "id", "order": "desc"}
-    rv = client.get("/method", query_string=params)
+    rv = client.get("/methods", query_string=params)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -179,14 +179,14 @@ def test_list_method_desc(client, seed_method):
 
 def test_list_method_asc(client, seed_method):
     """
-    Endpoint: /method
+    Endpoint: /methods
     Method: GET
     Assert: status_code = 200
     Description:
         Test list method with order asc
     """
     params = {"orderBy": "id", "order": "desc"}
-    rv = client.get("/method", query_string=params)
+    rv = client.get("/methods", query_string=params)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"

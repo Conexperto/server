@@ -54,7 +54,7 @@ schema_error = {
 
 def search_speciality(client, search):
     params = {"search": search}
-    rv = client.get("/speciality", query_string=params)
+    rv = client.get("/specialities", query_string=params)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -74,20 +74,20 @@ def prove_order(items, order):
 
 
 def paginate(client, params):
-    rv = client.get("/speciality", query_string=params)
+    rv = client.get("/specialities", query_string=params)
     return rv
 
 
 def test_get_speciality(client, seed_speciality):
     """
-    Endpoint: /speciality/<id>
+    Endpoint: /specialities/<id>
     Method: GET
     Assert: status_code = 200
     Description:
         Test get by speciality id
     """
     speciality = search_speciality(client, "Investing")
-    rv = client.get("/speciality/" + str(speciality[0]["id"]))
+    rv = client.get("/specialities/" + str(speciality[0]["id"]))
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -98,13 +98,13 @@ def test_get_speciality(client, seed_speciality):
 
 def test_list_speciality(client, seed_speciality):
     """
-    Endpoint: /speciality
+    Endpoint: /specialities
     Method: GET
     Assert: status_code = 200
     Description:
         Test list speciality
     """
-    rv = client.get("/speciality")
+    rv = client.get("/specialities")
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -115,7 +115,7 @@ def test_list_speciality(client, seed_speciality):
 
 def test_list_speciality_search(client, seed_speciality):
     """
-    Endpoint: /speciality
+    Endpoint: /specialities
     Method: GET
     Assert: status_code = 200
     Description:
@@ -124,7 +124,7 @@ def test_list_speciality_search(client, seed_speciality):
     params = {
         "search": "Investing",
     }
-    rv = client.get("/speciality", query_string=params)
+    rv = client.get("/specialities", query_string=params)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -135,7 +135,7 @@ def test_list_speciality_search(client, seed_speciality):
 
 def test_list_speciality_paginate(client, seed_speciality):
     """
-    Endpoint: /speciality
+    Endpoint: /specialities
     Method: GET
     Assert: status_code = 200
     Description:
@@ -158,14 +158,14 @@ def test_list_speciality_paginate(client, seed_speciality):
 
 def test_list_speciality_desc(client, seed_speciality):
     """
-    Endpoint: /speciality
+    Endpoint: /specialities
     Method: GET
     Assert: status_code = 200
     Description:
         Test list speciality with order desc
     """
     params = {"orderBy": "id", "order": "desc"}
-    rv = client.get("/speciality", query_string=params)
+    rv = client.get("/specialities", query_string=params)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -179,14 +179,14 @@ def test_list_speciality_desc(client, seed_speciality):
 
 def test_list_speciality_asc(client, seed_speciality):
     """
-    Endpoint: /speciality
+    Endpoint: /specialities
     Method: GET
     Assert: status_code = 200
     Description:
         Test list speciality with order asc
     """
     params = {"orderBy": "id", "order": "desc"}
-    rv = client.get("/speciality", query_string=params)
+    rv = client.get("/specialities", query_string=params)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"

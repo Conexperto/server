@@ -81,7 +81,7 @@ class AdminService:
             a (UserRecord): UserRecord
             b (Admin): Admin
         """
-        user_record = UserRecord.get_user(uid, app=admin_sdk)
+        user_record = UserRecord.get_user(uid, auth=admin_sdk.auth)
         user = Admin.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:
@@ -149,7 +149,7 @@ class AdminService:
                 display_name=body["display_name"],
                 phone_number=body["phone_number"],
                 photo_url=body.get("photo_url"),
-                app=admin_sdk,
+                auth=admin_sdk.auth,
             )
             privileges = body.get("privileges") or Privileges.User.value
             user_record.make_claims(
@@ -195,7 +195,7 @@ class AdminService:
             a (UserRecord): UserRecord
             b (Admin): Admin
         """
-        user_record = UserRecord.get_user(uid, app=admin_sdk)
+        user_record = UserRecord.get_user(uid, auth=admin_sdk.auth)
         user = Admin.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:
@@ -247,7 +247,7 @@ class AdminService:
             a (UserRecord): UserRecord
             b (Admin): Admin
         """
-        user_record = UserRecord.get_user(uid, app=admin_sdk)
+        user_record = UserRecord.get_user(uid, auth=admin_sdk.auth)
         user = Admin.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:
@@ -291,7 +291,7 @@ class AdminService:
             a (UserRecord): UserRecord
             b (Admin): Admin
         """
-        user_record = UserRecord.get_user(uid, app=admin_sdk)
+        user_record = UserRecord.get_user(uid, auth=admin_sdk.auth)
         user = Admin.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:
@@ -328,7 +328,7 @@ class AdminService:
         Returns: dict
             uid (str): User uid
         """
-        user_record = UserRecord.get_user(uid, app=admin_sdk)
+        user_record = UserRecord.get_user(uid, auth=admin_sdk.auth)
         user = Admin.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:
