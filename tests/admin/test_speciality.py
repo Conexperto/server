@@ -88,10 +88,12 @@ schema_delete_many = {
 
 
 def search_speciality(client, auth, search):
-    auth.login("admin@adminconexperto.com", "token_admin")
+    auth.login("admin@adminconexperto.com", "token_admin", "admin")
     headers = {"Authorization": "Bearer " + auth.token}
     params = {"search": search}
-    rv = client.get("/admin/speciality", query_string=params, headers=headers)
+    rv = client.get(
+        "/admin/specialities", query_string=params, headers=headers
+    )
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -112,13 +114,15 @@ def prove_order(items, order):
 
 def paginate(client, auth, params):
     headers = {"Authorization": "Bearer " + auth.token}
-    rv = client.get("/admin/speciality", query_string=params, headers=headers)
+    rv = client.get(
+        "/admin/specialities", query_string=params, headers=headers
+    )
     return rv
 
 
 def test_create_speciality(client, auth, login_admin, seed_speciality):
     """
-    Endpoint: /admin/speciality
+    Endpoint: /admin/specialities
     Method: POST
     Assert: status_code = 200
     Description:
@@ -126,7 +130,7 @@ def test_create_speciality(client, auth, login_admin, seed_speciality):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     payload = {"name": "Teacher"}
-    rv = client.post("/admin/speciality", headers=headers, json=payload)
+    rv = client.post("/admin/specialities", headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -137,7 +141,7 @@ def test_create_speciality(client, auth, login_admin, seed_speciality):
 
 def test_create_many_speciality(client, auth, login_admin, seed_speciality):
     """
-    Endpoint: /admin/speciality
+    Endpoint: /admin/specialities
     Method: POST
     Assert: status_code = 200
     Description:
@@ -145,7 +149,7 @@ def test_create_many_speciality(client, auth, login_admin, seed_speciality):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     payload = [{"name": "Astronomer"}, {"name": "Physicist"}]
-    rv = client.post("/admin/speciality", headers=headers, json=payload)
+    rv = client.post("/admin/specialities", headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -158,7 +162,7 @@ def test_create_speciality_duplicate(
     client, auth, login_admin, seed_speciality
 ):
     """
-    Endpoint: /admin/speciality
+    Endpoint: /admin/specialities
     Method: POST
     Assert: status_code = 400
     Description:
@@ -166,7 +170,7 @@ def test_create_speciality_duplicate(
     """
     headers = {"Authorization": "Bearer " + auth.token}
     payload = {"name": "Teacher"}
-    rv = client.post("/admin/speciality", headers=headers, json=payload)
+    rv = client.post("/admin/specialities", headers=headers, json=payload)
     assert rv.status_code == 400, "should be status code 400"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -179,7 +183,7 @@ def test_create_speciality_without_field(
     client, auth, login_admin, seed_speciality
 ):
     """
-    Endpoint: /admin/speciality
+    Endpoint: /admin/specialities
     Method: POST
     Assert: status_code = 400
     Description:
@@ -187,7 +191,7 @@ def test_create_speciality_without_field(
     """
     headers = {"Authorization": "Bearer " + auth.token}
     payload = {}
-    rv = client.post("/admin/speciality", headers=headers, json=payload)
+    rv = client.post("/admin/specialities", headers=headers, json=payload)
     assert rv.status_code == 400, "should be status code 400"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -200,14 +204,14 @@ def test_create_speciality_without_headers(
     client, auth, login_admin, seed_speciality
 ):
     """
-    Endpoint: /admin/speciality
+    Endpoint: /admin/specialities
     Method: POST
     Assert: status_code = 400
     Description:
         Test create speciality without headers
     """
     payload = {"name": "Teacher"}
-    rv = client.post("/admin/speciality", json=payload)
+    rv = client.post("/admin/specialities", json=payload)
     assert rv.status_code == 400, "should be status code 400"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -218,7 +222,7 @@ def test_create_speciality_without_headers(
 
 def test_update_speciality(client, auth, login_admin, seed_speciality):
     """
-    Endpoint: /admin/speciality/<id>
+    Endpoint: /admin/specialities/<id>
     Method: PUT
     Assert: status_code = 200
     Description:
@@ -228,7 +232,7 @@ def test_update_speciality(client, auth, login_admin, seed_speciality):
     payload = {"name": "Speciality"}
     speciality = search_speciality(client, auth, "Teacher")
     rv = client.put(
-        "/admin/speciality/" + str(speciality[0]["id"]),
+        "/admin/specialities/" + str(speciality[0]["id"]),
         headers=headers,
         json=payload,
     )
@@ -246,7 +250,7 @@ def test_update_speciality(client, auth, login_admin, seed_speciality):
 
 def test_update_speciality_field(client, auth, login_admin, seed_speciality):
     """
-    Endpoint: /admin/speciality/<id>
+    Endpoint: /admin/specialities/<id>
     Method: PATCH
     Assert: status_code = 200
     Description:
@@ -256,7 +260,7 @@ def test_update_speciality_field(client, auth, login_admin, seed_speciality):
     payload = {"name": "Teacher"}
     speciality = search_speciality(client, auth, "Speciality")
     rv = client.patch(
-        "/admin/speciality/" + str(speciality[0]["id"]),
+        "/admin/specialities/" + str(speciality[0]["id"]),
         headers=headers,
         json=payload,
     )
@@ -274,7 +278,7 @@ def test_update_speciality_field(client, auth, login_admin, seed_speciality):
 
 def test_update_many_speciality(client, auth, login_admin, seed_speciality):
     """
-    Endpoint: /admin/speciality
+    Endpoint: /admin/specialities
     Method: PUT
     Assert: status_code = 200
     Description:
@@ -286,7 +290,7 @@ def test_update_many_speciality(client, auth, login_admin, seed_speciality):
         {"id": speciality[0]["id"], "name": "Police"},
         {"id": speciality[1]["id"], "name": "Medic"},
     ]
-    rv = client.put("/admin/speciality", headers=headers, json=payload)
+    rv = client.put("/admin/specialities", headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -302,7 +306,7 @@ def test_update_many_speciality(client, auth, login_admin, seed_speciality):
 
 def test_get_speciality(client, auth, login_admin, seed_speciality):
     """
-    Endpoint: /admin/speciality/<id>
+    Endpoint: /admin/specialities/<id>
     Method: GET
     Assert: status_code = 200
     Description:
@@ -311,7 +315,7 @@ def test_get_speciality(client, auth, login_admin, seed_speciality):
     headers = {"Authorization": "Bearer " + auth.token}
     speciality = search_speciality(client, auth, "Medic")
     rv = client.get(
-        "/admin/speciality/" + str(speciality[0]["id"]), headers=headers
+        "/admin/specialities/" + str(speciality[0]["id"]), headers=headers
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -323,14 +327,14 @@ def test_get_speciality(client, auth, login_admin, seed_speciality):
 
 def test_list_speciality(client, auth, login_admin, seed_speciality):
     """
-    Endpoint: /admin/speciality
+    Endpoint: /admin/specialities
     Method: GET
     Assert: status_code = 200
     Description:
         Test list speciality
     """
     headers = {"Authorization": "Bearer " + auth.token}
-    rv = client.get("/admin/speciality", headers=headers)
+    rv = client.get("/admin/specialities", headers=headers)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -341,7 +345,7 @@ def test_list_speciality(client, auth, login_admin, seed_speciality):
 
 def test_list_speciality_search(client, auth, login_admin, seed_speciality):
     """
-    Endpoint: /admin/speciality
+    Endpoint: /admin/specialities
     Method: GET
     Assert: status_code = 200
     Description:
@@ -351,7 +355,9 @@ def test_list_speciality_search(client, auth, login_admin, seed_speciality):
     params = {
         "search": "Medic",
     }
-    rv = client.get("/admin/speciality", query_string=params, headers=headers)
+    rv = client.get(
+        "/admin/specialities", query_string=params, headers=headers
+    )
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -362,7 +368,7 @@ def test_list_speciality_search(client, auth, login_admin, seed_speciality):
 
 def test_list_speciality_paginate(client, auth, login_admin, seed_speciality):
     """
-    Endpoint: /admin/speciality
+    Endpoint: /admin/specialities
     Method: GET
     Assert: status_code = 200
     Description:
@@ -386,7 +392,7 @@ def test_list_speciality_paginate(client, auth, login_admin, seed_speciality):
 
 def test_list_speciality_desc(client, auth, login_admin, seed_speciality):
     """
-    Endpoint: /admin/speciality
+    Endpoint: /admin/specialities
     Method: GET
     Assert: status_code = 200
     Description:
@@ -394,7 +400,9 @@ def test_list_speciality_desc(client, auth, login_admin, seed_speciality):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     params = {"orderBy": "id", "order": "desc"}
-    rv = client.get("/admin/speciality", query_string=params, headers=headers)
+    rv = client.get(
+        "/admin/specialities", query_string=params, headers=headers
+    )
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -408,7 +416,7 @@ def test_list_speciality_desc(client, auth, login_admin, seed_speciality):
 
 def test_list_speciality_asc(client, auth, login_admin, seed_speciality):
     """
-    Endpoint: /admin/speciality
+    Endpoint: /admin/specialities
     Method: GET
     Assert: status_code = 200
     Description:
@@ -416,7 +424,9 @@ def test_list_speciality_asc(client, auth, login_admin, seed_speciality):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     params = {"orderBy": "id", "order": "desc"}
-    rv = client.get("/admin/speciality", query_string=params, headers=headers)
+    rv = client.get(
+        "/admin/specialities", query_string=params, headers=headers
+    )
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"
@@ -430,7 +440,7 @@ def test_list_speciality_asc(client, auth, login_admin, seed_speciality):
 
 def test_speciality_disabled(client, auth, login_admin, seed_speciality):
     """
-    Endpoint: /admin/speciality/disabled/<id>
+    Endpoint: /admin/specialities/disabled/<id>
     Method: PATCH
     Assert: status_code = 200
     Description:
@@ -439,7 +449,7 @@ def test_speciality_disabled(client, auth, login_admin, seed_speciality):
     headers = {"Authorization": "Bearer " + auth.token}
     speciality = search_speciality(client, auth, "Medic")
     rv = client.patch(
-        "/admin/speciality/disabled/" + str(speciality[0]["id"]),
+        "/admin/specialities/disabled/" + str(speciality[0]["id"]),
         headers=headers,
     )
     assert rv.status_code == 200, "should be status code 200"
@@ -453,7 +463,7 @@ def test_speciality_disabled(client, auth, login_admin, seed_speciality):
 
 def test_list_speciality_disabled(client, auth, login_admin, seed_speciality):
     """
-    Endpoint: /admin/speciality?disabled=true
+    Endpoint: /admin/specialities?disabled=true
     Method: GET
     Assert: status_code = 200
     Description:
@@ -461,7 +471,7 @@ def test_list_speciality_disabled(client, auth, login_admin, seed_speciality):
     """
     headers = {"Authorization": "Bearer " + auth.token}
     rv = client.get(
-        "/admin/speciality", query_string={"disabled": True}, headers=headers
+        "/admin/specialities", query_string={"disabled": True}, headers=headers
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -476,7 +486,7 @@ def test_list_speciality_disabled(client, auth, login_admin, seed_speciality):
 
 def test_speciality_enabled(client, auth, login_admin, seed_speciality):
     """
-    Endpoint: /admin/speciality/disabled/<id>
+    Endpoint: /admin/specialities/disabled/<id>
     Method: PATCH
     Assert: status_code = 200
     Description:
@@ -485,7 +495,7 @@ def test_speciality_enabled(client, auth, login_admin, seed_speciality):
     headers = {"Authorization": "Bearer " + auth.token}
     speciality = search_speciality(client, auth, "Medic")
     rv = client.patch(
-        "/admin/speciality/disabled/" + str(speciality[0]["id"]),
+        "/admin/specialities/disabled/" + str(speciality[0]["id"]),
         headers=headers,
     )
     assert rv.status_code == 200, "should be status code 200"
@@ -500,7 +510,7 @@ def test_speciality_enabled(client, auth, login_admin, seed_speciality):
 
 def test_speciality_disabled_many(client, auth, login_admin, seed_speciality):
     """
-    Endpoint: /admin/speciality/disabled
+    Endpoint: /admin/specialities/disabled
     Method: PATCH
     Assert: status_code = 200
     Description:
@@ -512,7 +522,7 @@ def test_speciality_disabled_many(client, auth, login_admin, seed_speciality):
     payload = [item["id"] for item in specialities[3:5]]
 
     rv = client.patch(
-        "/admin/speciality/disabled", headers=headers, json=payload
+        "/admin/specialities/disabled", headers=headers, json=payload
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -529,7 +539,7 @@ def test_speciality_disabled_many(client, auth, login_admin, seed_speciality):
 
 def test_speciality_enabled_many(client, auth, login_admin, seed_speciality):
     """
-    Endpoint: /admin/speciality/disabled
+    Endpoint: /admin/specialities/disabled
     Method: PATCH
     Assert: status_code = 200
     Description:
@@ -541,7 +551,7 @@ def test_speciality_enabled_many(client, auth, login_admin, seed_speciality):
     payload = [item["id"] for item in specialities[3:5]]
 
     rv = client.patch(
-        "/admin/speciality/disabled", headers=headers, json=payload
+        "/admin/specialities/disabled", headers=headers, json=payload
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -558,7 +568,7 @@ def test_speciality_enabled_many(client, auth, login_admin, seed_speciality):
 
 def test_speciality_delete(client, auth, login_admin, seed_speciality):
     """
-    Endpoint: /admin/speciality/<id>
+    Endpoint: /admin/specialities/<id>
     Method: DELETE
     Assert: status_code = 200
     Description:
@@ -567,7 +577,7 @@ def test_speciality_delete(client, auth, login_admin, seed_speciality):
     headers = {"Authorization": "Bearer " + auth.token}
     speciality = search_speciality(client, auth, "Medic")
     rv = client.delete(
-        "/admin/speciality/" + str(speciality[0]["id"]), headers=headers
+        "/admin/specialities/" + str(speciality[0]["id"]), headers=headers
     )
     assert rv.status_code == 200, "should be status code 200"
     assert (
@@ -579,7 +589,7 @@ def test_speciality_delete(client, auth, login_admin, seed_speciality):
 
 def test_speciality_delete_many(client, auth, login_admin, seed_speciality):
     """
-    Endpoint: /admin/speciality
+    Endpoint: /admin/specialities
     Method: DELETE
     Assert: status_code = 200
     Description:
@@ -590,7 +600,7 @@ def test_speciality_delete_many(client, auth, login_admin, seed_speciality):
     specialities = search_speciality(client, auth, "")
     payload = [item["id"] for item in specialities[3:5]]
 
-    rv = client.delete("/admin/speciality", headers=headers, json=payload)
+    rv = client.delete("/admin/specialities", headers=headers, json=payload)
     assert rv.status_code == 200, "should be status code 200"
     assert (
         rv.headers["Content-Type"] == "application/json"

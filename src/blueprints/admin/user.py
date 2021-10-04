@@ -16,7 +16,7 @@ router = Blueprint(name="UserAdmin", import_name=__name__)
 @login_required(admin=True)
 def index_user_admin_one(uid):
     """
-    GET: /api/v1/admin/user/<uid>
+    GET: /api/v1/admin/users/<uid>
     """
     try:
         service = UserService()
@@ -35,7 +35,7 @@ def index_user_admin_one(uid):
 @login_required(admin=True)
 def index_user_admin():
     """
-    GET: /api/v1/admin/user
+    GET: /api/v1/admin/users
     """
     try:
         search = request.args.get("search", None)
@@ -72,7 +72,7 @@ def index_user_admin():
 @login_required(admin=True)
 def register_user_admin():
     """
-    POST: /api/v1/admin/user
+    POST: /api/v1/admin/users
     """
     try:
         body = request.get_json()
@@ -96,7 +96,7 @@ def register_user_admin():
 @login_required(admin=True)
 def update_user_admin(uid):
     """
-    PUT: /api/v1/admin/user/<uid>
+    PUT: /api/v1/admin/users/<uid>
     """
     try:
         body = request.get_json()
@@ -123,7 +123,7 @@ def update_user_admin(uid):
 @login_required(admin=True)
 def update_field_user_admin(uid):
     """
-    PATCH: /api/v1/admin/user/<uid>
+    PATCH: /api/v1/admin/users/<uid>
     """
     try:
         body = request.get_json()
@@ -150,7 +150,7 @@ def update_field_user_admin(uid):
 @login_required(admin=True)
 def disabled_user_admin(uid):
     """
-    PATCH /api/v1/admin/user/disabled/<uid>
+    PATCH /api/v1/admin/users/disabled/<uid>
     """
     try:
         service = UserService()
@@ -169,7 +169,7 @@ def disabled_user_admin(uid):
 @login_required(admin=True)
 def delete_user_admin(uid):
     """
-    DELETE: /api/v1/admin/user/<uid>
+    DELETE: /api/v1/admin/users/<uid>
     """
     try:
         service = UserService()

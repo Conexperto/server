@@ -5,7 +5,7 @@ from collections import OrderedDict
 class Record:
     """Record"""
 
-    __repr_hide = ["app", "tokens_valid_after_timestamp", "password"]
+    __repr_hide = ["auth", "tokens_valid_after_timestamp", "password"]
     __insert_hide = []
 
     @property
