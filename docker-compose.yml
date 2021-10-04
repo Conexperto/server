@@ -55,3 +55,7 @@ services:
         - db
         - emulator_admin
         - emulator_web
+
+networks:
+  default:
+    driver: bridge
