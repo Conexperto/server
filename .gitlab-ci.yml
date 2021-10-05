@@ -25,10 +25,10 @@ services:
     alias: cxp_db
   - name: frfernandezdev/firebase-emulators:latest
     alias: emulator_admin
-    command: ./.gitlab/entrypoint_admin.sh
+    command: [./.gitlab/entrypoint_admin.sh]
   - name: frfernandezdev/firebase-emulators:latest
     alias: emulator_web
-    command: ./.gitlab/entrypoint_web.sh
+    command: [./.gitlab/entrypoint_web.sh]
 
 format:
   stage: format
