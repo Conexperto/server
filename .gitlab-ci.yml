@@ -55,7 +55,35 @@ test:
     - source .venv/bin/activate
     - pip install -r requirements.txt
   script:
-    - pytest
+    - pytest --ignore=tests/admin --junitxml=report.xml
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+
+test admin:
+  stage: test
+  needs:
+    - format
+  only:
+    - main
+    - develop
+    - /^feature-[0-9]\d*(\.[0-9]\d*)*$/
+    - /^hotfix-[0-9]\d*(\.[0-9]\d*)*$/
+    - /^staging-[0-9]\d*(\.[0-9]\d*)*$/
+    - /^release-[0-9]\d*(\.[0-9]\d*)*$/
+    - merge_requests
+  before_script:
+    - pip install virtualenv
+    - virtualenv .venv
+    - source .venv/bin/activate
+    - pip install -r requirements.txt
+  script:
+    - pytest tests/admin --junitxml=report-admin.xml
+  artifacts:
+    when: always
+    reports:
+      junit: report-admin.xml
 
 staging:
   stage: deploy
