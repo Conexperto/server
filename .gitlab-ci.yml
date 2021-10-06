@@ -8,13 +8,19 @@ variables:
   POSTGRES_DB: "cxp_test"
   POSTGRES_USER: "cxp"
   POSTGRES_PASSWORD: "token.01"
+
   DATABASE_URL: "postgresql+psycopg2://cxp:token.01@cxp_db:5432/cxp_test"
+
   FIREBASE_TOKEN: "1//01oOxnx8H1x1bCgYIARAAGAESNwF-L9IrDYa8EKEGhP55_lSx5MzPI-76952cMi9esR06R45VTkqzwkYhx5x2ydqBArg1UzfqH54"
   FIREBASE_AUTH_EMULATOR_ADMIN_HOST: "emulator_admin:9099"
   FIREBASE_AUTH_EMULATOR_WEB_HOST: "emulator_web:9098"
   FIREBASE_API_KEY_ADMIN: "AIzaSyD4uyFMfi35s6nae3gjZfB_Wd1hMmNF7_w"
   FIREBASE_API_KEY_WEB: "AIzaSyAe2EVtNNEZ8QZ9WKoGkPqFENCsajQeai4"
+
+  FLASK_ENV: "development"
+  FLASK_DEBUG: "True"
   TESTING: "True"
+
 cache:
   key: "$CI_COMMIT_REF_SLUG"
   paths:
@@ -55,7 +61,35 @@ test:
     - source .venv/bin/activate
     - pip install -r requirements.txt
   script:
-    - pytest
+    - pytest --ignore=tests/admin --junitxml=report.xml
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+
+test admin:
+  stage: test
+  needs:
+    - format
+  only:
+    - main
+    - develop
+    - /^feature-[0-9]\d*(\.[0-9]\d*)*$/
+    - /^hotfix-[0-9]\d*(\.[0-9]\d*)*$/
+    - /^staging-[0-9]\d*(\.[0-9]\d*)*$/
+    - /^release-[0-9]\d*(\.[0-9]\d*)*$/
+    - merge_requests
+  before_script:
+    - pip install virtualenv
+    - virtualenv .venv
+    - source .venv/bin/activate
+    - pip install -r requirements.txt
+  script:
+    - pytest tests/admin --junitxml=report-admin.xml
+  artifacts:
+    when: always
+    reports:
+      junit: report-admin.xml
 
 staging:
   stage: deploy
