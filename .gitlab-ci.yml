@@ -23,12 +23,10 @@ cache:
 services:
   - name: postgres:13-alpine
     alias: cxp_db
-  - name: frfernandezdev/firebase-emulators:latest
+  - name: frfernandezdev/cxp-firebase-ci-admin:latest
     alias: emulator_admin
-    command: ./.gitlab/entrypoint_admin.sh
-  - name: frfernandezdev/firebase-emulators:latest
+  - name: frfernandezdev/cxp-firebase-ci-web:latest
     alias: emulator_web
-    command: ./.gitlab/entrypoint_web.sh
 
 format:
   stage: format
