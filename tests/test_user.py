@@ -131,7 +131,6 @@ def search_user(client, search):
     ), "should be content type application/json"
     body = loads(rv.data)
     validate(instance=body, schema=schema_list)
-    logger.info(body)
     return body["response"]
 
 
