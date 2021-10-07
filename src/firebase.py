@@ -15,9 +15,10 @@ class sdk:
 
 
 def initialize_admin():
-    os.environ["FIREBASE_AUTH_EMULATOR_HOST"] = os.getenv(
-        "FIREBASE_AUTH_EMULATOR_ADMIN_HOST"
-    )
+    if os.getenv("FLASK_ENV") == "development":
+        os.environ["FIREBASE_AUTH_EMULATOR_HOST"] = os.getenv(
+            "FIREBASE_AUTH_EMULATOR_ADMIN_HOST"
+        )
     sdk_cred = credentials.Certificate(
         os.path.abspath(
             os.path.join(__package__, "./config/conexperto-admin-sdk.json")
@@ -29,9 +30,10 @@ def initialize_admin():
 
 
 def initialize_web():
-    os.environ["FIREBASE_AUTH_EMULATOR_HOST"] = os.getenv(
-        "FIREBASE_AUTH_EMULATOR_WEB_HOST"
-    )
+    if os.getenv("FLASK_ENV") == "development":
+        os.environ["FIREBASE_AUTH_EMULATOR_HOST"] = os.getenv(
+            "FIREBASE_AUTH_EMULATOR_WEB_HOST"
+        )
     sdk_cred = credentials.Certificate(
         os.path.abspath(
             os.path.join(__package__, "./config/conexperto-web-sdk.json")
