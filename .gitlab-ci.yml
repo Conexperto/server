@@ -39,7 +39,7 @@ format:
     - black --config .black .
 
 code quality:
-  stage: code
+  stage: test
   before_script:
     - pip install flake8
   script:
