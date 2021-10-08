@@ -39,7 +39,7 @@ services:
       volumes:
         - ./:/srv/app
       ports:
-        - "5000:3000"
+        - "5000:5000"
       depends_on:
         - db
         - emulator_admin
