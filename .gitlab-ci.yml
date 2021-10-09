@@ -53,6 +53,7 @@ test:
   only:
     - main
     - develop
+    - staging
     - /^feature-[0-9]\d*(\.[0-9]\d*)*$/
     - /^hotfix-[0-9]\d*(\.[0-9]\d*)*$/
     - /^staging-[0-9]\d*(\.[0-9]\d*)*$/
@@ -78,6 +79,7 @@ test admin:
   only:
     - main
     - develop
+    - staging
     - /^feature-[0-9]\d*(\.[0-9]\d*)*$/
     - /^hotfix-[0-9]\d*(\.[0-9]\d*)*$/
     - /^staging-[0-9]\d*(\.[0-9]\d*)*$/
@@ -101,7 +103,7 @@ staging:
     - test
     - test admin
   only:
-    - main
+    - staging
   script:
     - apt-get update -qy
     - apt-get install -y ruby-dev
