@@ -101,7 +101,7 @@ staging:
     - test
     - test admin
   only:
-    - main
+    - staging
   script:
     - apt-get update -qy
     - apt-get install -y ruby-dev
