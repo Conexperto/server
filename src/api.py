@@ -26,6 +26,8 @@ def create_api():
     """Initialize Application"""
     api = Flask(__name__)
 
+    # Heroku used protocolo postgres and psycopg2 used postgresql
+    # then be format to postgresql
     database_url = os.getenv("DATABASE_URL")
     if re.match("postgres://", database_url):
         database_url = database_url.replace("postgres", "postgresql", 1)
