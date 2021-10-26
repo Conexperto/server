@@ -16,7 +16,7 @@ In order to run this container you'll need docker installed.
 
 Clone the repository and move to the project directory.
 ```sh
-git clone git@gitlab.com:conexperto/dino-api.git
+git clone git@gitlab.com:conexperto-workspace/server.git
 ```
 
 Run build container.
@@ -24,118 +24,116 @@ Run build container.
 docker-compose build
 ```
 
-Run start container.
+Run start container api.
 ```sh
-docker-compose up
-```
-
-Or run this command for start and build container.
-```sh
-docker-compose up --build
+docker-compose up api
 ```
 then visit <http://localhost:5000/api/v1/>
 
 Initialize migration of database.
 ```sh
-docker-compose exec api python3 manage.py db init
-docker-compose exec api python3 manage.py db migrate
-docker-compose exec api python3 manage.py db upgrade
+docker-compose exec migrate flask db init
+docker-compose exec migrate flask db migrate
+docker-compose exec migrate flask db upgrade
 ```
 
-if alterations are made in the api `app/src/models`, an update is necessary run this script.
+if alterations are made in the api `src/models`, an update is necessary run this script.
 ```sh
-docker-compose exec api python3 manage.py upgrade
+docker-compose exec migrate flask db upgrade
 ```
 
-Alternative for run all command, directly inside container api.
+Alternative for run all command manually, directly inside container.
 ```sh
-docker-compose exec api sh
+docker-compose exec <service> sh
 ```
 
 ## Seeds
 ```
-docker-compose exec api python3 manage.py seed --model=<seed>
+docker-compose exec migrate flask seed <seed> <up|down>
 ```
+e.g.
+```
+docker-compose exec migrate flask seed user up
+```
+or
+```
+docker-compose exec migrate flask seed admin down
+```
+See folder `src/seeds`.
 
 ## Environment
 
 ### Environment for api.
-In file api.conf be all variables environment to api.
-* `ENV`     		- Set env, 'production' or 'development'.
-* `DEBUG`   		- Set debug, enabled flask debug.
-* `TESTING` 		- Set testing, enabled flask testing.
-
-Sqlalchemy connect to db container.
-* `POSTGRES_HOST` 	  - Set host, default `db`.
-* `POSTGRES_PORT`     - Set port, default `5432`.
-* `POSTGRES_DB`		  - Set dbname, default `conexpert`.
-* `POSTGRES_USER`     - Set user, default `owner`.
-* `POSTGRES_PASSWORD` - Set password, default `token.01`.
+In file `docker/api/api.conf` be all variables environment to api.
+* `FLASK_RUN_PORT` 		- Set port for flask app.
+* `FLASK_ENV`     		- Set env, 'production' or 'development'.
+* `FLASK_DEBUG`   		- Set debug, enabled flask debug.
+* `TESTING` 					- Set testing, enabled flask testing.
+* `DATABASE_URL` 			- Set URL for connected to database.
+* `FIREBASE_AUTH_EMULATOR_ADMIN_HOST` 		- Set host for emulator firebase admin.
+* `FIREBASE_AUTH_EMULATOR_WEB_HOST`				- Set host for emulator firebase web.
 
 ### Environment for db
-In file database.conf be all variables envionment to db.
-* `POSTGRES_PORT` 		- Set port, default `5432`.
-* `POSTGRES_DB`			- Set dbname, default `conexpert`.
-* `POSTGRES_USER`		- Set user, default `owner`.
-* `POSTGRES_PASSWORD`   - Set password, defaullt `token.01`.
+In file `docker/db/db.conf` be all variables envionment to db.
+* `POSTGRES_MULTIPLE_DATABASES` 		- Set name database separate by command(,).
+* `POSTGRES_PORT` 									- Set port, default `5432`.
+* `POSTGRES_USER`										- Set user, default `owner`.
+* `POSTGRES_PASSWORD`   						- Set password, defaullt `token.01`.
+
+### Environment for migrate.
+In file `docker/migrate/migrate.conf` be all variables environment to migrate.
+* `FLASK_RUN_PORT` 		- Set port for flask app.
+* `FLASK_ENV`     		- Set env, 'production' or 'development'.
+* `FLASK_DEBUG`   		- Set debug, enabled flask debug.
+* `TESTING` 					- Set testing, enabled flask testing.
+* `DATABASE_URL` 			- Set URL for connected to database.
+* `FIREBASE_AUTH_EMULATOR_ADMIN_HOST` 		- Set host for emulator firebase admin.
+* `FIREBASE_AUTH_EMULATOR_WEB_HOST`				- Set host for emulator firebase web.
+
+### Environment for migrate.
+In file `docker/test/test.conf` be all variables environment to test.
+* `FLASK_RUN_PORT` 		- Set port for flask app.
+* `FLASK_ENV`     		- Set env, 'production' or 'development'.
+* `FLASK_DEBUG`   		- Set debug, enabled flask debug.
+* `TESTING` 					- Set testing, enabled flask testing.
+* `DATABASE_URL` 			- Set URL for connected to database.
+* `FIREBASE_AUTH_EMULATOR_ADMIN_HOST` 		- Set host for emulator firebase admin.
+* `FIREBASE_AUTH_EMULATOR_WEB_HOST`				- Set host for emulator firebase web.
+* `FIREBASE_API_KEY_ADMIN` 								- Set api key for authentication testing admin.
+* `FIREBASE_API_KEY_WEB` 									- Set api key for authentication testing web.
 
 ## Folder Structure
 
 	.
-	├── app/
-	|	├── src/					# Source files.
-	|	|	├── blueprints/			# Blueprints for flask (routes).
-	|	|	├── helpers/			# Helpers for integrate to flask.
-	|	|	├── mixins/				# Mixins for integrate to sqlalchemy.
-	|	|	├── models/ 			# Model for sqlalchemy.
-	|	|	├── seed/				# Seeds
-	|	|	├── api.py				# Entrypoint for api.
-	|	|	├── db.py				# DB instance.
-	|	| 	└── firebase.py			# Firebase initialize app for admin and web.
-	|	├── static/					# Contains all resource static.
-	|	├── templates/				# Templates.
-	|	├── config.py				# Catch all environment variables to flask.
-	|	├── manage.py				# Manage migrate of database.
-	|	├── requirements.txt
-	|	├── seed.py					# Manage commandline seed.
-	|	├── run.py 					# Entrypoint for run app with python3.
-	|	├── test.py					# Entrypoint for exec unitesting.
-	|	└── wsgi.py					# Entrypoint for WSGI.
-	├── docker/						# Config Docker.
-	|	├── api/
-	|	|	├── api.conf			# Environment container api.
-	|	|	└── Dockerfile			# Contains all the commands for make image of container api.
-	|	├── db/
-	|	|	└── db.conf				# Environment container db.
-	|	└── test/
-	|	|	├── test.conf			# Environment container test.
-	|	|	└── Dockerfile			# Contains all the commands for make image of container test.
-	├── test/						# Unittesting.
-	|	├── __test__/				# Contains all the unittesting by endpoint.
-	|	├── config.js				# Configuration for unittesting firebase.
-	|	├── package.json
-	|	└── utils.js
-	├── db.conf		 				# Environment container db.
+	├── docker/ 			# resource for docker-compose
+	|	├── api/						# container api
+	|	|	├── Dockerfile 			# Contains all the comands for make image of container api.
+	|	|	└── api.conf 				# environment variables for this container.
+	| ├── db/								# container db
+	|	|	├── pg-init-scripts/
+	|	|	|	└──	create-multiple-postgresql-database.sh # script for handle multiple database
+	|	|	└── db.conf 					# environment variables for this container.
+	|	├── migrate/				# container migrate
+	|	|	├── Dockerfile 			# instruction for docker.
+	|	|	└── migrate.conf		# environment variables for this container.
+	| ├── test/						# container test
+	|	|	├── Dockerfile			# instruction for docker.
+	|	|	└── api.conf				# environment variables for this container.
+	├── src/					# Source files.
+	|	├── blueprints/		# Blueprints for flask (routes).
+	|	├── config/				# Contains credentials for firebase.
+	|	├── helpers/			# Helpers for integrate to flask.
+	|	├── middlewares/  # Middlewares as decorators.
+	|	├── mixins/				# Mixins for integrate to sqlalchemy.
+	|	├── models/ 			# Model for sqlalchemy.
+	|	├── seed/					# Seeds
+	|	├── api.py				# Entrypoint for api.
+	|	├── db.py				  # DB instance.
+	| ├── firebase.py		# Firebase initialize app for admin and web.
+	|	└── seed.py				# Manage commandline seed.
+	├── requirements.txt
+	├── wsgi.py									# Entrypoint for WSGI.
 	├── docker-compose.yml			# Configuration that is applied to each container started for that service.
-	├── Dockerfile 					# Contains all the commands for image of container api.
-	├── README.md 					# Readme of a lifetime.
-	└── heroku.yml					# Config for deploy on heroku.
-
-## Deploy 🏂
-
-### Prerequisities
-
-In order to deploy this container you'll need heroku installed. [Here the information on how to install it and login](https://devcenter.heroku.com/articles/heroku-cli)
-
-
-### Instructions
-
-Set the stack of your app to container.
-```
-heroku stack:set container
-```
-
-Push your app to Heroku.
-```
-git push heroku master
-```
+	├── Dockerfile 							# Contains all the commands for image of container api production.
+	├── README.md 							# Readme of a lifetime.
+	└── heroku.yml							# Config for deploy on heroku.
