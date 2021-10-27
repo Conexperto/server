@@ -11,13 +11,13 @@ services:
         - ./docker/db/pg-init-scripts:/docker-entrypoint-initdb.d
     emulator_admin:
       container_name: cxp_emulator_admin
-      image: frfernandezdev/cxp_emulator_admin:latest
+      image: frfernandezdev/cxp-firebase-ci-admin:latest
       ports:
         - "9000:9000"
         - "9099:9099"
     emulator_web:
       container_name: cxp_emulator_web
-      image: frfernandezdev/cxp_emulator_web:latest
+      image: frfernandezdev/cxp-firebase-ci-web:latest
       ports:
         - "9001:9001"
         - "9098:9098"
