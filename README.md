@@ -32,34 +32,41 @@ then visit <http://localhost:5000/api/v1/>
 
 Initialize migration of database.
 ```sh
-docker-compose exec migrate flask db init
-docker-compose exec migrate flask db migrate
-docker-compose exec migrate flask db upgrade
+docker-compose run --rm migrate flask db init
+docker-compose run --rm migrate flask db migrate
+docker-compose run --rm migrate flask db upgrade
 ```
 
 if alterations are made in the api `src/models`, an update is necessary run this script.
 ```sh
-docker-compose exec migrate flask db upgrade
-```
-
-Alternative for run all command manually, directly inside container.
-```sh
-docker-compose exec <service> sh
+docker-compose run --rm migrate flask db upgrade
 ```
 
 ## Seeds
 ```
-docker-compose exec migrate flask seed <seed> <up|down>
+docker-compose run --rm migrate flask seed <seed> <up|down>
 ```
 e.g.
 ```
-docker-compose exec migrate flask seed user up
+docker-compose run --rm migrate flask seed user up
 ```
 or
 ```
 docker-compose exec migrate flask seed admin down
 ```
 See folder `src/seeds`.
+
+## Testing
+```
+docker-compose run --rm test bash
+```
+For start container test.
+
+Inside container.
+```
+pytest .
+```
+For exec all testing.
 
 ## Environment
 
