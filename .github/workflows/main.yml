@@ -1,0 +1,19 @@
+name: CI/CD
+
+on: 
+  push: 
+    branches: ["*"]
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  format: 
+    name: Formatting Code
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: psf/black@stable
+      with:
+        options: "--config .black"
+        src: "."
+        version: "21.5b1"
