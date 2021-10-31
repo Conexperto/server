@@ -72,75 +72,75 @@ For exec all testing.
 
 ### Environment for api.
 In file `docker/api/api.conf` be all variables environment to api.
-* `FLASK_RUN_PORT` 		- Set port for flask app.
-* `FLASK_ENV`     		- Set env, 'production' or 'development'.
-* `FLASK_DEBUG`   		- Set debug, enabled flask debug.
-* `TESTING` 					- Set testing, enabled flask testing.
+* `FLASK_RUN_PORT` 			- Set port for flask app.
+* `FLASK_ENV`     			- Set env, 'production' or 'development'.
+* `FLASK_DEBUG`   			- Set debug, enabled flask debug.
+* `TESTING` 		  		- Set testing, enabled flask testing.
 * `DATABASE_URL` 			- Set URL for connected to database.
-* `FIREBASE_AUTH_EMULATOR_ADMIN_HOST` 		- Set host for emulator firebase admin.
-* `FIREBASE_AUTH_EMULATOR_WEB_HOST`				- Set host for emulator firebase web.
+* `FIREBASE_AUTH_EMULATOR_ADMIN_HOST` 	- Set host for emulator firebase admin.
+* `FIREBASE_AUTH_EMULATOR_WEB_HOST`	- Set host for emulator firebase web.
 
 ### Environment for db
 In file `docker/db/db.conf` be all variables envionment to db.
 * `POSTGRES_MULTIPLE_DATABASES` 		- Set name database separate by command(,).
-* `POSTGRES_PORT` 									- Set port, default `5432`.
-* `POSTGRES_USER`										- Set user, default `owner`.
-* `POSTGRES_PASSWORD`   						- Set password, defaullt `token.01`.
+* `POSTGRES_PORT` 				- Set port, default `5432`.
+* `POSTGRES_USER`				- Set user, default `owner`.
+* `POSTGRES_PASSWORD`   			- Set password, defaullt `token.01`.
 
 ### Environment for migrate.
 In file `docker/migrate/migrate.conf` be all variables environment to migrate.
-* `FLASK_RUN_PORT` 		- Set port for flask app.
-* `FLASK_ENV`     		- Set env, 'production' or 'development'.
-* `FLASK_DEBUG`   		- Set debug, enabled flask debug.
-* `TESTING` 					- Set testing, enabled flask testing.
+* `FLASK_RUN_PORT` 			- Set port for flask app.
+* `FLASK_ENV`     			- Set env, 'production' or 'development'.
+* `FLASK_DEBUG`   			- Set debug, enabled flask debug.
+* `TESTING` 				- Set testing, enabled flask testing.
 * `DATABASE_URL` 			- Set URL for connected to database.
-* `FIREBASE_AUTH_EMULATOR_ADMIN_HOST` 		- Set host for emulator firebase admin.
-* `FIREBASE_AUTH_EMULATOR_WEB_HOST`				- Set host for emulator firebase web.
+* `FIREBASE_AUTH_EMULATOR_ADMIN_HOST` 	- Set host for emulator firebase admin.
+* `FIREBASE_AUTH_EMULATOR_WEB_HOST`	- Set host for emulator firebase web.
 
 ### Environment for migrate.
 In file `docker/test/test.conf` be all variables environment to test.
-* `FLASK_RUN_PORT` 		- Set port for flask app.
-* `FLASK_ENV`     		- Set env, 'production' or 'development'.
-* `FLASK_DEBUG`   		- Set debug, enabled flask debug.
-* `TESTING` 					- Set testing, enabled flask testing.
+* `FLASK_RUN_PORT` 			- Set port for flask app.
+* `FLASK_ENV`     			- Set env, 'production' or 'development'.
+* `FLASK_DEBUG`   			- Set debug, enabled flask debug.
+* `TESTING` 				- Set testing, enabled flask testing.
 * `DATABASE_URL` 			- Set URL for connected to database.
-* `FIREBASE_AUTH_EMULATOR_ADMIN_HOST` 		- Set host for emulator firebase admin.
-* `FIREBASE_AUTH_EMULATOR_WEB_HOST`				- Set host for emulator firebase web.
-* `FIREBASE_API_KEY_ADMIN` 								- Set api key for authentication testing admin.
-* `FIREBASE_API_KEY_WEB` 									- Set api key for authentication testing web.
+* `FIREBASE_AUTH_EMULATOR_ADMIN_HOST` 	- Set host for emulator firebase admin.
+* `FIREBASE_AUTH_EMULATOR_WEB_HOST`	- Set host for emulator firebase web.
+* `FIREBASE_API_KEY_ADMIN` 		- Set api key for authentication testing admin.
+* `FIREBASE_API_KEY_WEB` 		- Set api key for authentication testing web.
 
 ## Folder Structure
 
 	.
-	├── docker/ 			# resource for docker-compose
-	|	├── api/						# container api
+	├── docker/ 					# resource for docker-compose
+	|	├── api/				# container api
 	|	|	├── Dockerfile 			# Contains all the comands for make image of container api.
-	|	|	└── api.conf 				# environment variables for this container.
-	| ├── db/								# container db
+	|	|	└── api.conf 			# environment variables for this container.
+	| ├── db/					# container db
 	|	|	├── pg-init-scripts/
-	|	|	|	└──	create-multiple-postgresql-database.sh # script for handle multiple database
-	|	|	└── db.conf 					# environment variables for this container.
+	|	|	|	└── create-multiple-postgresql-database.sh # script for handle multiple database
+	|	|	└── db.conf 			# environment variables for this container.
 	|	├── migrate/				# container migrate
 	|	|	├── Dockerfile 			# instruction for docker.
 	|	|	└── migrate.conf		# environment variables for this container.
-	| ├── test/						# container test
+	| ├── test/					# container test
 	|	|	├── Dockerfile			# instruction for docker.
-	|	|	└── api.conf				# environment variables for this container.
+	|	|	└── api.conf			# environment variables for this container.
 	├── src/					# Source files.
-	|	├── blueprints/		# Blueprints for flask (routes).
+	|	├── blueprints/				# Blueprints for flask (routes).
 	|	├── config/				# Contains credentials for firebase.
-	|	├── helpers/			# Helpers for integrate to flask.
-	|	├── middlewares/  # Middlewares as decorators.
+	|	├── helpers/				# Helpers for integrate to flask.
+	|	├── middlewares/  			# Middlewares as decorators.
 	|	├── mixins/				# Mixins for integrate to sqlalchemy.
-	|	├── models/ 			# Model for sqlalchemy.
-	|	├── seed/					# Seeds
+	|	├── models/ 				# Model for sqlalchemy.
+	|	├── seed/				# Seeds
 	|	├── api.py				# Entrypoint for api.
-	|	├── db.py				  # DB instance.
-	| ├── firebase.py		# Firebase initialize app for admin and web.
+	|	├── db.py				# DB instance.
+	| ├── firebase.py				# Firebase initialize app for admin and web.
 	|	└── seed.py				# Manage commandline seed.
 	├── requirements.txt
-	├── wsgi.py									# Entrypoint for WSGI.
-	├── docker-compose.yml			# Configuration that is applied to each container started for that service.
-	├── Dockerfile 							# Contains all the commands for image of container api production.
-	├── README.md 							# Readme of a lifetime.
-	└── heroku.yml							# Config for deploy on heroku.
+	├── wsgi.py					# Entrypoint for WSGI.
+	├── docker-compose.yml				# Configuration that is applied to each container started for that service.
+	├── Dockerfile 					# Contains all the commands for image of container api production.
+	├── README.md 					# Readme of a lifetime.
+	└── heroku.yml					# Config for deploy on heroku.
