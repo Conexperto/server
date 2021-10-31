@@ -127,16 +127,16 @@ In file `docker/test/test.conf` be all variables environment to test.
 	|	|	├── Dockerfile			# instruction for docker.
 	|	|	└── api.conf			# environment variables for this container.
 	├── src/					# Source files.
-	|	├── blueprints/		# Blueprints for flask (routes).
+	|	├── blueprints/				# Blueprints for flask (routes).
 	|	├── config/				# Contains credentials for firebase.
-	|	├── helpers/			# Helpers for integrate to flask.
-	|	├── middlewares/  # Middlewares as decorators.
+	|	├── helpers/				# Helpers for integrate to flask.
+	|	├── middlewares/  			# Middlewares as decorators.
 	|	├── mixins/				# Mixins for integrate to sqlalchemy.
-	|	├── models/ 			# Model for sqlalchemy.
+	|	├── models/ 				# Model for sqlalchemy.
 	|	├── seed/				# Seeds
 	|	├── api.py				# Entrypoint for api.
-	|	├── db.py				 # DB instance.
-	| ├── firebase.py		# Firebase initialize app for admin and web.
+	|	├── db.py				# DB instance.
+	| ├── firebase.py				# Firebase initialize app for admin and web.
 	|	└── seed.py				# Manage commandline seed.
 	├── requirements.txt
 	├── wsgi.py					# Entrypoint for WSGI.
