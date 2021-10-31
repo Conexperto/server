@@ -14,6 +14,18 @@ jobs:
     - uses: actions/checkout@v2
     - uses: psf/black@stable
       with:
-        options: "--config .black"
+        options: "--config .black --check --diff"
         src: "."
         version: "21.5b1"
+  code_quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+      - run: |
+          python -m pip install --upgrade pip
+          python -m pip install flake8
+          flake8 . --count --show-source --statistics
