@@ -43,11 +43,13 @@ jobs:
       FIREBASE_AUTH_EMULATOR_WEB_HOST: "emulator_web:9098"
     services:
       postgres:
-        image: postgres
+        image: postgres:13-alpine
         env: 
           POSTGRES_DB: "postgres"
           POSTGRES_USER: "postgres"
-          POSTGRES_PASSWORD: "010101"
+          POSTGRES_PASSWORD: "postgres"
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
       emulator_admin:
         image: frfernandezdev/firebase-emulators
         env: 
