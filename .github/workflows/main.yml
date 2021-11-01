@@ -45,6 +45,8 @@ jobs:
       postgres:
         image: postgres
         env: 
+          POSTGRES_DB: "postgres"
+          POSTGRES_USER: "postgres"
           POSTGRES_PASSWORD: "010101"
       emulator_admin:
         image: frfernandezdev/firebase-emulators
