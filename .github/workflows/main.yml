@@ -40,8 +40,8 @@ jobs:
       FLASK_ENV: "development"
       FLASK_DEBUG: "True"
       TESTING: "True"
-      FIREBASE_AUTH_EMULATOR_ADMIN_HOST: "emulator_admin:9099"
-      FIREBASE_AUTH_EMULATOR_WEB_HOST: "emulator_web:9098"
+      FIREBASE_AUTH_EMULATOR_ADMIN_HOST: "localhost:9099"
+      FIREBASE_AUTH_EMULATOR_WEB_HOST: "localhost:9098"
     services:
       postgres:
         image: postgres
@@ -58,11 +58,14 @@ jobs:
         image: frfernandezdev/firebase-emulators
         env:
           FIREBASE_PROJECT: conexperto-admin
+        ports:
+          - 9099:9099
       emulator_web:
         image: frfernandezdev/firebase-emulators
         env:
-          FIREBASE_AUTH_PORT: 9098
           FIREBASE_PROJECT: conexperto-6b5e7
+        ports:
+          - 9098:9099
 
     steps:
       - uses: actions/checkout@v2
