@@ -36,17 +36,24 @@ jobs:
     name: Testing public endpoints
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: "postgresql+psycopg2://postgres:postgres@postgres:5432/postgres"
+      DATABASE_URL: "postgresql+psycopg2://postgres:postgres@localhost:5432/postgres"
       FLASK_ENV: "development"
       FLASK_DEBUG: "True"
       TESTING: "True"
-      FIREBASE_AUTH_EMULATOR_ADMIN_HOST: "emulator_admin:9099"
-      FIREBASE_AUTH_EMULATOR_WEB_HOST: "emulator_web:9098"
+      FIREBASE_AUTH_EMULATOR_ADMIN_HOST: "localhost:9099"
+      FIREBASE_AUTH_EMULATOR_WEB_HOST: "localhost:9098"
     services:
       postgres:
         image: postgres
         env:
           POSTGRES_PASSWORD: "postgres"
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
       emulator_admin:
         image: frfernandezdev/firebase-emulators
         env:
