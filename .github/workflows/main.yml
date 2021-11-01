@@ -39,6 +39,8 @@ jobs:
       FLASK_ENV: "development"
       FLASK_DEBUG: "True"
       TESTING: "True"
+      FIREBASE_AUTH_EMULATOR_ADMIN_HOST: "emulator_admin:9099"
+      FIREBASE_AUTH_EMULATOR_WEB_HOST: "emulator_web:9098"
     services:
       postgres:
         image: postgres
