@@ -34,6 +34,26 @@ jobs:
   test:
     name: Testing public endpoints
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "postgresql+psycopg2://postgres:010101@postgres:5432/postgres"
+      FLASK_ENV: "development"
+      FLASK_DEBUG: "True"
+      TESTING: "True"
+    services:
+      postgres:
+        image: postgres
+        env: 
+          POSTGRES_PASSWORD: "010101"
+      emulator_admin:
+        image: frfernandezdev/firebase-emulators
+        env: 
+          FIREBASE_PROJECT: conexperto-admin
+      emulator_web:
+        image: frfernandezdev/firebase-emulators
+        env: 
+          FIREBASE_AUTH_PORT: 9098
+          FIREBASE_PROJECT: conexperto-6b5e7
+      
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
