@@ -63,3 +63,9 @@ jobs:
       - name: Run testing
         run: |
           pytest --junitxml=report.xml
+      - name: Upload pytest report
+        uses: actions/upload-artifacts@v2
+        with:
+          name: report
+          path: report.xml
+        if: ${{ always() }}
