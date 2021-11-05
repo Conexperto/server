@@ -36,7 +36,7 @@ def initialize_web():
         )
     sdk_cred = credentials.Certificate(
         os.path.abspath(
-            os.path.join(__package__, "./config/conexperto-web-sdk.json")
+            os.path.join(__package__, "./config/conexperto-6b5e7-sdk.json")
         )
     )
     sdk_app = initialize_app(credential=sdk_cred, name="web")
