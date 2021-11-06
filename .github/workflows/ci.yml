@@ -7,9 +7,44 @@ on:
     branches: [main, staging, develop]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     env:
+      FLASK_APP=src.api:create_api()
+      FLASK_ENV=development
+      FLASK_DEBUG=True
+      TESTING=True
+      DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/postgres
+      FIREBASE_AUTH_EMULATOR_ADMIN_HOST=localhost:9099
+      FIREBASE_AUTH_EMULATOR_WEB_HOST=localhost:9098
+      FIREBASE_API_KEY_ADMIN=AIzaSyD4uyFMfi35s6nae3gjZfB_Wd1hMmNF7_w
+      FIREBASE_API_KEY_WEB=AIzaSyAe2EVtNNEZ8QZ9WKoGkPqFENCsajQeai4
+    services:
+      postgres:
+        image: postgres:13-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      emulator_admin:
+        image: frfernandezdev/firebase-emulators:latest
+        env:
+          FIREBASE_UI_ENABLED=true
+          FIREBASE_PROJECT=conexperto-admin
+        ports:
+          - 9099:9099
+      emulator_web:
+        image: frfernandezdev/firebase-emulators:latest
+        env:
+          FIREBASE_UI_ENABLED=true
+          FIREBASE_PROJECT=conexperto-admin
+        ports:
+          - 9098:9098
     stages:
       - uses: actions/checkout@v2
       - name: Setup Python
