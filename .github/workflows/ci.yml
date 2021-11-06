@@ -9,16 +9,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      FLASK_APP=src.api:create_api()
-      FLASK_ENV=development
-      FLASK_DEBUG=True
-      TESTING=True
-      DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/postgres
-      FIREBASE_AUTH_EMULATOR_ADMIN_HOST=localhost:9099
-      FIREBASE_AUTH_EMULATOR_WEB_HOST=localhost:9098
-      FIREBASE_API_KEY_ADMIN=AIzaSyD4uyFMfi35s6nae3gjZfB_Wd1hMmNF7_w
-      FIREBASE_API_KEY_WEB=AIzaSyAe2EVtNNEZ8QZ9WKoGkPqFENCsajQeai4
     services:
       postgres:
         image: postgres:13-alpine
@@ -45,7 +35,17 @@ jobs:
           FIREBASE_PROJECT=conexperto-admin
         ports:
           - 9098:9098
-    stages:
+    env:
+      FLASK_APP=src.api:create_api()
+      FLASK_ENV=development
+      FLASK_DEBUG=True
+      TESTING=True
+      DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/postgres
+      FIREBASE_AUTH_EMULATOR_ADMIN_HOST=localhost:9099
+      FIREBASE_AUTH_EMULATOR_WEB_HOST=localhost:9098
+      FIREBASE_API_KEY_ADMIN=AIzaSyD4uyFMfi35s6nae3gjZfB_Wd1hMmNF7_w
+      FIREBASE_API_KEY_WEB=AIzaSyAe2EVtNNEZ8QZ9WKoGkPqFENCsajQeai4
+    steps:
       - uses: actions/checkout@v2
       - name: Setup Python
       - uses: actions/setup-python@v2
