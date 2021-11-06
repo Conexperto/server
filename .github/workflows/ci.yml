@@ -52,6 +52,8 @@ jobs:
         with:
           python-version: 3
       - name: Decrypt large secret
+        env:
+          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
         run: ./.github/scripts/decrypt_secret.sh
       - name: Install dependencies
         run: |
