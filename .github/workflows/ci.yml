@@ -34,7 +34,7 @@ jobs:
           FIREBASE_UI_ENABLED: true
           FIREBASE_PROJECT: conexperto-admin
         ports:
-          - 9098:9098
+          - 9098:9099
     env:
       FLASK_APP: src.api:create_api()
       FLASK_ENV: development
