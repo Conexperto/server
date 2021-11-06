@@ -32,7 +32,7 @@ jobs:
         image: frfernandezdev/firebase-emulators:latest
         env:
           FIREBASE_UI_ENABLED: true
-          FIREBASE_PROJECT: conexperto-admin
+          FIREBASE_PROJECT: conexperto-6b5e7
         ports:
           - 9098:9099
     env:
