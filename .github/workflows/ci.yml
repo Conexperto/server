@@ -46,10 +46,9 @@ jobs:
       FIREBASE_API_KEY_ADMIN=AIzaSyD4uyFMfi35s6nae3gjZfB_Wd1hMmNF7_w
       FIREBASE_API_KEY_WEB=AIzaSyAe2EVtNNEZ8QZ9WKoGkPqFENCsajQeai4
     steps:
-      - name: Check out repository code
       - uses: actions/checkout@v2
       - name: Setup Python
-      - uses: actions/setup-python@v2
+        uses: actions/setup-python@v2
         with:
           python-version: 3.10
       - name: Install dependencies
