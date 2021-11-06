@@ -24,15 +24,15 @@ jobs:
       emulator_admin:
         image: frfernandezdev/firebase-emulators:latest
         env:
-          FIREBASE_UI_ENABLED=true
-          FIREBASE_PROJECT=conexperto-admin
+          FIREBASE_UI_ENABLED:true
+          FIREBASE_PROJECT:conexperto-admin
         ports:
           - 9099:9099
       emulator_web:
         image: frfernandezdev/firebase-emulators:latest
         env:
-          FIREBASE_UI_ENABLED=true
-          FIREBASE_PROJECT=conexperto-admin
+          FIREBASE_UI_ENABLED:true
+          FIREBASE_PROJECT:conexperto-admin
         ports:
           - 9098:9098
     env:
