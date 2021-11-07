@@ -3,7 +3,17 @@ API Restful dyno-api
 
 ## Workflow
 
+### Git flow
+
 ### Hooks
+
+In order to maintain consistency and readability of commit messages, this convention is used [ConventionalCommits](https://www.conventionalcommits.org/en/v1.0.0/)
+
+And with the help of the following hooks we can imply these conventions to the workflow.
+```sh
+pip install gitlint
+gitlint install-hook
+```
 
 To maintain a stable & quality code, the following hooks have been used with [pre-commit](https://pre-commit.com/).
 
@@ -16,7 +26,6 @@ To install the pre-commit and use your hook configuration.
 ```sh
 pip install pre-commit
 pre-commit install
-pre-commit --hook-type commit-msg
 ```
 
 ## Getting Started 💪
