@@ -31,14 +31,14 @@ jobs:
         image: frfernandezdev/firebase-emulators:latest
         env:
           FIREBASE_UI_ENABLED: true
-          FIREBASE_PROJECT: conexperto-admin
+          FIREBASE_PROJECT: cxp-dev-admin
         ports:
           - 9099:9099
       emulator_web:
         image: frfernandezdev/firebase-emulators:latest
         env:
           FIREBASE_UI_ENABLED: true
-          FIREBASE_PROJECT: conexperto-6b5e7
+          FIREBASE_PROJECT: cxp-dev
         ports:
           - 9098:9099
     env:
