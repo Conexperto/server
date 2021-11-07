@@ -63,13 +63,13 @@ jobs:
         env:
           INPUT: ./src/config/cxp-dev-admin-adminsdk.json.gpg
           OUTPUT: ./src/config/cxp-dev-admin-adminsdk.json
-          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
+          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE_DEV }}
         run: ./.github/scripts/decrypt_secret.sh
       - name: Decrypt large secret web
         env:
           INPUT: ./src/config/cxp-dev-adminsdk.json.gpg
           OUTPUT: ./src/config/cxp-dev-adminsdk.json
-          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
+          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE_DEV }}
         run: ./.github/scripts/decrypt_secret.sh
       - name: Install dependencies
         run: |
