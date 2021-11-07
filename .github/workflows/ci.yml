@@ -61,14 +61,14 @@ jobs:
           python-version: 3
       - name: Decrypt large secret admin
         env:
-          INPUT: cxp-dev-admin-adminsdk.json.gpg
-          OUTPUT: cxp-dev-admin-adminsdk.json
+          INPUT: ./src/config/cxp-dev-admin-adminsdk.json.gpg
+          OUTPUT: ./src/config/cxp-dev-admin-adminsdk.json
           SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
         run: ./.github/scripts/decrypt_secret.sh
       - name: Decrypt large secret web
         env:
-          INPUT: cxp-dev-adminsdk.json.gpg
-          OUTPUT: cxp-dev-adminsdk.json
+          INPUT: ./src/config/cxp-dev-adminsdk.json.gpg
+          OUTPUT: ./src/config/cxp-dev-adminsdk.json
           SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
         run: ./.github/scripts/decrypt_secret.sh
       - name: Install dependencies
