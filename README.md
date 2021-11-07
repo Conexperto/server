@@ -1,6 +1,24 @@
 API Restful dyno-api
 ================
 
+## Workflow
+
+### Hooks
+
+To maintain a stable & quality code, the following hooks have been used with [pre-commit](https://pre-commit.com/).
+
+* [flake8](https://flake8.pycqa.org/en/latest/)
+* [black](https://pypi.org/project/black/)
+* [reorder_python_imports](https://github.com/asottile/reorder_python_imports)
+* pre-commit-hooks (see file .pre-commit-config.yaml)
+
+To install the pre-commit and use your hook configuration.
+```sh
+pip install pre-commit
+pre-commit install
+pre-commit --hook-type commit-msg
+```
+
 ## Getting Started 💪
 
 ### Prerequisities
