@@ -49,16 +49,26 @@ jobs:
       DATABASE_URL: postgresql+psycopg2://postgres:postgres@localhost:5432/postgres
       FIREBASE_AUTH_EMULATOR_ADMIN_HOST: localhost:9099
       FIREBASE_AUTH_EMULATOR_WEB_HOST: localhost:9098
-      FIREBASE_API_KEY_ADMIN: AIzaSyD4uyFMfi35s6nae3gjZfB_Wd1hMmNF7_w
-      FIREBASE_API_KEY_WEB: AIzaSyAe2EVtNNEZ8QZ9WKoGkPqFENCsajQeai4
+      FIREBASE_API_KEY_ADMIN: ${{ secrets.API_KEY_ADMIN }}
+      FIREBASE_API_KEY_WEB: ${{ secrets.API_KEY_WEB }}
+      FIREBASE_ADMIN_SDK_FILE: cxp-dev-admin-adminsdk.json
+      FIREBASE_WEB_SDK_FILE: cxp-dev-adminsdk.json
     steps:
       - uses: actions/checkout@v2
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
           python-version: 3
-      - name: Decrypt large secret
+      - name: Decrypt large secret admin
         env:
+          INPUT: cxp-dev-admin-adminsdk.json.gpg
+          OUTPUT: cxp-dev-admin-adminsdk.json
+          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
+        run: ./.github/scripts/decrypt_secret.sh
+      - name: Decrypt large secret web
+        env:
+          INPUT: cxp-dev-adminsdk.json.gpg
+          OUTPUT: cxp-dev-adminsdk.json
           SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
         run: ./.github/scripts/decrypt_secret.sh
       - name: Install dependencies
