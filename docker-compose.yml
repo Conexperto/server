@@ -11,16 +11,22 @@ services:
         - ./docker/db/pg-init-scripts:/docker-entrypoint-initdb.d
     emulator_admin:
       container_name: cxp_emulator_admin
-      image: frfernandezdev/cxp-firebase-ci-admin:latest
+      image: frfernandezdev/firebase-emulators:latest
+      environment:
+        - FIREBASE_UI_ENABLED=true
+        - FIREBASE_PROJECT=conexperto-admin
       ports:
         - "9000:9000"
         - "9099:9099"
     emulator_web:
       container_name: cxp_emulator_web
-      image: frfernandezdev/cxp-firebase-ci-web:latest
+      environment:
+        - FIREBASE_UI_ENABLED=true
+        - FIREBASE_PROJECT=conexperto-6b5e7
+      image: frfernandezdev/firebase-emulators:latest
       ports:
-        - "9001:9001"
-        - "9098:9098"
+        - "9001:9000"
+        - "9098:9099"
     migrate:
       build:
         context: .
