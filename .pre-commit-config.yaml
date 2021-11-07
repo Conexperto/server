@@ -1,6 +1,10 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
+-   repo: https://github.com/jorisroovers/gitlint
+    rev: v0.16.0
+    hooks:
+    -   id: gitlint
 -   repo: https://github.com/psf/black
     rev: 21.7b0
     hooks:
