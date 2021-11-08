@@ -6,11 +6,15 @@ on:
       - main
       - staging
       - develop
+    paths:
+      - 'src/**.py'
   pull_request:
     branches:
       - main
       - staging
       - develop
+    paths:
+      - 'src/**.py'
 
 jobs:
   test:
