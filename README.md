@@ -1,15 +1,15 @@
 Conexperto Server
 ================
 
-Conexperto, aims to be a social network to learn and grow. We believe that people learn best from other people, it was like that for a long time and this is how we actually learn from our environment.
+Conexperto aims to be a social network to learn and grow. We believe that people learn best from other people, it was like that for a long time and this is how we actually learn from our environment.
 
-This repository houses the code for all operation of the Backend in Conexperto.
+This repository houses the code for all operations of the Backend in Conexperto.
 
 ## Getting Started 💪
 
-### Prerequisities
+### Prerequisites
 
-In order to run this container you'll need docker installed.
+To run this container, you'll need docker installed.
 
 * [Windows](https://docs.docker.com/windows/started)
 * [OS X](https://docs.docker.com/mac/started/)
