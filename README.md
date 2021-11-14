@@ -1,5 +1,9 @@
-API Restful dyno-api
+Conexperto Server
 ================
+
+Conexperto, aims to be a social network to learn and grow. We believe that people learn best from other people, it was like that for a long time and this is how we actually learn from our environment.
+
+This repository houses the code for all operation of the Backend in Conexperto.
 
 ## Getting Started 💪
 
@@ -16,7 +20,7 @@ In order to run this container you'll need docker installed.
 
 Clone the repository and move to the project directory.
 ```sh
-git clone git@gitlab.com:conexperto-workspace/server.git
+git clone git@gitlab.com:conexperto/server.git
 ```
 
 Run build container.
@@ -144,3 +148,31 @@ In file `docker/test/test.conf` be all variables environment to test.
 	├── Dockerfile 					# Contains all the commands for image of container api production.
 	├── README.md 					# Readme of a lifetime.
 	└── heroku.yml					# Config for deploy on heroku.
+
+## Discussion
+
+* Discuss Conexperto Server on [Github Discussions](https://github.com/conexperto/server/discussions)
+
+## Contributing
+To contribute, please review the issues in the projects section [projects](https://github.com/conexperto/server/projects/1)
+
+In order to maintain consistency and readability of commit messages, this convention is used [ConventionalCommits](https://www.conventionalcommits.org/en/v1.0.0/)
+
+And with the help of the following hooks we can imply these conventions to the workflow.
+```sh
+pip install gitlint
+gitlint install-hook
+```
+
+To maintain a stable & quality code, the following hooks have been used with [pre-commit](https://pre-commit.com/).
+
+* [flake8](https://flake8.pycqa.org/en/latest/)
+* [black](https://pypi.org/project/black/)
+* [reorder_python_imports](https://github.com/asottile/reorder_python_imports)
+* pre-commit-hooks (see file .pre-commit-config.yaml)
+
+To install the pre-commit and use your hook configuration.
+```sh
+pip install pre-commit
+pre-commit install
+```

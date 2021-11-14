@@ -139,4 +139,4 @@ cython_debug/
 
 
 # SDK credentials firebase
-src/config/
+/src/config/*.json
