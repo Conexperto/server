@@ -6,8 +6,6 @@ from src.blueprints.admin.plan import router as plan
 from src.blueprints.admin.speciality import router as speciality
 from src.blueprints.admin.user import router as user
 
-# from src.blueprints.admin.expert import router as expert
-
 
 __all__ = [
     "admin",

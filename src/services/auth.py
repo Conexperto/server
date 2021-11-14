@@ -1,6 +1,4 @@
 """ src.services.auth """
-from flask import current_app
-
 from src.exceptions import HandlerException
 from src.firebase import web_sdk
 from src.models import User
@@ -26,10 +24,12 @@ class AuthService:
         """
 
         decoded_token = UserRecord.verify_id_token(
-            id_token, check_revoked=True, app=web_sdk
+            id_token, check_revoked=True, auth=web_sdk.auth
         )
 
-        user_record = UserRecord.get_user(decoded_token["uid"], app=web_sdk)
+        user_record = UserRecord.get_user(
+            decoded_token["uid"], auth=web_sdk.auth
+        )
 
         if user_record.disabled:
             raise HandlerException(401, "Account disabled")
@@ -66,7 +66,7 @@ class AuthService:
                 email=body["email"],
                 password=body["password"],
                 display_name=body["display_name"],
-                app=web_sdk,
+                auth=web_sdk.auth,
             )
             user_record.make_claims({"complete_register": False})
 
@@ -78,7 +78,6 @@ class AuthService:
             user.add()
             user.save()
 
-            current_app.logger.info(user_record)
             return {"uid": user_record.uid, "a": user_record, "b": user}
         except KeyError as ex:
             raise HandlerException(
@@ -117,7 +116,30 @@ class AuthService:
         user_record.update_user()
 
         if "complete_register" in body:
-            user_record.make_claims({"complete_register": body["complete_register"]})
+            user_record.make_claims(
+                {"complete_register": body["complete_register"]}
+            )
+
+        if "specialities" in body:
+            if not isinstance(body["specialities"], list):
+                raise HandlerException(
+                    400, "Bad request: specialities should be array"
+                )
+            _user.update_specialities(body["specialities"])
+
+        if "methods" in body:
+            if not isinstance(body["methods"], list):
+                raise HandlerException(
+                    400, "Bad request: methods should be array"
+                )
+            _user.update_methods(body["methods"])
+
+        if "plans" in body:
+            if not isinstance(body["plans"], list):
+                raise HandlerException(
+                    400, "Bad request: plans should be array"
+                )
+            _user.update_plans(body["plans"])
 
         _user.serialize(body)
         _user.save()
@@ -156,7 +178,30 @@ class AuthService:
         user_record.update_user()
 
         if "complete_register" in body:
-            user_record.make_claims({"complete_register": body["complete_register"]})
+            user_record.make_claims(
+                {"complete_register": body["complete_register"]}
+            )
+
+        if "specialities" in body:
+            if not isinstance(body["specialities"], list):
+                raise HandlerException(
+                    400, "Bad request: specialities should be array"
+                )
+            user.update_specialities(body["specialities"])
+
+        if "methods" in body:
+            if not isinstance(body["methods"], list):
+                raise HandlerException(
+                    400, "Bad request: methods should be array"
+                )
+            user.update_methods(body["methods"])
+
+        if "plans" in body:
+            if not isinstance(body["plans"], list):
+                raise HandlerException(
+                    400, "Bad request: plans should be array"
+                )
+            user.update_plans(body["plans"])
 
         _user.serialize(body)
         _user.save()

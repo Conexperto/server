@@ -1,0 +1,98 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - develop
+    paths:
+      - 'src/**.py'
+  pull_request:
+    branches:
+      - main
+      - staging
+      - develop
+    paths:
+      - 'src/**.py'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      emulator_admin:
+        image: frfernandezdev/firebase-emulators:latest
+        env:
+          FIREBASE_UI_ENABLED: true
+          FIREBASE_PROJECT: cxp-dev-admin
+        ports:
+          - 9099:9099
+      emulator_web:
+        image: frfernandezdev/firebase-emulators:latest
+        env:
+          FIREBASE_UI_ENABLED: true
+          FIREBASE_PROJECT: cxp-dev
+        ports:
+          - 9098:9099
+    env:
+      FLASK_APP: src.api:create_api()
+      FLASK_ENV: development
+      FLASK_DEBUG: True
+      TESTING: True
+      DATABASE_URL: postgresql+psycopg2://postgres:postgres@localhost:5432/postgres
+      FIREBASE_AUTH_EMULATOR_ADMIN_HOST: localhost:9099
+      FIREBASE_AUTH_EMULATOR_WEB_HOST: localhost:9098
+      FIREBASE_API_KEY_ADMIN: ${{ secrets.API_KEY_ADMIN }}
+      FIREBASE_API_KEY_WEB: ${{ secrets.API_KEY_WEB }}
+      FIREBASE_ADMIN_SDK_FILE: cxp-dev-admin-adminsdk.json
+      FIREBASE_WEB_SDK_FILE: cxp-dev-adminsdk.json
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3
+      - name: Decrypt large secret admin
+        env:
+          INPUT: ./src/config/cxp-dev-admin-adminsdk.json.gpg
+          OUTPUT: ./src/config/cxp-dev-admin-adminsdk.json
+          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE_DEV }}
+        run: ./.github/scripts/decrypt_secret.sh
+      - name: Decrypt large secret web
+        env:
+          INPUT: ./src/config/cxp-dev-adminsdk.json.gpg
+          OUTPUT: ./src/config/cxp-dev-adminsdk.json
+          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE_DEV }}
+        run: ./.github/scripts/decrypt_secret.sh
+      - name: Get pip cache dir
+        id: pip-cache
+        run: |
+          echo "::set-output name=dir::$(pip cache dir)"
+      - name: pip cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+      - name: Install dependencies app
+        run: |
+          python -m pip install -r requirements.txt
+      - name: Run pytest tests
+        run: |
+          pytest .

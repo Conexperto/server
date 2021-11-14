@@ -26,7 +26,9 @@ schema = {
                         "phone_number": {
                             "oneOf": [{"type": "string"}, {"type": "null"}]
                         },
-                        "photo_url": {"oneOf": [{"type": "string"}, {"type": "null"}]},
+                        "photo_url": {
+                            "oneOf": [{"type": "string"}, {"type": "null"}]
+                        },
                         "disabled": {"type": "boolean"},
                         "provider_data": {
                             "type": "array",
@@ -76,20 +78,29 @@ schema_error = {
 
 
 def test_auth_user(client, auth, login_user):
-    rv = client.get("/admin/auth", headers={"Authorization": "Bearer " + auth.token})
+    """
+    Endpoint: /admin/auth
+    Method: GET
+    Assert: status_code == 200
+    Description:
+        Test admin auth
+    """
+    rv = client.get(
+        "/admin/auth", headers={"Authorization": "Bearer " + auth.token}
+    )
     assert rv.status_code == 200, "should be status code 200"
     body = loads(rv.data)
     validate(instance=body, schema=schema)
 
 
-def test_auth_wrong_user(client, auth, login):
-    rv = client.get("/admin/auth", headers={"Authorization": "Bearer " + auth.token})
-    assert rv.status_code == 404, "should be status code 200"
-    body = loads(rv.data)
-    validate(instance=body, schema=schema_error)
-
-
 def test_auth_without_headers(client):
+    """
+    Endpoint: /admin/auth
+    Method: GET
+    Assert: status_code == 400
+    Description:
+        Test admin auth without headers
+    """
     rv = client.get("/admin/auth")
     assert rv.status_code == 400, "should be status code 400"
     body = loads(rv.data)
@@ -97,6 +108,13 @@ def test_auth_without_headers(client):
 
 
 def test_auth_wrong_token(client):
+    """
+    Endpoint: /admin/auth
+    Method: GET
+    Assert: status_code == 400
+    Description:
+        Test admin auth without token
+    """
     rv = client.get("/admin/auth", headers={"Authorization": "Bearer"})
     assert rv.status_code == 400, "should be status code 400"
     body = loads(rv.data)
@@ -104,9 +122,16 @@ def test_auth_wrong_token(client):
 
 
 def test_auth_update(client, auth, login_user):
+    """
+    Endpoint: /admin/auth
+    Method: PUT
+    Assert: status_code == 200
+    Description:
+        Test update user
+    """
     headers = {"Authorization": "Bearer " + auth.token}
     payload = {
-        "phone_number": "+10000000000",
+        "phone_number": "+10000000001",
         "name": "Testing",
         "lastname": "Testing",
     }
@@ -117,6 +142,13 @@ def test_auth_update(client, auth, login_user):
 
 
 def test_auth_disabled(client, auth, login_user):
+    """
+    Endpoint: /admin/auth
+    Method: PATCH
+    Assert: status_code == 200
+    Description:
+        Test disabled user
+    """
     headers = {"Authorization": "Bearer " + auth.token}
     rv = client.patch("/admin/auth/disabled", headers=headers)
     assert rv.status_code == 200, "should be status code 200"

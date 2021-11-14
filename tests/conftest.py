@@ -1,6 +1,5 @@
 """ tests.conftest """
 import logging
-import os
 
 import pytest
 
@@ -18,10 +17,6 @@ def api():
     Initialize API
     """
     api = create_api()
-    api.config["TESTING"] = True
-    api.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
-    api.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    api.config["JSON_SORT_KEYS"] = False
 
     with api.app_context():
         db.init_app(api)
@@ -29,6 +24,7 @@ def api():
 
     yield api
 
+    AuthActions.drop_all()
     with api.app_context():
         db.drop_all()
 
@@ -54,11 +50,13 @@ def auth(runner):
     """
     Fixture for AuthActions
     """
-    runner.invoke(args=["seed", "admin", "up"])
-    runner.invoke(args=["seed", "user", "up"])
-    yield AuthActions()
-    runner.invoke(args=["seed", "admin", "down"])
-    runner.invoke(args=["seed", "user", "down"])
+    rv = runner.invoke(args=["seed", "admin", "up"])
+    assert not rv.exit_code, "Error in seed admin invoke: " + str(rv.output)
+
+    rv = runner.invoke(args=["seed", "user", "up"])
+    assert not rv.exit_code, "Error in seed user invoke: " + str(rv.output)
+
+    return AuthActions()
 
 
 @pytest.fixture
@@ -74,7 +72,7 @@ def login_user(auth):
     """
     Fixture for login user with user privileges
     """
-    auth.login("user@adminconexperto.com", "token_user")
+    auth.login("user@adminconexperto.com", "token_user", "admin")
 
 
 @pytest.fixture
@@ -82,7 +80,7 @@ def login_admin(auth):
     """
     Fixture for login user with admin privileges
     """
-    auth.login("admin@adminconexperto.com", "token_admin")
+    auth.login("admin@adminconexperto.com", "token_admin", "admin")
 
 
 @pytest.fixture
@@ -90,7 +88,7 @@ def login_root(auth):
     """
     Fixture for login user with root privileges
     """
-    auth.login("root@adminconexperto.com", "token_root")
+    auth.login("root@adminconexperto.com", "token_root", "admin")
 
 
 @pytest.fixture
@@ -98,4 +96,20 @@ def login_superroot(auth):
     """
     Fixture for login user with superroot privileges
     """
-    auth.login("superroot@adminconexperto.com", "token_superroot")
+    auth.login("superroot@adminconexperto.com", "token_superroot", "admin")
+
+
+@pytest.fixture(scope="module")
+def seed_speciality(runner):
+    """
+    Fixture seed speciality
+    """
+    runner.invoke(args=["seed", "speciality", "up"])
+
+
+@pytest.fixture(scope="module")
+def seed_method(runner):
+    """
+    Fixture seed method
+    """
+    runner.invoke(args=["seed", "method", "up"])

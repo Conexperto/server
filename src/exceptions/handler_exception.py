@@ -1,4 +1,7 @@
 """ src.exceptions.handler_exception """
+import os
+import sys
+
 from flask import abort
 from flask import current_app
 
@@ -25,13 +28,19 @@ class HandlerException(Exception):
 
     @property
     def message(self):
-        return "{} - {} \n {}".format(
-            self.__status_code, self.__description, self.__exception
+        return ("{} - {} \n {}").format(
+            self.__status_code,
+            self.__description,
+            self.__exception,
         )
 
     def logger(self):
         if self.status_code == 500:
-            self.__logger.error(self.message)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            return self.__logger.error(
+                "{} \n ({}:{})".format(self.message, fname, exc_tb.tb_lineno)
+            )
 
         self.__logger.warning(self.message)
 

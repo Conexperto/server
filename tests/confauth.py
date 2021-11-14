@@ -4,26 +4,39 @@ import os
 
 import requests
 
+from src.firebase import admin_sdk
+from src.firebase import web_sdk
+
 
 logger = logging.getLogger(__name__)
-URI = "http://emulator:9099/identitytoolkit.googleapis.com/v1/accounts:{}?key={}"
+URI = "http://{}/identitytoolkit.googleapis.com/v1/accounts:{}?key={}"
 
 
 class AuthActions(object):
     def __init__(self):
-        self._key = os.getenv("FIREBASE_API_KEY")
+        self._keys = {
+            "admin": os.getenv("FIREBASE_API_KEY_ADMIN"),
+            "web": os.getenv("FIREBASE_API_KEY_WEB"),
+        }
+        self._host = {
+            "admin": os.getenv("FIREBASE_AUTH_EMULATOR_ADMIN_HOST"),
+            "web": os.getenv("FIREBASE_AUTH_EMULATOR_WEB_HOST"),
+        }
         self._user = None
         self._token = None
         self._refresh_token = None
 
-    def login(self, email, password):
-        uri = URI.format("signInWithPassword", self._key)
-        payload = {"email": email, "password": password, "returnSecureToken": True}
-        logger.info(uri)
-        logger.info(payload)
+    def login(self, email, password, platform="web"):
+        uri = URI.format(
+            self._host[platform], "signInWithPassword", self._keys[platform]
+        )
+        payload = {
+            "email": email,
+            "password": password,
+            "returnSecureToken": True,
+        }
         rv = requests.post(uri, json=payload)
-        logger.info(rv.json())
-        assert rv.status_code == 200, "Faild authentication"
+        assert rv.status_code == 200, "Faild authentication: " + rv.text
         self._user = rv.json()
         self._token = self._user["idToken"]
         self._refresh_token = self._user["refreshToken"]
@@ -46,3 +59,19 @@ class AuthActions(object):
     @property
     def refresh_token(self):
         return self._refresh_token
+
+    @classmethod
+    def drop_all(self):
+        identifiers = []
+        page = admin_sdk.auth.list_users()
+        while page:
+            identifiers.extend([item.uid for item in page.users])
+            page = page.get_next_page()
+        admin_sdk.auth.delete_users(identifiers)
+
+        identifiers = []
+        page = web_sdk.auth.list_users()
+        while page:
+            identifiers.extend([item.uid for item in page.users])
+            page = page.get_next_page()
+        web_sdk.auth.delete_users(identifiers)

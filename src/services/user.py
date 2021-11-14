@@ -3,9 +3,15 @@ from flask import abort
 from sqlalchemy import asc
 from sqlalchemy import desc
 from sqlalchemy import or_
+from sqlalchemy.orm import class_mapper
 
 from src.exceptions import HandlerException
 from src.firebase import web_sdk
+from src.helpers import computed_operator
+from src.models import AssociationMethod
+from src.models import AssociationSpeciality
+from src.models import Method
+from src.models import Speciality
 from src.models import User
 from src.models import UserRecord
 
@@ -22,14 +28,38 @@ class UserService:
         if search is None:
             return self.__query
 
-        self.__query = self.__query.filter(
-            or_(
-                User.display_name.like(f"%{search}%"),
-                User.email.like(f"%{search}%"),
-                User.name.like(f"%{search}%"),
-                User.lastname.like(f"%{search}%"),
+        searchstring = "{}".format(search)
+        self.__query = (
+            self.__query.join(AssociationSpeciality)
+            .join(Speciality)
+            .join(AssociationMethod)
+            .join(Method)
+            .filter(
+                or_(
+                    User.display_name.like(f"%{searchstring}%"),
+                    User.email.like(f"%{searchstring}%"),
+                    User.name.like(f"%{searchstring}%"),
+                    User.lastname.like(f"%{searchstring}%"),
+                    User.headline.like(f"%{searchstring}%"),
+                    User.about_me.like(f"%{searchstring}%"),
+                    User.location.like(f"%{searchstring}%"),
+                    Speciality.name.like(f"%{searchstring}%"),
+                    Method.name.like(f"%{searchstring}"),
+                )
             )
         )
+        return self.__query
+
+    def filter_by(self, filter_by):
+        filters = []
+        for k, v in filter_by.items():
+            mapper = class_mapper(User)
+            if not hasattr(mapper.columns, k):
+                continue
+            filters.append(
+                computed_operator(mapper.columns[k], "{}".format(v))
+            )
+        self.__query = self.__query.filter(*filters)
         return self.__query
 
     def sort(self, order_by, order):
@@ -66,7 +96,7 @@ class UserService:
             a (UserRecord): UserRecord
             b (User): User
         """
-        user_record = UserRecord.get_user(uid, app=web_sdk)
+        user_record = UserRecord.get_user(uid, auth=web_sdk.auth)
         user = User.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:
@@ -74,13 +104,17 @@ class UserService:
 
         return {"uid": user_record.uid, "a": user_record, "b": user}
 
-    def list(self, search, page, per_pages, order_by, order):
+    def list(self, search, filter_by, page, per_pages, order_by, order):
         """
         Get list user
 
         Args:
+            search (str): Search
+            filter_by: Filter by column in model
             page (int): Pagination position
             per_pages (int): Limit result by page
+            order_by (str): Field by order
+            order (str|int): desc or asc (1|-1)
 
         Returns: list
             uid (str): User uid
@@ -90,9 +124,10 @@ class UserService:
         """
         self.__query = User.query
         self.search(search)
+        self.filter_by(filter_by)
         self.sort(order_by, order)
         paginate = self.__query.paginate(
-            int(page), int(per_pages) or 10, error_out=False
+            int(page), int(per_pages), error_out=False
         )
 
         return paginate
@@ -130,7 +165,7 @@ class UserService:
                 email=body["email"],
                 password=body["password"],
                 display_name=body["display_name"],
-                app=web_sdk,
+                auth=web_sdk.auth,
             )
             complete_register = body.get("complete_register") or False
             user_record.make_claims({"complete_register": complete_register})
@@ -192,47 +227,45 @@ class UserService:
             a (UserRecord): UserRecord
             b (User): User
         """
-        try:
-            user_record = UserRecord.get_user(uid, app=web_sdk)
-            user = User.query.filter_by(uid=user_record.uid).first()
+        user_record = UserRecord.get_user(uid, auth=web_sdk.auth)
+        user = User.query.filter_by(uid=user_record.uid).first()
 
-            if not user_record or not user:
-                raise abort(404, description="NotFound", response="not_found")
+        if not user_record or not user:
+            raise abort(404, description="NotFound", response="not_found")
 
-            user_record.serialize(body)
-            user_record.update_user()
+        user_record.serialize(body)
+        user_record.update_user()
 
-            if "complete_register" in body:
-                user_record.make_claims(
-                    {"complete_register": body["complete_register"]}
+        if "complete_register" in body:
+            user_record.make_claims(
+                {"complete_register": body["complete_register"]}
+            )
+
+        if "specialities" in body:
+            if not isinstance(body["specialities"], list):
+                raise HandlerException(
+                    400, "Bad request: specialities should be array"
                 )
+            user.update_specialities(body["specialities"])
 
-            if "specialities" in body:
-                if type(body["specialities"]) is not list:
-                    raise HandlerException(
-                        400, "Bad request: specialities should be array"
-                    )
-                user.update_specialities(body["specialities"])
-                user.append_specialities(body["specialities"])
+        if "methods" in body:
+            if not isinstance(body["methods"], list):
+                raise HandlerException(
+                    400, "Bad request: methods should be array"
+                )
+            user.update_methods(body["methods"])
 
-            if "methods" in body:
-                if type(body["methods"]) is not list:
-                    raise HandlerException(400, "Bad request: methods should be array")
-                user.update_methods(body["methods"])
-                user.append_methods(body["methods"])
+        if "plans" in body:
+            if not isinstance(body["plans"], list):
+                raise HandlerException(
+                    400, "Bad request: plans should be array"
+                )
+            user.update_plans(body["plans"])
 
-            if "plans" in body:
-                if type(body["plans"]) is not list:
-                    raise HandlerException(400, "Bad request: plans should be array")
-                user.update_plans(body["plans"])
-                user.append_plans(body["plans"])
+        user.serialize(body)
+        user.save()
 
-            user.serialize(body)
-            user.save()
-
-            return {"uid": user_record.uid, "a": user_record, "b": user}
-        except Exception as ex:
-            raise HandlerException(400, "Bad request: " + str(ex))
+        return {"uid": user_record.uid, "a": user_record, "b": user}
 
     def update_field(self, uid, body):
         """
@@ -253,47 +286,45 @@ class UserService:
             a (UserRecord): UserRecord
             b (User): User
         """
-        try:
-            user_record = UserRecord.get_user(uid, app=web_sdk)
-            user = User.query.filter_by(uid=user_record.uid).first()
+        user_record = UserRecord.get_user(uid, auth=web_sdk.auth)
+        user = User.query.filter_by(uid=user_record.uid).first()
 
-            if not user_record or not user:
-                raise HandlerException(404, "Not found user")
+        if not user_record or not user:
+            raise HandlerException(404, "Not found user")
 
-            user_record.serialize(body)
-            user_record.update_user()
+        user_record.serialize(body)
+        user_record.update_user()
 
-            if "complete_register" in body:
-                user_record.make_claims(
-                    {"complete_register": body["complete_register"]}
+        if "complete_register" in body:
+            user_record.make_claims(
+                {"complete_register": body["complete_register"]}
+            )
+
+        if "specialities" in body:
+            if not isinstance(body["specialities"], list):
+                raise HandlerException(
+                    400, "Bad request: specialities should be array"
                 )
+            user.update_specialities(body["specialities"])
 
-            if "specialities" in body:
-                if type(body["specialities"]) is not list:
-                    raise HandlerException(
-                        400, "Bad request: specialities should be array"
-                    )
-                user.update_specialities(body["specialities"])
-                user.append_specialities(body["specialities"])
+        if "methods" in body:
+            if not isinstance(body["methods"], list):
+                raise HandlerException(
+                    400, "Bad request: methods should be array"
+                )
+            user.update_methods(body["methods"])
 
-            if "methods" in body:
-                if type(body["methods"]) is not list:
-                    raise HandlerException(400, "Bad request: methods should be array")
-                user.update_methods(body["methods"])
-                user.append_methods(body["methods"])
+        if "plans" in body:
+            if not isinstance(body["plans"], list):
+                raise HandlerException(
+                    400, "Bad request: plans should be array"
+                )
+            user.update_plans(body["plans"])
 
-            if "plans" in body:
-                if type(body["plans"]) is not list:
-                    raise HandlerException(400, "Bad request: plans should be array")
-                user.update_plans(body["plans"])
-                user.append_plans(body["plans"])
+        user.serialize(body)
+        user.save()
 
-            user.serialize(body)
-            user.save()
-
-            return {"uid": user_record.uid, "a": user_record, "b": user}
-        except Exception as ex:
-            raise HandlerException(400, "Bad request: " + str(ex))
+        return {"uid": user_record.uid, "a": user_record, "b": user}
 
     def disabled(self, uid):
         """
@@ -307,7 +338,7 @@ class UserService:
             a (UserRecord): UserRecord
             b (User): User
         """
-        user_record = UserRecord.get_user(uid, app=web_sdk)
+        user_record = UserRecord.get_user(uid, auth=web_sdk.auth)
         user = User.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:
@@ -331,7 +362,7 @@ class UserService:
         Returns: dict
             uid (str): User uid
         """
-        user_record = UserRecord.get_user(uid, app=web_sdk)
+        user_record = UserRecord.get_user(uid, auth=web_sdk.auth)
         user = User.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:

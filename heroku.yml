@@ -1,15 +1,10 @@
 setup:
-    addons:
-        - plan: heroku-postgresql
-          as: db
+  addons:
+    - plan: heroku-postgresql
+
 build:
-    docker:
-        web: Dockerfile
-release:
-    image: web
-    command:
-        - flask db init
-        - flask db migrate
-        - flask db upgrade
+  docker:
+    web: Dockerfile
+
 run:
-    web: gunicorn 'wsgi:create_wsgi()' --log-file -
+  web: gunicorn 'wsgi:create_wsgi()'

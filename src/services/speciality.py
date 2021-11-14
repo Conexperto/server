@@ -1,10 +1,11 @@
 """ src.services.speciality """
-from flask import abort
 from sqlalchemy import asc
 from sqlalchemy import desc
+from sqlalchemy.orm import class_mapper
 
 from src.db import db
 from src.exceptions import HandlerException
+from src.helpers import computed_operator
 from src.models import Admin
 from src.models import Speciality
 
@@ -22,6 +23,19 @@ class SpecialityService:
             return self.__query
 
         self.__query = self.__query.filter(Speciality.name.like(f"%{search}%"))
+        return self.__query
+
+    def filter_by(self, filter_by):
+        """filter by column of model"""
+        filters = []
+        for k, v in filter_by.items():
+            mapper = class_mapper(Speciality)
+            if not hasattr(mapper.columns, k):
+                continue
+            filters.append(
+                computed_operator(mapper.columns[k], "{}".format(v))
+            )
+        self.__query = self.__query.filter(*filters)
         return self.__query
 
     def sort(self, order_by, order):
@@ -62,12 +76,13 @@ class SpecialityService:
 
         return speciality
 
-    def list(self, search, page, per_pages, order_by, order):
+    def list(self, search, filter_by, page, per_pages, order_by, order):
         """
         Get list specialities
 
         Args:
             search (str): Search
+            filter_by: Filter by column of model
             page (int): Pagination position
             per_pages (int): Limit result by page
             order_by (str): Field by order
@@ -77,8 +92,11 @@ class SpecialityService:
         """
         self.__query = Speciality.query
         self.search(search)
+        self.filter_by(filter_by)
         self.sort(order_by, order)
-        paginate = self.__query.paginate(int(page), int(per_pages), error_out=False)
+        paginate = self.__query.paginate(
+            int(page), int(per_pages), error_out=False
+        )
 
         return paginate
 
@@ -99,7 +117,9 @@ class SpecialityService:
 
             return speciality
         except KeyError as ex:
-            raise HandlerException(404, "Bad request: " + str(ex))
+            raise HandlerException(
+                400, "Bad request, field {}".format(str(ex)), str(ex)
+            )
 
     def create_many(self, body):
         """
@@ -119,14 +139,18 @@ class SpecialityService:
                 pipe = [body]
 
             for p in pipe:
-                speciality = Speciality(
-                    duration=p["duration"], price=p["price"], coin=p["coin"]
-                )
+                speciality = Speciality(name=p["name"])
                 mappings_create.append(speciality)
 
-            db.session.bulk_insert_mappings(Speciality, mappings_create)
+            db.session.bulk_save_objects(mappings_create, return_defaults=True)
+            db.session.commit()
 
-            return mappings_create
+            identifiers = [item.id for item in mappings_create]
+
+            specialities_created = Speciality.query.filter(
+                Speciality.id.in_(identifiers)
+            ).all()
+            return specialities_created
 
         except KeyError as ex:
             raise HandlerException(
@@ -169,21 +193,21 @@ class SpecialityService:
         identifiers = [item["id"] for item in body]
 
         __query = Speciality.query
-        _specialities = __query.filter(Speciality.id.in_(identifiers)).all()
+        specialities = __query.filter(Speciality.id.in_(identifiers)).all()
 
-        for _speciality in _specialities:
+        for speciality in specialities:
             index = next(
-                [
-                    index
-                    for (index, item) in enumerate(body)
-                    if item["id"] == _speciality.id
-                ]
+                index
+                for (index, item) in enumerate(body)
+                if item["id"] == speciality.id
             )
 
-            _speciality.serialize(body[index])
-            mappings_update.append(_speciality)
+            speciality.serialize(body[index])
+            mappings_update.append(speciality)
 
-        db.session.bulk_update_mappings(Speciality, mappings_update)
+        db.session.bulk_save_objects(mappings_update)
+        db.session.commit()
+
         return mappings_update
 
     def update_field(self, _id, body):
@@ -200,7 +224,7 @@ class SpecialityService:
         speciality = Speciality.query.get(_id)
 
         if not speciality:
-            abort(404, description="NotFound", response="not_found")
+            raise HandlerException(404, "Not found speciality")
 
         speciality.serialize(body)
         speciality.save()
@@ -226,6 +250,26 @@ class SpecialityService:
 
         return speciality
 
+    def disabled_many(self, body):
+        """
+        Disabled speciality many
+
+        Args:
+            body (list<int ): identifiers
+
+        Returns: Specialities
+        """
+        __query = Speciality.query
+        specialities = __query.filter(Speciality.id.in_(body)).all()
+
+        for speciality in specialities:
+            speciality.serialize({"disabled": not speciality.disabled})
+
+        db.session.bulk_save_objects(specialities)
+        db.session.commit()
+
+        return specialities
+
     def delete(self, _id):
         """
         Delete Speciality
@@ -244,3 +288,19 @@ class SpecialityService:
         speciality.delete()
 
         return {"id": speciality.id}
+
+    def delete_many(self, body):
+        """
+        Delete speciality many
+
+        Args:
+            body (list<int>): identifiers
+
+        Returns: identifiers
+        """
+        db.session.query(Speciality).filter(Speciality.id.in_(body)).delete(
+            synchronize_session=False
+        )
+        db.session.commit()
+
+        return body

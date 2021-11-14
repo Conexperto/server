@@ -78,4 +78,6 @@ class Admin(BaseMixin, db.Model):
         if self.is_super_root():  # superroot have all access
             return True
 
-        return self.privileges < access if strict else self.privileges <= access
+        return (
+            self.privileges < access if strict else self.privileges <= access
+        )

@@ -1,21 +1,46 @@
 """
-    Credentials of Firebase for Admin & Web
+    Initialize firebase_admin for admin & web
 """
 import os
 
-import firebase_admin
+from firebase_admin import auth
+from firebase_admin import credentials
+from firebase_admin import initialize_app
 
 
-admin_sdk_cred = firebase_admin.credentials.Certificate(
-    os.path.abspath(os.path.join(__package__, "./config/conexperto-admin-sdk.json"))
-)
-admin_sdk = firebase_admin.initialize_app(credential=admin_sdk_cred, name="admin")
+class sdk:
+    def __init__(self, sdk, auth):
+        self.sdk = sdk
+        self.auth = auth
 
 
-web_sdk_cred = firebase_admin.credentials.Certificate(
-    os.path.abspath(os.path.join(__package__, "./config/conexperto-web-sdk.json"))
-)
-web_sdk = firebase_admin.initialize_app(credential=web_sdk_cred, name="web")
+def initialize_admin():
+    if os.getenv("FLASK_ENV") == "development":
+        os.environ["FIREBASE_AUTH_EMULATOR_HOST"] = os.getenv(
+            "FIREBASE_AUTH_EMULATOR_ADMIN_HOST"
+        )
+    SDK_FILE = os.getenv("FIREBASE_ADMIN_SDK_FILE")
+    sdk_cred = credentials.Certificate(
+        os.path.abspath(os.path.join(__package__, "./config/" + SDK_FILE))
+    )
+    sdk_app = initialize_app(credential=sdk_cred, name="admin")
+    client = auth._get_client(sdk_app)
+    return sdk(sdk_app, client)
 
-if os.getenv("TESTING"):
-    web_sdk = admin_sdk
+
+def initialize_web():
+    if os.getenv("FLASK_ENV") == "development":
+        os.environ["FIREBASE_AUTH_EMULATOR_HOST"] = os.getenv(
+            "FIREBASE_AUTH_EMULATOR_WEB_HOST"
+        )
+    SDK_FILE = os.getenv("FIREBASE_WEB_SDK_FILE")
+    sdk_cred = credentials.Certificate(
+        os.path.abspath(os.path.join(__package__, "./config/" + SDK_FILE))
+    )
+    sdk_app = initialize_app(credential=sdk_cred, name="web")
+    client = auth._get_client(sdk_app)
+    return sdk(sdk_app, client)
+
+
+admin_sdk = initialize_admin()
+web_sdk = initialize_web()

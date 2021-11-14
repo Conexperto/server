@@ -42,7 +42,9 @@ def index_search():
         order = parse_order(request.args.get("order"))
 
         service = SearchService()
-        paginate = service.list(search, speciality, page, per_page, order_by, order)
+        paginate = service.list(
+            search, speciality, page, per_page, order_by, order
+        )
 
         return jsonify(
             {

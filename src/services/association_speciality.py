@@ -18,7 +18,9 @@ class AssociationUserToSpecialityService:
 
         Returns: AssociationSpeciality
         """
-        association = AssociationSpeciality.query.filter_by(left_id=user_id).all()
+        association = AssociationSpeciality.query.filter_by(
+            left_id=user_id
+        ).all()
 
         if not association:
             raise HandlerException(404, "Not found association")
@@ -53,7 +55,9 @@ class AssociationUserToSpecialityService:
 
         Returns: AssociationSpeciality
         """
-        association = AssociationSpeciality(left_id=user_id, right_id=speciality_id)
+        association = AssociationSpeciality(
+            left_id=user_id, right_id=speciality_id
+        )
 
         association.add()
         association.save()
@@ -84,7 +88,8 @@ class AssociationUserToSpecialityService:
             )
             mappings_create.append(ass_speciality)
 
-        db.session.bulk_insert_mappings(AssociationSpeciality, mappings_create)
+        db.session.bulk_save_objects(mappings_create, return_defaults=True)
+        db.session.commit()
 
         return mappings_create
 

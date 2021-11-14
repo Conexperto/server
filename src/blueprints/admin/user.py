@@ -16,7 +16,7 @@ router = Blueprint(name="UserAdmin", import_name=__name__)
 @login_required(admin=True)
 def index_user_admin_one(uid):
     """
-    GET: /api/v1/admin/user/<uid>
+    GET: /api/v1/admin/users/<uid>
     """
     try:
         service = UserService()
@@ -26,43 +26,59 @@ def index_user_admin_one(uid):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/", methods=["GET"])
 @login_required(admin=True)
 def index_user_admin():
     """
-    GET: /api/v1/admin/user
+    GET: /api/v1/admin/users
     """
     try:
-        search = request.args.get("search")
-        page = request.args.get("page") or 1
-        per_pages = request.args.get("per_pages")
-        order_by = request.args.get("orderBy")
-        order = parse_order(request.args.get("order"))
+        search = request.args.get("search", None)
+        filter_by = request.args
+        page = request.args.get("page", 1)
+        per_pages = request.args.get("limit", 10)
+        order_by = request.args.get("orderBy", None)
+        order = parse_order(request.args.get("order", None))
 
         service = UserService()
-        users = service.list(search, page, per_pages, order_by, order)
+        paginate = service.list(
+            search, filter_by, page, per_pages, order_by, order
+        )
 
-        return jsonify({"success": True, "response": users})
+        return jsonify(
+            {
+                "success": True,
+                "response": paginate.items,
+                "total": paginate.total,
+                "page": paginate.page,
+                "limit": paginate.per_page,
+                "next": paginate.next_num,
+            }
+        )
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/", methods=["POST"])
 @login_required(admin=True)
 def register_user_admin():
     """
-    POST: /api/v1/admin/user
+    POST: /api/v1/admin/users
     """
     try:
         body = request.get_json()
 
         if not body:
-            raise HandlerException(400, "Not found body")
+            raise HandlerException(400, "Not found body request")
 
         service = UserService()
         user = service.create(body)
@@ -71,17 +87,22 @@ def register_user_admin():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/<uid>", methods=["PUT"])
 @login_required(admin=True)
 def update_user_admin(uid):
     """
-    PUT: /api/v1/admin/user/<uid>
+    PUT: /api/v1/admin/users/<uid>
     """
     try:
         body = request.get_json()
+
+        if not uid:
+            raise HandlerException(404, "Not found user")
 
         if not body:
             raise HandlerException(400, "Not found body")
@@ -93,17 +114,22 @@ def update_user_admin(uid):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/<uid>", methods=["PATCH"])
 @login_required(admin=True)
 def update_field_user_admin(uid):
     """
-    PATCH: /api/v1/admin/user/<uid>
+    PATCH: /api/v1/admin/users/<uid>
     """
     try:
         body = request.get_json()
+
+        if not uid:
+            raise HandlerException(404, "Not found user")
 
         if not body:
             raise HandlerException(400, "Not found body")
@@ -115,14 +141,16 @@ def update_field_user_admin(uid):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/disabled/<uid>", methods=["PATCH"])
 @login_required(admin=True)
 def disabled_user_admin(uid):
     """
-    PATCH /api/v1/admin/user/disabled/<uid>
+    PATCH /api/v1/admin/users/disabled/<uid>
     """
     try:
         service = UserService()
@@ -132,14 +160,16 @@ def disabled_user_admin(uid):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/<uid>", methods=["DELETE"])
 @login_required(admin=True)
 def delete_user_admin(uid):
     """
-    DELETE: /api/v1/admin/user/<uid>
+    DELETE: /api/v1/admin/users/<uid>
     """
     try:
         service = UserService()
@@ -149,4 +179,6 @@ def delete_user_admin(uid):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex)), str(ex)
+        HandlerException(500, "Unexpected response: " + str(ex)), str(
+            ex
+        ).abort()

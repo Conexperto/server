@@ -43,9 +43,34 @@ class User(BaseMixin, db.Model):
     timezone = Column(String)
     link_video = Column(String)
     location = Column(String)
-    plans = relationship("Plan", cascade="all, delete", passive_deletes=True)
-    specialities = relationship("AssociationSpeciality", cascade="all, delete")
-    methods = relationship("AssociationMethod", cascade="all, delete")
+    plans = relationship("Plan", passive_deletes=True)
+    specialities = relationship(
+        "AssociationSpeciality",
+        cascade="all, delete, delete-orphan",
+        passive_deletes=True,
+    )
+    methods = relationship(
+        "AssociationMethod",
+        cascade="all, delete, delete-orphan",
+        passive_deletes=True,
+    )
+
+    def __exists(self, _id, relationship, column):
+        return any(
+            getattr(item, column) == _id
+            for item in getattr(self, relationship)
+        )
+
+    def __get_by_id(self, _id, relationship, column):
+        return next(
+            filter(
+                lambda item: getattr(item, column) == _id,
+                getattr(self, relationship),
+            )
+        )
+
+    def __extract(self, _id, body, column):
+        return next(item.get(column) for item in body if item["id"] == _id)
 
     def append_specialities(self, identifiers):
         """
@@ -59,100 +84,80 @@ class User(BaseMixin, db.Model):
         __query = Speciality.query
         specialities = __query.filter(Speciality.id.in_(identifiers)).all()
 
-        for speciality in specialities:
-            if not any(item["right_id"] in identifiers for item in self.specialities):
+        for item in specialities:
+            if self.__exists(item.id, "specialities", "right_id"):
                 continue
-
             ass_speciality = AssociationSpeciality()
-            ass_speciality.speciality.append(speciality)
-
+            ass_speciality.speciality = item
             self.specialities.append(ass_speciality)
 
-    def append_methods(self, methods):
+    def append_methods(self, body):
         """
         Associate Methods to the user
 
         Args:
-            methods (list<dict>):
+            body (list<dict>):
                 id (int): Method.id
                 link (str): Method.link
 
         Returns: void
         """
-        identifiers = [item["id"] for item in methods]
+        identifiers = [item["id"] for item in body]
 
         __query = Method.query
-        _methods = __query.filter(Method.id.in_(identifiers)).all()
+        methods = __query.filter(Method.id.in_(identifiers)).all()
 
-        for _method in _methods:
-            if not any(item["right_id"] in identifiers for item in self.methods):
+        for item in methods:
+            if self.__exists(item.id, "methods", "right_id"):
                 continue
 
-            link = next(
-                [item["link"] for item in methods if item["id"] == _method.id], None
-            )
+            link = self.__extract(item.id, body, "link")
             if not link:
                 continue
 
             _ass_method = AssociationMethod(link=link)
-            _ass_method.method.append(_method)
-
+            _ass_method.method = item
             self.methods.append(_ass_method)
 
-    def append_plans(self, plans):
+    def append_plans(self, body):
         """
         Create plans and associates them to the user
 
         Args:
-            plans (list<dict>):
+            body (list<dict>):
                 duration (int): duration
                 price (int): price
                 coin (str): coin default "USD"
 
         Returns: void
         """
-        for item in plans:
-            if not any(_item.id == item["id"] for _item in self.plans):
-                continue
-
-            plan = Plan(
-                duration=item["duration"], price=item["price"], coin=item["coin"]
-            )
+        for item in body:
+            plan = Plan(duration=item["duration"], price=item["price"])
             self.plans.append(plan)
 
-    def update_specialities(self, ass_specialities):
+    def update_specialities(self, identifiers):
         """
         Update specialities
 
         Args:
-            specialities (list<dict>):
-                id (int): AssociationSpeciality.id
-                left_id (int): User.id
-                right_id (int): Speciality.id
+            body: list identifiers specialities
 
         Returns: void
         """
-        to_update = []
+        self.specialities = []
+        __query = Speciality.query
+        specialities = __query.filter(Speciality.id.in_(identifiers)).all()
+        for speciality in specialities:
+            ass_speciality = AssociationSpeciality()
+            ass_speciality.speciality = speciality
+            self.specialities.append(ass_speciality)
 
-        for item in ass_specialities:
-            if not any(_item.id == item["id"] for _item in self.specialities):
-                continue
-
-            _ass_speciality = next(
-                filter(lambda x: x.id == item["id"], self.specialities)
-            )
-            _ass_speciality.serialize(item)
-
-            to_update.append(_ass_speciality)
-
-        self.methods = to_update
-
-    def update_methods(self, ass_methods):
+    def update_methods(self, body):
         """
         Update methods
 
         Args:
-            methods (list<dict>):
+            body (list<dict>):
                 id (int): AssociationMethod.id
                 left_id (int): User.id
                 right_id (int): Method.id
@@ -161,23 +166,24 @@ class User(BaseMixin, db.Model):
         """
         to_update = []
 
-        for item in ass_methods:
-            if not any(_item.id == item["id"] for _item in self.methods):
+        for item in body:
+            if not self.__exists(item.get("id"), "methods", "right_id"):
                 continue
 
-            _ass_method = next(filter(lambda x: x.id == item["id"], self.methods))
+            _ass_method = self.__get_by_id(item["id"], "methods", "right_id")
             _ass_method.serialize(item)
 
             to_update.append(_ass_method)
 
         self.methods = to_update
+        self.append_methods(body)
 
-    def update_plans(self, plans):
+    def update_plans(self, body):
         """
         Update plans
 
         Args:
-            plans (list<dict)):
+            body (list<dict)):
                 id (int): Plan.id
                 duration (int): duration
                 price (int): price
@@ -186,14 +192,17 @@ class User(BaseMixin, db.Model):
         Returns: void
         """
         to_update = []
+        to_create = []
 
-        for item in plans:
-            if not any(_item.id == item["id"] for _item in self.plans):
+        for item in body:
+            if not self.__exists(item.get("id"), "plans", "id"):
+                to_create.append(item)
                 continue
 
-            _plan = next(filter(lambda x: x.id == item["id"], self.plans))
+            _plan = self.__get_by_id(item["id"], "plans", "id")
             _plan.serialize(item)
 
             to_update.append(_plan)
 
         self.plans = to_update
+        self.append_plans(to_create)

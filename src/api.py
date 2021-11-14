@@ -1,5 +1,6 @@
 """ src.api """
 import os
+import re
 
 from flask import Flask
 from flask import jsonify
@@ -7,12 +8,15 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 
 from src.blueprints import auth
+from src.blueprints import method
+from src.blueprints import speciality
+from src.blueprints import user
 from src.blueprints.admin import admin
 from src.blueprints.admin import auth_admin
-from src.blueprints.admin import method
-from src.blueprints.admin import plan
-from src.blueprints.admin import speciality
-from src.blueprints.admin import user
+from src.blueprints.admin import method as method_admin
+from src.blueprints.admin import plan as plan_admin
+from src.blueprints.admin import speciality as speciality_admin
+from src.blueprints.admin import user as user_admin
 from src.db import db
 from src.helpers import JSONSerializable
 from src.seed import seed
@@ -22,7 +26,12 @@ def create_api():
     """Initialize Application"""
     api = Flask(__name__)
 
-    api.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
+    # Heroku used protocolo postgres and psycopg2 used postgresql
+    # then be format to postgresql
+    database_url = os.getenv("DATABASE_URL")
+    if re.match("postgres://", database_url):
+        database_url = database_url.replace("postgres", "postgresql", 1)
+    api.config["SQLALCHEMY_DATABASE_URI"] = database_url
     api.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     api.config["JSON_SORT_KEYS"] = False
 
@@ -39,13 +48,16 @@ def create_api():
         db.init_app(api)
 
     api.register_blueprint(auth_admin, url_prefix="/admin/auth")
-    api.register_blueprint(admin, url_prefix="/admin")
-    api.register_blueprint(user, url_prefix="/admin/user")
-    api.register_blueprint(method, url_prefix="/admin/method")
-    api.register_blueprint(plan, url_prefix="/admin/plan")
-    api.register_blueprint(speciality, url_prefix="/admin/speciality")
+    api.register_blueprint(admin, url_prefix="/admins")
+    api.register_blueprint(user_admin, url_prefix="/admin/users")
+    api.register_blueprint(method_admin, url_prefix="/admin/methods")
+    api.register_blueprint(plan_admin, url_prefix="/admin/plans")
+    api.register_blueprint(speciality_admin, url_prefix="/admin/specialities")
 
     api.register_blueprint(auth, url_prefix="/auth")
+    api.register_blueprint(user, url_prefix="/users")
+    api.register_blueprint(speciality, url_prefix="/specialities")
+    api.register_blueprint(method, url_prefix="/methods")
 
     # Handler Errors HTTP
     def error_handler(err, msg, detail=None):

@@ -23,7 +23,9 @@ def index_speciality_one(_id):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 # GET: /api/v1/speciality
@@ -33,14 +35,19 @@ def index_speciality():
     GET: /api/v1/speciality
     """
     try:
-        search = request.args.get("search")
-        page = request.args.get("page") or 1
-        per_pages = request.args.get("limit") or 10
-        order_by = request.args.get("orderBy") or None
-        order = parse_order(request.args.get("order"))
+        search = request.args.get("search", None)
+        filter_by = request.args
+        page = request.args.get("page", 1)
+        per_pages = request.args.get("limit", 10)
+        order_by = request.args.get("orderBy", None)
+        order = parse_order(request.args.get("order", None))
+
+        _filter_by = {"disabled": False, **filter_by}
 
         service = SpecialityService()
-        paginate = service.list(search, page, per_pages, order_by, order)
+        paginate = service.list(
+            search, _filter_by, page, per_pages, order_by, order
+        )
 
         return jsonify(
             {
@@ -55,4 +62,6 @@ def index_speciality():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()

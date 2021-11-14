@@ -28,7 +28,9 @@ def index_method_admin_one(_id):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/", methods=["GET"])
@@ -39,19 +41,33 @@ def index_method_admin():
     """
     try:
         search = request.args.get("search")
+        filter_by = request.args
         page = request.args.get("page") or 1
         per_pages = request.args.get("limit") or 10
         order_by = request.args.get("orderBy") or None
         order = parse_order(request.args.get("order"))
 
         service = MethodService()
-        methods = service.list(search, page, per_pages, order_by, order)
+        paginate = service.list(
+            search, filter_by, page, per_pages, order_by, order
+        )
 
-        return jsonify({"success": True, "response": methods})
+        return jsonify(
+            {
+                "success": True,
+                "response": paginate.items,
+                "total": paginate.total,
+                "page": paginate.page,
+                "limit": paginate.per_page,
+                "next": paginate.next_num,
+            }
+        )
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/", methods=["POST"])
@@ -67,13 +83,19 @@ def register_method_admin():
             raise HandlerException(400, "Not found body")
 
         service = MethodService()
-        method = service.create(body)
+
+        if isinstance(body, list):
+            method = service.create_many(body)
+        else:
+            method = service.create(body)
 
         return jsonify({"success": True, "response": method})
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/<int:_id>", methods=["PUT"])
@@ -95,7 +117,33 @@ def update_method_admin(_id):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
+
+
+@router.route("/", methods=["PUT"])
+@login_required(admin=True)
+def update_many_method_admin():
+    """
+    PUT: /api/v1/admin/method
+    """
+    try:
+        body = request.get_json()
+
+        if not body:
+            raise HandlerException(400, "Not found body")
+
+        service = MethodService()
+        method = service.update_many(body)
+
+        return jsonify({"success": True, "response": method})
+    except HandlerException as ex:
+        ex.abort()
+    except Exception as ex:
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/<int:_id>", methods=["PATCH"])
@@ -117,7 +165,9 @@ def update_field_method_admin(_id):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/disabled/<int:_id>", methods=["PATCH"])
@@ -134,7 +184,33 @@ def disabled_method_admin(_id):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
+
+
+@router.route("/disabled", methods=["PATCH"])
+@login_required(admin=True)
+def disabled_many_speciality():
+    """
+    PATCH: /api/v1/admin/method/disabled
+    """
+    try:
+        body = request.get_json()
+
+        if not body:
+            raise HandlerException(400, "Not found body")
+
+        service = MethodService()
+        method = service.disabled_many(body)
+
+        return jsonify({"success": True, "response": method})
+    except HandlerException as ex:
+        ex.abort()
+    except Exception as ex:
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/<int:_id>", methods=["DELETE"])
@@ -151,4 +227,30 @@ def delete_method_admin(_id):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
+
+
+@router.route("/", methods=["DELETE"])
+@login_required(admin=True)
+def delete_many_speciality_admin():
+    """
+    DELETE: /api/v1/admin/method
+    """
+    try:
+        body = request.get_json()
+
+        if not body:
+            raise HandlerException(400, "Not found body")
+
+        service = MethodService()
+        method = service.delete_many(body)
+
+        return jsonify({"success": True, "response": method})
+    except HandlerException as ex:
+        ex.abort()
+    except Exception as ex:
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()

@@ -2,9 +2,11 @@
 from sqlalchemy import asc
 from sqlalchemy import desc
 from sqlalchemy import or_
+from sqlalchemy.orm import class_mapper
 
 from src.exceptions import HandlerException
 from src.firebase import admin_sdk
+from src.helpers import computed_operator
 from src.models import Admin
 from src.models import Privileges
 from src.models import UserRecord
@@ -22,14 +24,27 @@ class AdminService:
         if search is None:
             return self.__query
 
+        searchstring = "{}".format(search)
         self.__query = self.__query.filter(
             or_(
-                Admin.display_name.like(f"%{search}%"),
-                Admin.email.like(f"%{search}%"),
-                Admin.name.like(f"%{search}%"),
-                Admin.lastname.like(f"%{search}%"),
+                Admin.display_name.like(f"%{searchstring}%"),
+                Admin.email.like(f"%{searchstring}%"),
+                Admin.name.like(f"%{searchstring}%"),
+                Admin.lastname.like(f"%{searchstring}%"),
             )
         )
+        return self.__query
+
+    def filter_by(self, filter_by):
+        filters = []
+        for k, v in filter_by.items():
+            mapper = class_mapper(Admin)
+            if not hasattr(mapper.columns, k):
+                continue
+            filters.append(
+                computed_operator(mapper.columns[k], "{}".format(v))
+            )
+        self.__query = self.__query.filter(*filters)
         return self.__query
 
     def sort(self, order_by, order):
@@ -66,7 +81,7 @@ class AdminService:
             a (UserRecord): UserRecord
             b (Admin): Admin
         """
-        user_record = UserRecord.get_user(uid, app=admin_sdk)
+        user_record = UserRecord.get_user(uid, auth=admin_sdk.auth)
         user = Admin.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:
@@ -74,7 +89,7 @@ class AdminService:
 
         return {"uid": user_record.uid, "a": user_record, "b": user}
 
-    def list(self, search, page, per_pages, order_by, order):
+    def list(self, search, filter_by, page, per_pages, order_by, order):
         """
         Get list user admin
 
@@ -92,6 +107,7 @@ class AdminService:
         """
         self.__query = Admin.query
         self.search(search)
+        self.filter_by(filter_by)
         self.sort(order_by, order)
         paginate = self.__query.paginate(
             int(page), int(per_pages) or 10, error_out=False
@@ -133,10 +149,12 @@ class AdminService:
                 display_name=body["display_name"],
                 phone_number=body["phone_number"],
                 photo_url=body.get("photo_url"),
-                app=admin_sdk,
+                auth=admin_sdk.auth,
             )
             privileges = body.get("privileges") or Privileges.User.value
-            user_record.make_claims({"admin": True, "access_level": privileges})
+            user_record.make_claims(
+                {"admin": True, "access_level": privileges}
+            )
             user = Admin(
                 uid=user_record.uid,
                 email=user_record.email,
@@ -177,7 +195,7 @@ class AdminService:
             a (UserRecord): UserRecord
             b (Admin): Admin
         """
-        user_record = UserRecord.get_user(uid, app=admin_sdk)
+        user_record = UserRecord.get_user(uid, auth=admin_sdk.auth)
         user = Admin.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:
@@ -199,7 +217,9 @@ class AdminService:
         user_record.update_user()
 
         if "privileges" in body:
-            user_record.make_claims({"admin": True, "access_level": body["privileges"]})
+            user_record.make_claims(
+                {"admin": True, "access_level": body["privileges"]}
+            )
 
         user.serialize(body)
         user.save()
@@ -227,7 +247,7 @@ class AdminService:
             a (UserRecord): UserRecord
             b (Admin): Admin
         """
-        user_record = UserRecord.get_user(uid, app=admin_sdk)
+        user_record = UserRecord.get_user(uid, auth=admin_sdk.auth)
         user = Admin.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:
@@ -249,7 +269,9 @@ class AdminService:
         user_record.update_user()
 
         if "privileges" in body:
-            user_record.make_claims({"admin": True, "access_level": body["privileges"]})
+            user_record.make_claims(
+                {"admin": True, "access_level": body["privileges"]}
+            )
 
         user.serialize(body)
         user.save()
@@ -269,7 +291,7 @@ class AdminService:
             a (UserRecord): UserRecord
             b (Admin): Admin
         """
-        user_record = UserRecord.get_user(uid, app=admin_sdk)
+        user_record = UserRecord.get_user(uid, auth=admin_sdk.auth)
         user = Admin.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:
@@ -306,7 +328,7 @@ class AdminService:
         Returns: dict
             uid (str): User uid
         """
-        user_record = UserRecord.get_user(uid, app=admin_sdk)
+        user_record = UserRecord.get_user(uid, auth=admin_sdk.auth)
         user = Admin.query.filter_by(uid=user_record.uid).first()
 
         if not user_record or not user:

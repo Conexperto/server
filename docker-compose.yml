@@ -6,20 +6,38 @@ services:
       image: postgres:13-alpine
       env_file: ./docker/db/db.conf
       ports:
-          - "5432:5432"
+        - "5432:5432"
       volumes:
-          - ./docker/db/pg-init-scripts:/docker-entrypoint-initdb.d
-    emulator:
-      container_name: cxp_emulator
-      build:
-        context: ./docker/emulator
-        dockerfile: Dockerfile
-      env_file: ./docker/emulator/emulator.conf
+        - ./docker/db/pg-init-scripts:/docker-entrypoint-initdb.d
+    emulator_admin:
+      container_name: cxp_emulator_admin
+      image: frfernandezdev/firebase-emulators:latest
+      environment:
+        - FIREBASE_UI_ENABLED=true
+        - FIREBASE_PROJECT=conexperto-admin
       ports:
-        - "9099:9099"
         - "9000:9000"
+        - "9099:9099"
+    emulator_web:
+      container_name: cxp_emulator_web
+      environment:
+        - FIREBASE_UI_ENABLED=true
+        - FIREBASE_PROJECT=conexperto-6b5e7
+      image: frfernandezdev/firebase-emulators:latest
+      ports:
+        - "9001:9000"
+        - "9098:9099"
+    migrate:
+      build:
+        context: .
+        dockerfile: ./docker/migrate/Dockerfile
+      env_file: ./docker/migrate/migrate.conf
       volumes:
-        - ./docker/emulator/.cache/firebase/emulators/:/app/.cache/firebase/emulators/
+        - ./:/srv/app
+      depends_on:
+        - db
+        - emulator_admin
+        - emulator_web
     api:
       build:
         context: .
@@ -27,11 +45,12 @@ services:
       env_file: ./docker/api/api.conf
       volumes:
         - ./:/srv/app
-        - /srv/app/migrations
       ports:
-        - "5000:3000"
+        - "5000:5000"
       depends_on:
         - db
+        - emulator_admin
+        - emulator_web
     test:
       build:
         context: .
@@ -41,4 +60,9 @@ services:
         - ./:/srv/test
       depends_on:
         - db
-        - emulator
+        - emulator_admin
+        - emulator_web
+
+networks:
+  default:
+    driver: bridge

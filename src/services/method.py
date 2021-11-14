@@ -1,9 +1,11 @@
 """ src.services.method """
 from sqlalchemy import asc
 from sqlalchemy import desc
+from sqlalchemy.orm import class_mapper
 
 from src.db import db
 from src.exceptions import HandlerException
+from src.helpers import computed_operator
 from src.models import Method
 
 
@@ -19,7 +21,23 @@ class MethodService:
         if search is None:
             return self.__query
 
-        self.__query = self.__query.filter(Method.name.like(f"%{search}"))
+        searchstring = "{}".format(search)
+        self.__query = self.__query.filter(
+            Method.name.like(f"%{searchstring}")
+        )
+        return self.__query
+
+    def filter_by(self, filter_by):
+        """filter by column of model"""
+        filters = []
+        for k, v in filter_by.items():
+            mapper = class_mapper(Method)
+            if not hasattr(mapper.columns, k):
+                continue
+            filters.append(
+                computed_operator(mapper.columns[k], "{}".format(v))
+            )
+        self.__query = self.__query.filter(*filters)
         return self.__query
 
     def sort(self, order_by, order):
@@ -60,12 +78,13 @@ class MethodService:
 
         return method
 
-    def list(self, search, page, per_pages, order_by, order):
+    def list(self, search, filter_by, page, per_pages, order_by, order):
         """
         Get list method
 
         Args:
-            search (str)L Search
+            search (str): Search
+            filter_by: Filter by column of model
             page (int): Pagination position
             per_pages (int): Limit result by page
             order_by (str): Field by order
@@ -75,9 +94,10 @@ class MethodService:
         """
         self.__query = Method.query
         self.search(search)
+        self.filter_by(filter_by)
         self.sort(order_by, order)
         paginate = self.__query.paginate(
-            int(page), int(per_pages) or 10, error_out=False
+            int(page), int(per_pages), error_out=False
         )
 
         return paginate
@@ -125,9 +145,15 @@ class MethodService:
                 method = Method(name=p["name"])
                 mappings_create.append(method)
 
-            db.session.bulk_insert_mappings(Method, mappings_create)
+            db.session.bulk_save_objects(mappings_create, return_defaults=True)
+            db.session.commit()
 
-            return mappings_create
+            identifiers = [item.id for item in mappings_create]
+
+            methods_created = Method.query.filter(
+                Method.id.in_(identifiers)
+            ).all()
+            return methods_created
 
         except KeyError as ex:
             raise HandlerException(
@@ -170,17 +196,20 @@ class MethodService:
         identifiers = [item["id"] for item in body]
 
         __query = Method.query
-        _methods = __query.filter(Method.id.in_(identifiers)).all()
+        methods = __query.filter(Method.id.in_(identifiers)).all()
 
-        for _method in _methods:
+        for method in methods:
             index = next(
-                [index for (index, item) in enumerate(body) if item["id"] == _method.id]
+                index
+                for (index, item) in enumerate(body)
+                if item["id"] == method.id
             )
 
-            _method.serialize(body[index])
-            mappings_update.append(_method)
+            method.serialize(body[index])
+            mappings_update.append(method)
 
-        db.session.bulk_update_mappings(Method, mappings_update)
+        db.session.bulk_save_objects(mappings_update)
+        db.session.commit()
 
         return mappings_update
 
@@ -224,6 +253,26 @@ class MethodService:
 
         return method
 
+    def disabled_many(self, body):
+        """
+        Disabled method many
+
+        Args:
+            body (list<int ): identifiers
+
+        Returns: Method
+        """
+        __query = Method.query
+        methods = __query.filter(Method.id.in_(body)).all()
+
+        for method in methods:
+            method.serialize({"disabled": not method.disabled})
+
+        db.session.bulk_save_objects(methods)
+        db.session.commit()
+
+        return methods
+
     def delete(self, _id):
         """
         Delete Method
@@ -242,3 +291,19 @@ class MethodService:
         method.delete()
 
         return {"id": method.id}
+
+    def delete_many(self, body):
+        """
+        Delete method many
+
+        Args:
+            body (list<int>): identifiers
+
+        Returns: identifiers
+        """
+        db.session.query(Method).filter(Method.id.in_(body)).delete(
+            synchronize_session=False
+        )
+        db.session.commit()
+
+        return body

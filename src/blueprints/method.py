@@ -23,7 +23,9 @@ def index_method_one(_id):
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
 
 
 @router.route("/", methods=["GET"])
@@ -32,14 +34,19 @@ def index_method():
     GET: /api/v1/method
     """
     try:
-        search = request.args.get("search")
-        page = request.args.get("page") or 1
-        per_page = request.args.get("limit") or 10
-        order_by = request.args.get("orderBy")
-        order = parse_order(request.args.get("order"))
+        search = request.args.get("search", None)
+        filter_by = request.args
+        page = request.args.get("page", 1)
+        per_page = request.args.get("limit", 10)
+        order_by = request.args.get("orderBy", None)
+        order = parse_order(request.args.get("order", None))
+
+        _filter_by = {"disabled": False, **filter_by}
 
         service = MethodService()
-        paginate = service.list(search, page, per_page, order_by, order)
+        paginate = service.list(
+            search, _filter_by, page, per_page, order_by, order
+        )
 
         return jsonify(
             {
@@ -54,4 +61,6 @@ def index_method():
     except HandlerException as ex:
         ex.abort()
     except Exception as ex:
-        HandlerException(500, "Unexpected response: " + str(ex), str(ex))
+        HandlerException(
+            500, "Unexpected response: " + str(ex), str(ex)
+        ).abort()
