@@ -1,0 +1,35 @@
+name: Continuous Delivery
+
+on:
+  pull_request:
+    branches: staging
+
+jobs:
+  delivery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3
+      - name: Decrypt large secret admin
+        env:
+          INPUT: cxp-staging-admin-adminsdk.json.gpg
+          OUTPUT: cxp-staging-admin-adminsdk.json
+          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE_STAGING }}
+        run: ./.github/scripts/decrypt_secret.sh
+      - name: Decrypt large secret web
+        env:
+          INPUT: cxp-staging-adminsdk.json.gpg
+          OUTPUT: cxp-staging-adminsdk.json
+          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE_STAGING }}
+        run: ./.github/scripts/decrypt_secret.sh
+      - name: Install ruby and dpl
+        run: |
+           apt-get update -qy
+           apt-get install -y ruby-dev
+           gem install dpl
+      - name: Deployment on Heroku
+        run: |
+           dpl --provider=heroku --app=cxp-server-staging --api_key=$HEROKU_API_KEY

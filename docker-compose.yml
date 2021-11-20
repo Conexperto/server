@@ -12,25 +12,32 @@ services:
     emulator_admin:
       container_name: cxp_emulator_admin
       image: frfernandezdev/firebase-emulators:latest
+      environment:
+        - FIREBASE_UI_ENABLED=true
+        - FIREBASE_PROJECT=conexperto-admin
       ports:
         - "9000:9000"
         - "9099:9099"
-      environment:
-        - FIREBASE_PROJECT=conexperto-admin
-        - FIREBASE_TOKEN=1//01oOxnx8H1x1bCgYIARAAGAESNwF-L9IrDYa8EKEGhP55_lSx5MzPI-76952cMi9esR06R45VTkqzwkYhx5x2ydqBArg1UzfqH54
-        - FIREBASE_UI_ENABLED=true
     emulator_web:
       container_name: cxp_emulator_web
+      environment:
+        - FIREBASE_UI_ENABLED=true
+        - FIREBASE_PROJECT=conexperto-6b5e7
       image: frfernandezdev/firebase-emulators:latest
       ports:
-        - "9001:9001"
-        - "9098:9098"
-      environment:
-        - FIREBASE_PROJECT=conexperto-6b5e7
-        - FIREBASE_TOKEN=1//01oOxnx8H1x1bCgYIARAAGAESNwF-L9IrDYa8EKEGhP55_lSx5MzPI-76952cMi9esR06R45VTkqzwkYhx5x2ydqBArg1UzfqH54
-        - FIREBASE_UI_ENABLED=true
-        - FIREBASE_AUTH_PORT=9098
-        - FIREBASE_UI_PORT=9001
+        - "9001:9000"
+        - "9098:9099"
+    migrate:
+      build:
+        context: .
+        dockerfile: ./docker/migrate/Dockerfile
+      env_file: ./docker/migrate/migrate.conf
+      volumes:
+        - ./:/srv/app
+      depends_on:
+        - db
+        - emulator_admin
+        - emulator_web
     api:
       build:
         context: .
