@@ -22,3 +22,6 @@ RUN gpg --quiet --batch --yes --decrypt  \
 			--passphrase="$SECRET_PASSPHRASE" \
 			--output "./src/config/$FIREBASE_SDK_WEB" \
 			"./src/config/$FIREBASE_SDK_WEB.gpg"
+
+
+CMD gunicorn --bind 0.0.0.0:$PORT 'wsgi:create_wsgi()'
