@@ -25,11 +25,13 @@ jobs:
           OUTPUT: conexperto-adminsdk.json
           SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
         run: ./.github/scripts/decrypt_secret.sh
-      - name: Install ruby and dpl
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6
+          bundler-cache: true
+      - name: Install dpl
         run: |
-           apt-get update -qy
-           apt-get install -y ruby-dev
            gem install dpl
       - name: Deployment on Heroku
         run: |
-           dpl --provider=heroku --app=cxp-server-prod --api_key=$HEROKU_API_KEY
+           dpl --provider=heroku --app=cxp-server-prod --api_key=${{ secrets.HEROKU_API_KEY }}

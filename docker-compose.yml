@@ -14,30 +14,33 @@ services:
       image: frfernandezdev/firebase-emulators:latest
       environment:
         - FIREBASE_UI_ENABLED=true
-        - FIREBASE_PROJECT=conexperto-admin
+        - FIREBASE_PROJECT=cxp-dev-admin
       ports:
         - "9000:9000"
         - "9099:9099"
     emulator_web:
       container_name: cxp_emulator_web
+      image: frfernandezdev/firebase-emulators:latest
       environment:
         - FIREBASE_UI_ENABLED=true
-        - FIREBASE_PROJECT=conexperto-6b5e7
-      image: frfernandezdev/firebase-emulators:latest
+        - FIREBASE_PROJECT=cxp-dev
       ports:
         - "9001:9000"
         - "9098:9099"
-    migrate:
-      build:
-        context: .
-        dockerfile: ./docker/migrate/Dockerfile
-      env_file: ./docker/migrate/migrate.conf
-      volumes:
-        - ./:/srv/app
-      depends_on:
-        - db
-        - emulator_admin
-        - emulator_web
+    emulator_test_admin:
+      container_name: cxp_emulator_test_admin
+      image: frfernandezdev/firebase-emulators:latest
+      environment:
+        - FIREBASE_PROJECT=cxp-dev-admin
+      ports:
+        - "9099"
+    emulator_test_web:
+      container_name: cxp_emulator_test_web
+      image: frfernandezdev/firebase-emulators:latest
+      environment:
+        - FIREBASE_PROJECT=cxp-dev
+      ports:
+        - "9099"
     api:
       build:
         context: .
@@ -49,8 +52,8 @@ services:
         - "5000:5000"
       depends_on:
         - db
-        - emulator_admin
         - emulator_web
+        - emulator_admin
     test:
       build:
         context: .
@@ -60,9 +63,5 @@ services:
         - ./:/srv/test
       depends_on:
         - db
-        - emulator_admin
-        - emulator_web
-
-networks:
-  default:
-    driver: bridge
+        - emulator_test_admin
+        - emulator_test_web
