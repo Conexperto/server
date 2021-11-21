@@ -9,7 +9,7 @@ build:
 release:
   image: web
   command:
-    - ./scripts/release.sh
+    - ./scripts/migrate.sh
 
 run:
   web: gunicorn 'wsgi:create_wsgi()'
