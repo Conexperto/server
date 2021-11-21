@@ -9,29 +9,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Setup Python
-        uses: actions/setup-python@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
         with:
-          python-version: 3
-      - name: Decrypt large secret admin
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "cxp-server-staging"
+          heroku_email: "conexpertoteam@gmail.com"
+          procfile: "web: gunicorn 'wsgi:create_wsgi()'"
+          usedocker: true
+          docker_build_args: |
+            SECRET_PASSPHRASE
+            FIREBASE_SDK_ADMIN
+            FIREBASE_SDK_WEB
         env:
-          INPUT: ./src/config/cxp-staging-admin-adminsdk.json.gpg
-          OUTPUT: ./src/config/cxp-staging-admin-adminsdk.json
           SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE_STAGING }}
-        run: ./.github/scripts/decrypt_secret.sh
-      - name: Decrypt large secret web
-        env:
-          INPUT: ./src/config/cxp-staging-adminsdk.json.gpg
-          OUTPUT: ./src/config/cxp-staging-adminsdk.json
-          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE_STAGING }}
-        run: ./.github/scripts/decrypt_secret.sh
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.6
-          bundler-cache: true
-      - name: Install dpl
-        run: |
-           gem install dpl
-      - name: Deployment on Heroku
-        run: |
-           dpl --provider=heroku --app=cxp-server-staging --api_key=${{ secrets.HEROKU_API_KEY }}
+          FIREBASE_SDK_ADMIN: ./src/config/cxp-staging-admin-adminsdk.json
+          FIREBASE_SDK_WEB: ./src/config/cxp-staging-adminsdk.json
