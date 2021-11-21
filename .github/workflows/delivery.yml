@@ -34,4 +34,4 @@ jobs:
            gem install dpl
       - name: Deployment on Heroku
         run: |
-           dpl --provider=heroku --app=cxp-server-staging --api_key=$HEROKU_API_KEY
+           dpl --provider=heroku --app=cxp-server-staging --api_key=${{ secrets.HEROKU_API_KEY }}
