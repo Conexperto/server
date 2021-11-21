@@ -13,6 +13,18 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3
+      - name: Decrypt large secret admin
+        env:
+          INPUT: ./src/config/cxp-staging-admin-adminsdk.json.gpg
+          OUTPUT: ./src/config/cxp-staging-admin-adminsdk.json
+          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE_STAGING }}
+        run: ./.github/scripts/decrypt_secret.sh
+      - name: Decrypt large secret web
+        env:
+          INPUT: ./src/config/cxp-staging-adminsdk.json.gpg
+          OUTPUT: ./src/confgi/cxp-staging-adminsdk.json
+          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE_STAGING }}
+        run: ./.github/scripts/decrypt_secret.sh
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.6
