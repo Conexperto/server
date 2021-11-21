@@ -14,12 +14,13 @@ jobs:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: "cxp-server-staging"
           heroku_email: "conexpertoteam@gmail.com"
-          procfile: "web: gunicorn 'wsgi:create_wsgi()'"
           usedocker: true
           docker_build_args: |
             SECRET_PASSPHRASE
             FIREBASE_SDK_ADMIN
             FIREBASE_SDK_WEB
+          procfile: "web: gunicorn 'wsgi:create_wsgi()'"
+          branch: "staging"
         env:
           SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE_STAGING }}
           FIREBASE_SDK_ADMIN: ./src/config/cxp-staging-admin-adminsdk.json
