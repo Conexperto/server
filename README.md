@@ -32,33 +32,27 @@ Run start container api.
 ```sh
 docker-compose up api
 ```
-then visit <http://localhost:5000/api/v1/>
 
 Initialize migration of database.
-```sh
-docker-compose run --rm migrate flask db init
-docker-compose run --rm migrate flask db migrate
-docker-compose run --rm migrate flask db upgrade
-```
-
 if alterations are made in the api `src/models`, an update is necessary run this script.
 ```sh
-docker-compose run --rm migrate flask db upgrade
+docker-compose exec api bash
+> FLASK_APP="src.api:create_api()" flask db upgrade
 ```
+
+then visit <http://localhost:5000/api/v1/>
 
 ## Seeds
 ```
-docker-compose run --rm migrate flask seed <seed> <up|down>
+docker-compose exec api bash 
+> FLASK_APP="src.api:create_api()" flask seed <seed> <up|down>
 ```
 e.g.
 ```
-docker-compose run --rm migrate flask seed user up
+docker-compose exec api bash 
+> FLASK_APP="src.api:create_api()" flask seed user up
 ```
-or
-```
-docker-compose exec migrate flask seed admin down
-```
-See folder `src/seeds`.
+See folder `src/seeds` for more options.
 
 ## Testing
 ```
