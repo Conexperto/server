@@ -16,10 +16,10 @@ COPY ./ .
 
 RUN gpg --quiet --batch --yes --decrypt  \
 			--passphrase="$SECRET_PASSPHRASE" \
-			--output "./src/config/${FIREBASE_SDK_ADMIN}"
+			--output "./src/config/${FIREBASE_SDK_ADMIN}" \
 			"./src/config/${FIREBASE_SDK_ADMIN}.gpg"
 
 RUN gpg --quiet --batch --yes --decrypt  \
 			--passphrase="$SECRET_PASSPHRASE" \
-			--output "./src/config/${FIREBASE_SDK_WEB}"
+			--output "./src/config/${FIREBASE_SDK_WEB}" \
 			"./src/config/${FIREBASE_SDK_WEB}.gpg"
