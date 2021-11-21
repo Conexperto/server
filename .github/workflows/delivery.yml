@@ -23,5 +23,5 @@ jobs:
           branch: "staging"
         env:
           SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE_STAGING }}
-          FIREBASE_SDK_ADMIN: ./src/config/cxp-staging-admin-adminsdk.json
-          FIREBASE_SDK_WEB: ./src/config/cxp-staging-adminsdk.json
+          FIREBASE_SDK_ADMIN: cxp-staging-admin-adminsdk.json
+          FIREBASE_SDK_WEB: cxp-staging-adminsdk.json

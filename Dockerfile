@@ -1,18 +1,17 @@
 FROM python:3
 
-ARG SECRET_PASSPHRASE
-ARG FIREBASE_SDK_ADMIN
-ARG FIREBASE_SDK_WEB
+ARG SECRET_PASSPHRASE="cxp"
+ARG FIREBASE_SDK_ADMIN="cxp"
+ARG FIREBASE_SDK_WEB="cxp"
 
 
 RUN mkdir -p /srv/app
 WORKDIR /srv/app
 
-COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+#COPY ./requirements.txt .
+#RUN pip install -r requirements.txt
 
 COPY ./ .
-
 
 RUN gpg --quiet --batch --yes --decrypt  \
 			--passphrase="$SECRET_PASSPHRASE" \
