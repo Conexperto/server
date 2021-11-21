@@ -8,8 +8,8 @@ ARG FIREBASE_SDK_WEB="cxp"
 RUN mkdir -p /srv/app
 WORKDIR /srv/app
 
-#COPY ./requirements.txt .
-#RUN pip install -r requirements.txt
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
 
 COPY ./ .
 
