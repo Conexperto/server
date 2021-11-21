@@ -19,7 +19,6 @@ jobs:
             SECRET_PASSPHRASE
             FIREBASE_SDK_ADMIN
             FIREBASE_SDK_WEB
-          procfile: "web: gunicorn 'wsgi:create_wsgi()'"
           branch: "staging"
         env:
           SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE_STAGING }}
