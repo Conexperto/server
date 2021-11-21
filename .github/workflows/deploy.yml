@@ -13,18 +13,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3
-      - name: Decrypt large secret admin
-        env:
-          INPUT: conexperto-admin-adminsdk.json.gpg
-          OUTPUT: conexperto-admin-adminsdk.json
-          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
-        run: ./.github/scripts/decrypt_secret.sh
-      - name: Decrypt large secret web
-        env:
-          INPUT: conexperto-adminsdk.json.gpg
-          OUTPUT: conexperto-adminsdk.json
-          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
-        run: ./.github/scripts/decrypt_secret.sh
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.6

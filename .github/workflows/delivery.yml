@@ -1,6 +1,8 @@
 name: Continuous Delivery
 
 on:
+  push:
+    branches: staging
   pull_request:
     branches: staging
 
@@ -13,18 +15,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3
-      - name: Decrypt large secret admin
-        env:
-          INPUT: cxp-staging-admin-adminsdk.json.gpg
-          OUTPUT: cxp-staging-admin-adminsdk.json
-          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE_STAGING }}
-        run: ./.github/scripts/decrypt_secret.sh
-      - name: Decrypt large secret web
-        env:
-          INPUT: cxp-staging-adminsdk.json.gpg
-          OUTPUT: cxp-staging-adminsdk.json
-          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE_STAGING }}
-        run: ./.github/scripts/decrypt_secret.sh
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.6
