@@ -8,3 +8,4 @@ build:
 
 run:
   web: gunicorn 'wsgi:create_wsgi()'
+  release: ./scripts/release.sh
