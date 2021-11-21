@@ -6,6 +6,9 @@ build:
   docker:
     web: Dockerfile
 
+release:
+  command:
+    - ./scripts/release.sh
+
 run:
   web: gunicorn 'wsgi:create_wsgi()'
-  release: ./scripts/release.sh
