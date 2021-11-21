@@ -22,7 +22,7 @@ jobs:
       - name: Decrypt large secret web
         env:
           INPUT: ./src/config/cxp-staging-adminsdk.json.gpg
-          OUTPUT: ./src/confgi/cxp-staging-adminsdk.json
+          OUTPUT: ./src/config/cxp-staging-adminsdk.json
           SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE_STAGING }}
         run: ./.github/scripts/decrypt_secret.sh
       - uses: ruby/setup-ruby@v1
