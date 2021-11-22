@@ -6,5 +6,10 @@ build:
   docker:
     web: Dockerfile
 
+release:
+  image: web
+  command:
+    - ./scripts/migrate.sh
+
 run:
   web: gunicorn 'wsgi:create_wsgi()'
