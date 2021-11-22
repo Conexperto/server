@@ -36,3 +36,11 @@ jobs:
           file: ./images/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/server:latest
+          build-args: |
+            SECRET_PASSPHRASE
+            FIREBASE_SDK_ADMIN
+            FIREBASE_SDK_WEB
+        env:
+          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE_DEV }}
+          FIREBASE_SDK_ADMIN: cxp-dev-admin-adminsdk.json
+          FIREBASE_SDK_WEB: cxp-dev-adminsdk.json
