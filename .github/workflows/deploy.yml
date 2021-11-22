@@ -9,29 +9,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Setup Python
-        uses: actions/setup-python@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
         with:
-          python-version: 3
-      - name: Decrypt large secret admin
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "cxp-server-prod"
+          heroku_email: "conexpertoteam@gmail.com"
+          usedocker: true
+          docker_build_args: |
+            SECRET_PASSPHRASE
+            FIREBASE_SDK_ADMIN
+            FIREBASE_SDK_WEB
+          branch: "staging"
         env:
-          INPUT: conexperto-admin-adminsdk.json.gpg
-          OUTPUT: conexperto-admin-adminsdk.json
           SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
-        run: ./.github/scripts/decrypt_secret.sh
-      - name: Decrypt large secret web
-        env:
-          INPUT: conexperto-adminsdk.json.gpg
-          OUTPUT: conexperto-adminsdk.json
-          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
-        run: ./.github/scripts/decrypt_secret.sh
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.6
-          bundler-cache: true
-      - name: Install dpl
-        run: |
-           gem install dpl
-      - name: Deployment on Heroku
-        run: |
-           dpl --provider=heroku --app=cxp-server-prod --api_key=${{ secrets.HEROKU_API_KEY }}
+          FIREBASE_SDK_ADMIN: conexperto-admin-adminsdk.json
+          FIREBASE_SDK_WEB: conexperto-admin-adminsdk.json
