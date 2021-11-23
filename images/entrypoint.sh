@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -euo pipefail
 
 FLASK_APP="src.api:create_api()" eval 'flask db upgrade'
