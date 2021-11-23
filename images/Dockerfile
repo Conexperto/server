@@ -24,4 +24,4 @@ RUN gpg --quiet --batch --yes --decrypt  \
 			--output "./src/config/$FIREBASE_SDK_WEB" \
 			"./src/config/$FIREBASE_SDK_WEB.gpg"
 
-CMD ["flask", "run", "--host=0.0.0.0"]
+ENTRYPOINT "./entrypoint.sh"
