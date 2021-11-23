@@ -6,13 +6,13 @@ on:
       - main
     paths:
       - 'src/**.py'
-      - 'images/Dockerfile'
+      - 'images/*'
   pull_request:
     branches:
       - main
     paths:
       - 'src/**.py'
-      - 'images/Dockerfile'
+      - 'images/*'
 
 jobs:
   docker:
