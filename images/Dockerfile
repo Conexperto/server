@@ -24,4 +24,4 @@ RUN gpg --quiet --batch --yes --decrypt  \
 			--output "./src/config/$FIREBASE_SDK_WEB" \
 			"./src/config/$FIREBASE_SDK_WEB.gpg"
 
-ENTRYPOINT "./entrypoint.sh"
+ENTRYPOINT "./images/entrypoint.sh"
