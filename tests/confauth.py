@@ -9,15 +9,11 @@ from src.firebase import web_sdk
 
 
 logger = logging.getLogger(__name__)
-URI = "http://{}/identitytoolkit.googleapis.com/v1/accounts:{}?key={}"
+URI = "http://{}/identitytoolkit.googleapis.com/v1/accounts:{}?key=None"
 
 
 class AuthActions(object):
     def __init__(self):
-        self._keys = {
-            "admin": os.getenv("FIREBASE_API_KEY_ADMIN"),
-            "web": os.getenv("FIREBASE_API_KEY_WEB"),
-        }
         self._host = {
             "admin": os.getenv("FIREBASE_AUTH_EMULATOR_ADMIN_HOST"),
             "web": os.getenv("FIREBASE_AUTH_EMULATOR_WEB_HOST"),
@@ -27,9 +23,7 @@ class AuthActions(object):
         self._refresh_token = None
 
     def login(self, email, password, platform="web"):
-        uri = URI.format(
-            self._host[platform], "signInWithPassword", self._keys[platform]
-        )
+        uri = URI.format(self._host[platform], "signInWithPassword")
         payload = {
             "email": email,
             "password": password,
