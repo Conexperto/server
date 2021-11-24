@@ -24,6 +24,8 @@ RUN gpg --quiet --batch --yes --decrypt  \
 			--output "./src/config/$FIREBASE_SDK_WEB" \
 			"./src/config/$FIREBASE_SDK_WEB.gpg"
 
-COPY ./images/seed.sh .
-COPY  ./images/entrypoint.sh .
+# Added scripts to path OS
+COPY ./images/seed.sh /usr/local/bin
+COPY  ./images/entrypoint.sh /usr/local/bin
+
 ENTRYPOINT "./entrypoint.sh"
