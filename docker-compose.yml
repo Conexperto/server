@@ -26,7 +26,7 @@ services:
         - FIREBASE_PROJECT=cxp-dev
       ports:
         - "9001:9000"
-        - "9098:9099"
+        - "9098:9098"
     emulator_test_admin:
       container_name: cxp_emulator_test_admin
       image: frfernandezdev/firebase-emulators:latest
@@ -39,8 +39,9 @@ services:
       image: frfernandezdev/firebase-emulators:latest
       environment:
         - FIREBASE_PROJECT=cxp-dev
+        - FIREBASE_AUTH_HOST=9098
       ports:
-        - "9099"
+        - "9098"
     api:
       build:
         context: .
