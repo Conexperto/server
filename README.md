@@ -5,7 +5,7 @@ Conexperto, aims to be a social network to learn and grow. We believe that peopl
 
 This repository houses the code for all operation of the Backend in Conexperto.
 
-## Getting Started 💪
+## Getting Started 🚀
 
 ### Prerequisities
 
@@ -44,7 +44,7 @@ docker-compose exec api db migrate
 
 then visit <http://localhost:5000/api/v1/>
 
-## Seeds
+## Seeds 🥜
 ```
 docker-compose exec api seed <seed> <up|down>
 ```
@@ -54,7 +54,7 @@ docker-compose exec api seed user up
 ```
 See folder `src/seeds` for more options.
 
-## Testing
+## Testing 🔨
 ```
 docker-compose run --rm test bash
 ```
@@ -66,7 +66,7 @@ pytest .
 ```
 For exec all testing.
 
-## Environment
+## Environment ⛺
 
 ### Environment for api.
 In file `docker/api/api.conf` be all variables environment to api.
@@ -101,7 +101,7 @@ In file `docker/test/test.conf` be all variables environment to test.
 * `FIREBASE_API_KEY_ADMIN` 		- Set api key for authentication testing admin.
 * `FIREBASE_API_KEY_WEB` 		- Set api key for authentication testing web.
 
-## Folder Structure
+## Folder Structure 📁
 	.
 	├── docker/ 					# resource for docker-compose
 	|	├── api/				# container api
@@ -136,11 +136,12 @@ In file `docker/test/test.conf` be all variables environment to test.
 	├── README.md 					# Readme of a lifetime.
 	└── heroku.yml					# Config for deploy on heroku.
 
-## Discussion
+## Discussion 💬
 
 * Discuss Conexperto Server on [Github Discussions](https://github.com/conexperto/server/discussions)
 
-## Contributing
+## Contributing 🎢
+
 To contribute, please review the issues in the projects section [projects](https://github.com/conexperto/server/projects/1)
 
 In order to maintain consistency and readability of commit messages, this convention is used [ConventionalCommits](https://www.conventionalcommits.org/en/v1.0.0/)
