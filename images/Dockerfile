@@ -26,6 +26,8 @@ RUN gpg --quiet --batch --yes --decrypt  \
 
 # Added scripts to path OS
 COPY ./images/seed.sh /usr/local/bin
-COPY  ./images/entrypoint.sh /usr/local/bin
+COPY  ./images/migrate.sh /usr/local/bin
+
+COPY ./images/entrypoint.sh .
 
 ENTRYPOINT "./entrypoint.sh"
