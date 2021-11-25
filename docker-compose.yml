@@ -23,6 +23,7 @@ services:
       image: frfernandezdev/firebase-emulators:latest
       environment:
         - FIREBASE_UI_ENABLED=true
+        - FIREBASE_AUTH_PORT=9098
         - FIREBASE_PROJECT=cxp-dev
       ports:
         - "9001:9000"
@@ -38,8 +39,8 @@ services:
       container_name: cxp_emulator_test_web
       image: frfernandezdev/firebase-emulators:latest
       environment:
+        - FIREBASE_AUTH_PORT=9098
         - FIREBASE_PROJECT=cxp-dev
-        - FIREBASE_AUTH_HOST=9098
       ports:
         - "9098"
     api:
@@ -53,8 +54,8 @@ services:
         - "5000:5000"
       depends_on:
         - db
-        - emulator_web
         - emulator_admin
+        - emulator_web
     test:
       build:
         context: .
