@@ -26,7 +26,7 @@ RUN gpg --quiet --batch --yes --decrypt  \
 
 # Added scripts to path OS
 COPY ./scripts/seed.sh /usr/local/bin/seed
-COPY  ./scripts/migrate.sh /usr/local/bin/migrate
+COPY  ./scripts/db.sh /usr/local/bin/db
 
 COPY ./docker/image/entrypoint.sh .
 
