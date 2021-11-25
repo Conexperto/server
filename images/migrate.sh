@@ -2,4 +2,4 @@
 
 FLASK_APP="src.api:create_api()"
 
-flask db upgrade
+exec flask db $1
