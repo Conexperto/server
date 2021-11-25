@@ -34,23 +34,23 @@ docker-compose up api
 ```
 
 Initialize migration of database.
+```sh
+docker-compose exec api db upgrade
+```
 if alterations are made in the api `src/models`, an update is necessary run this script.
 ```sh
-docker-compose exec api bash
-> FLASK_APP="src.api:create_api()" flask db upgrade
+docker-compose exec api db migrate
 ```
 
 then visit <http://localhost:5000/api/v1/>
 
 ## Seeds
 ```
-docker-compose exec api bash 
-> FLASK_APP="src.api:create_api()" flask seed <seed> <up|down>
+docker-compose exec api seed <seed> <up|down>
 ```
 e.g.
 ```
-docker-compose exec api bash 
-> FLASK_APP="src.api:create_api()" flask seed user up
+docker-compose exec api seed user up
 ```
 See folder `src/seeds` for more options.
 
@@ -75,6 +75,8 @@ In file `docker/api/api.conf` be all variables environment to api.
 * `FLASK_DEBUG`   			- Set debug, enabled flask debug.
 * `TESTING` 		  		- Set testing, enabled flask testing.
 * `DATABASE_URL` 			- Set URL for connected to database.
+* `FIREBASE_ADMIN_SDK_FILE` - Set path for sdk credentials admin.
+* `FIREBASE_WEB_SDK_FILE`		- Set path for sdk credentials web.
 * `FIREBASE_AUTH_EMULATOR_ADMIN_HOST` 	- Set host for emulator firebase admin.
 * `FIREBASE_AUTH_EMULATOR_WEB_HOST`	- Set host for emulator firebase web.
 
@@ -85,30 +87,21 @@ In file `docker/db/db.conf` be all variables envionment to db.
 * `POSTGRES_USER`				- Set user, default `owner`.
 * `POSTGRES_PASSWORD`   			- Set password, defaullt `token.01`.
 
-### Environment for migrate.
-In file `docker/migrate/migrate.conf` be all variables environment to migrate.
-* `FLASK_RUN_PORT` 			- Set port for flask app.
-* `FLASK_ENV`     			- Set env, 'production' or 'development'.
-* `FLASK_DEBUG`   			- Set debug, enabled flask debug.
-* `TESTING` 				- Set testing, enabled flask testing.
-* `DATABASE_URL` 			- Set URL for connected to database.
-* `FIREBASE_AUTH_EMULATOR_ADMIN_HOST` 	- Set host for emulator firebase admin.
-* `FIREBASE_AUTH_EMULATOR_WEB_HOST`	- Set host for emulator firebase web.
-
-### Environment for migrate.
+### Environment for test.
 In file `docker/test/test.conf` be all variables environment to test.
 * `FLASK_RUN_PORT` 			- Set port for flask app.
 * `FLASK_ENV`     			- Set env, 'production' or 'development'.
 * `FLASK_DEBUG`   			- Set debug, enabled flask debug.
 * `TESTING` 				- Set testing, enabled flask testing.
 * `DATABASE_URL` 			- Set URL for connected to database.
+* `FIREBASE_ADMIN_SDK_FILE` - Set path for sdk credentials admin.
+* `FIREBASE_WEB_SDK_FILE`		- Set path for sdk credentials web.
 * `FIREBASE_AUTH_EMULATOR_ADMIN_HOST` 	- Set host for emulator firebase admin.
 * `FIREBASE_AUTH_EMULATOR_WEB_HOST`	- Set host for emulator firebase web.
 * `FIREBASE_API_KEY_ADMIN` 		- Set api key for authentication testing admin.
 * `FIREBASE_API_KEY_WEB` 		- Set api key for authentication testing web.
 
 ## Folder Structure
-
 	.
 	├── docker/ 					# resource for docker-compose
 	|	├── api/				# container api
@@ -118,9 +111,9 @@ In file `docker/test/test.conf` be all variables environment to test.
 	|	|	├── pg-init-scripts/
 	|	|	|	└── create-multiple-postgresql-database.sh # script for handle multiple database
 	|	|	└── db.conf 			# environment variables for this container.
-	|	├── migrate/				# container migrate
-	|	|	├── Dockerfile 			# instruction for docker.
-	|	|	└── migrate.conf		# environment variables for this container.
+	|	├── image/				# container migrate
+	|	|	├── Dockerfile 			# Contains all the comands for make image.
+	|	|	└── entrypoint.sh		# entrypoint.
 	| ├── test/					# container test
 	|	|	├── Dockerfile			# instruction for docker.
 	|	|	└── api.conf			# environment variables for this container.
