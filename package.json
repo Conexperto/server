@@ -26,8 +26,10 @@
     "@nestjs/cqrs": "^8.0.1",
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/typeorm": "^8.0.2",
+    "@types/convict": "^6.1.1",
     "@types/uuid": "^8.3.4",
     "@types/uuid-validate": "^0.0.1",
+    "convict": "^6.2.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
@@ -75,8 +77,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
-		"moduleNameMapper": {
-				"src/(.*)": "<rootDir>/src/$1"
-		}
+    "moduleNameMapper": {
+      "src/(.*)": "<rootDir>/src/$1"
+    }
   }
 }
