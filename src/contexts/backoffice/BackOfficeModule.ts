@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { SQLiteModule } from './shared/infrastructure/persistence/SQLiteModule';
+import { BackOfficeSQLiteModule } from './shared/infrastructure/persistence/BackOfficeSQLiteModule';
 
 @Module({
-  imports: [SQLiteModule],
+  imports: [BackOfficeSQLiteModule],
   exports: [],
 })
 export class BackOfficeModule {}
