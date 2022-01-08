@@ -1,8 +1,15 @@
 import { Module } from '@nestjs/common';
-import { SQLiteClientFactory } from './shared/infrastructure/persistence/SQLiteClientFactory';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [SQLiteClientFactory],
+  imports: [
+    TypeOrmModule.forRoot({
+      type: 'sqlite',
+      database: 'cxp_db',
+      entities: [__dirname + '/**/**/entities/*{.ts,.js}'],
+      synchronize: true,
+    }),
+  ],
   controllers: [],
   providers: [],
   exports: [],
