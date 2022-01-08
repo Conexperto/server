@@ -11,7 +11,7 @@ export class UserRatingEntity {
   @Column()
   average: number;
 
-  @Column('array')
+  @Column('simple-array')
   stars: number[];
 
   @Column()
