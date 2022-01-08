@@ -1,4 +1,4 @@
-import { Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { MethodEntity } from './MethodEntity';
 import { UserEntity } from './UserEntity';
 
@@ -12,4 +12,7 @@ export class AssociationUserToMethodEntity {
 
   @ManyToOne(() => MethodEntity, (method) => method.id)
   method: MethodEntity;
+
+  @Column()
+  link: string;
 }
