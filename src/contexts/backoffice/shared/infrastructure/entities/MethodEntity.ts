@@ -2,7 +2,6 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({
   name: 'cxp_method',
-  orderBy: { id: 'DESC' },
   synchronize: true,
 })
 export class MethodEntity {
