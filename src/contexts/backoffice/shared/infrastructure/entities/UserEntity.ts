@@ -1,8 +1,22 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { AssociationUserToMethodEntity } from './AssociationUserToMethodEntity';
+import { AssociationUserToSpecialityEntity } from './AssociationUserToSpecialityEntity';
+import { MethodEntity } from './MethodEntity';
+import { PlanEntity } from './PlanEntity';
+import { SpecialityEntity } from './SpecialityEntity';
+import { UserExpertEntity } from './UserExpertEntity';
+import { UserRatingEntity } from './UserRatingEntity';
 
 @Entity({
   name: 'cxp_users',
-  orderBy: { id: 'DESC' },
   synchronize: true,
 })
 export class UserEntity {
@@ -35,21 +49,6 @@ export class UserEntity {
   disabled: boolean;
 
   @Column()
-  ratingAverage: number;
-
-  @Column('array')
-  ratingStars: [number];
-
-  @Column()
-  ratingVotes: number;
-
-  @Column()
-  headline: string;
-
-  @Column()
-  aboutMe: string;
-
-  @Column()
   sessionTaken: number;
 
   @Column()
@@ -59,14 +58,28 @@ export class UserEntity {
   timezone: string;
 
   @Column()
-  linkVideo: string;
-
-  @Column()
   location: string;
 
-  plans: [];
+  @OneToOne(() => UserRatingEntity)
+  @JoinColumn()
+  rating: UserRatingEntity;
 
-  specialities: [];
+  @OneToOne(() => UserExpertEntity)
+  @JoinColumn()
+  expert: UserExpertEntity;
 
-  methods: [];
+  @OneToMany(
+    () => AssociationUserToSpecialityEntity,
+    (assocSpeciality) => assocSpeciality.speciality,
+  )
+  specialities: SpecialityEntity[];
+
+  @OneToMany(
+    () => AssociationUserToMethodEntity,
+    (assocMethod) => assocMethod.method,
+  )
+  methods: MethodEntity[];
+
+  @OneToMany(() => PlanEntity, (plan) => plan.id)
+  plans: PlanEntity[];
 }
