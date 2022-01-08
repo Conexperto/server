@@ -2,7 +2,7 @@ import { v4 } from 'uuid';
 import validate from 'uuid-validate';
 import { InvalidArgumentError } from './InvalidArgumentError';
 
-export class Uuid {
+export class UuidValueObject {
   readonly value: string;
 
   constructor(value: string) {
@@ -11,8 +11,8 @@ export class Uuid {
     this.value = value;
   }
 
-  static random(): Uuid {
-    return new Uuid(v4());
+  static random(): UuidValueObject {
+    return new UuidValueObject(v4());
   }
 
   private ensureIsValidUuid(id: string): void {
