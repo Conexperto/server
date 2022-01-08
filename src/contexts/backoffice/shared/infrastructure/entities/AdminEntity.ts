@@ -1,5 +1,5 @@
+import { AdminRoles } from 'src/contexts/backoffice/admins/domain/AdminRole';
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
-import { RoleAdminEnumType } from 'src/contexts/backoffice/admins/domain/RoleAdminTypeEnum';
 
 @Entity({
   name: 'cxp_admins',
@@ -35,5 +35,5 @@ export class AdminEntity {
   disabled: boolean;
 
   @Column({ type: 'simple-enum' })
-  role: RoleAdminEnumType;
+  role: AdminRoles;
 }
