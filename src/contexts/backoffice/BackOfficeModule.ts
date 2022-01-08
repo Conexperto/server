@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { BackOfficeSharedModule } from './shared/BackOfficeSharedModule';
+import { SQLiteClientFactory } from './shared/infrastructure/persistence/SQLiteClientFactory';
 
 @Module({
-  imports: [BackOfficeSharedModule],
+  imports: [SQLiteClientFactory],
   controllers: [],
   providers: [],
   exports: [],
