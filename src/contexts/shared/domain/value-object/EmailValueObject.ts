@@ -1,4 +1,4 @@
-import { isEmail, validate } from 'class-validator';
+import { isEmail } from 'class-validator';
 import { InvalidArgumentError } from './InvalidArgumentError';
 import { StringValueObject } from './StringValueObject';
 
