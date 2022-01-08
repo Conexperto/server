@@ -74,11 +74,8 @@ export class UserEntity {
   )
   specialities: SpecialityEntity[];
 
-  @OneToMany(
-    () => AssociationUserToMethodEntity,
-    (assocMethod) => assocMethod.method,
-  )
-  methods: MethodEntity[];
+  @OneToMany(() => AssociationUserToMethodEntity, (assocMethod) => assocMethod)
+  methods: AssociationUserToMethodEntity[];
 
   @OneToMany(() => PlanEntity, (plan) => plan.id)
   plans: PlanEntity[];
