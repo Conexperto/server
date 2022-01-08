@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { MethodEntity } from './MethodEntity';
 import { UserEntity } from './UserEntity';
 
@@ -7,6 +7,9 @@ import { UserEntity } from './UserEntity';
   synchronize: true,
 })
 export class AssociationUserToMethodEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @ManyToOne(() => UserEntity, (user) => user.id)
   user: UserEntity;
 
