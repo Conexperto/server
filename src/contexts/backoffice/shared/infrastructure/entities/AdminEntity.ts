@@ -3,7 +3,6 @@ import { RoleAdminEnumType } from 'src/contexts/backoffice/admins/domain/RoleAdm
 
 @Entity({
   name: 'cxp_admins',
-  orderBy: { id: 'DESC' },
   synchronize: true,
 })
 export class AdminEntity {
