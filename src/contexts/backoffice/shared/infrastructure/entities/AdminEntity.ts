@@ -34,6 +34,6 @@ export class AdminEntity {
   @Column()
   disabled: boolean;
 
-  @Column('enum', { enum: RoleAdminEnumType })
-  role: string;
+  @Column({ type: 'simple-enum' })
+  role: RoleAdminEnumType;
 }
