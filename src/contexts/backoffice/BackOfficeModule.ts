@@ -1,17 +1,8 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { SQLiteModule } from './shared/infrastructure/persistence/SQLiteModule';
 
 @Module({
-  imports: [
-    TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: 'cxp_db',
-      entities: [__dirname + '/**/**/entities/*{.ts,.js}'],
-      synchronize: true,
-    }),
-  ],
-  controllers: [],
-  providers: [],
+  imports: [SQLiteModule],
   exports: [],
 })
 export class BackOfficeModule {}
