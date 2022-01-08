@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AppApiModule } from './apps/api/AppApiModule';
 import { AppBackOfficeModule } from './apps/backoffice/AppBackOfficeModule';
-import WinstonLogger from './contexts/shared/infrastructure/WinstonLogger';
+import { SharedModule } from './contexts/shared/SharedModule';
 
 @Module({
-  imports: [AppApiModule, AppBackOfficeModule, WinstonLogger],
+  imports: [AppApiModule, AppBackOfficeModule, SharedModule],
 })
 export class AppModule {}
