@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AdminEntity } from '../entities/AdminEntity';
-import { AssociationUserToMethodEntity } from '../entities/AssociationUserToMethodEntity';
-import { AssociationUserToSpecialityEntity } from '../entities/AssociationUserToSpecialityEntity';
-import { MethodEntity } from '../entities/MethodEntity';
-import { PlanEntity } from '../entities/PlanEntity';
-import { SpecialityEntity } from '../entities/SpecialityEntity';
-import { UserEntity } from '../entities/UserEntity';
-import { UserExpertEntity } from '../entities/UserExpertEntity';
-import { UserRatingEntity } from '../entities/UserRatingEntity';
+import { AdminEntity } from 'src/contexts/shared/infrastructure/entities/AdminEntity';
+import { AssociationUserToMethodEntity } from 'src/contexts/shared/infrastructure/entities/AssociationUserToMethodEntity';
+import { AssociationUserToSpecialityEntity } from 'src/contexts/shared/infrastructure/entities/AssociationUserToSpecialityEntity';
+import { MethodEntity } from 'src/contexts/shared/infrastructure/entities/MethodEntity';
+import { PlanEntity } from 'src/contexts/shared/infrastructure/entities/PlanEntity';
+import { SpecialityEntity } from 'src/contexts/shared/infrastructure/entities/SpecialityEntity';
+import { UserEntity } from 'src/contexts/shared/infrastructure/entities/UserEntity';
+import { UserExpertEntity } from 'src/contexts/shared/infrastructure/entities/UserExpertEntity';
+import { UserRatingEntity } from 'src/contexts/shared/infrastructure/entities/UserRatingEntity';
 
 const database = TypeOrmModule.forRoot({
   type: 'sqlite',
