@@ -10,8 +10,8 @@ export class Criteria {
   constructor(filters: Filters, order: Order, limit?: number, offset?: number) {
     this.filters = filters;
     this.order = order;
-    this.limit = limit;
-    this.offset = offset;
+    this.offset = offset || 0;
+		this.limit = limit || 100;
   }
 
   public hasFilters(): boolean {
