@@ -43,4 +43,4 @@ const schemas = TypeOrmModule.forFeature([
   imports: [database, schemas],
   exports: [database, schemas],
 })
-export class BackOfficeSQLiteModule {}
+export class BackofficeSQLiteModule {}
