@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AdminEntity } from 'src/contexts/backoffice/shared/infrastructure/entities/AdminEntity';
 import { Criteria } from 'src/contexts/shared/domain/criteria/Criteria';
+import { AdminEntity } from 'src/contexts/shared/infrastructure/entities/AdminEntity';
 import { SQLiteCriteriaConverter } from 'src/contexts/shared/infrastructure/sqlite/SQLiteCriteraConverter';
 import { Repository } from 'typeorm';
 import { BackofficeAdmin } from '../../domain/BackofficeAdmin';
