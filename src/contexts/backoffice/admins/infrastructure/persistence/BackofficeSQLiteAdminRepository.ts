@@ -3,18 +3,18 @@ import { AdminEntity } from 'src/contexts/backoffice/shared/infrastructure/entit
 import { Criteria } from 'src/contexts/shared/domain/criteria/Criteria';
 import { SQLiteCriteriaConverter } from 'src/contexts/shared/infrastructure/sqlite/SQLiteCriteraConverter';
 import { Repository } from 'typeorm';
-import { Admin } from '../../domain/Admin';
-import { AdminId } from '../../domain/AdminId';
+import { BackofficeAdmin } from '../../domain/BackofficeAdmin';
+import { BackofficeAdminId } from '../../domain/BackofficeAdminId';
 
 @Injectable()
-export class BackOfficeSQLiteAdminRepository {
+export class BackofficeSQLiteAdminRepository {
   private criteriaConverter: SQLiteCriteriaConverter;
 
   constructor(private readonly repository: Repository<AdminEntity>) {
     this.criteriaConverter = new SQLiteCriteriaConverter();
   }
 
-  async save(admin: Admin): Promise<void> {
+  async save(admin: BackofficeAdmin): Promise<void> {
     const {
       id,
       email,
@@ -39,9 +39,9 @@ export class BackOfficeSQLiteAdminRepository {
     await this.repository.save(entity);
   }
 
-  async findById(id: AdminId): Promise<Admin> {
+  async findById(id: BackofficeAdminId): Promise<BackofficeAdmin> {
     const entity = await this.repository.findOne({ uid: id.value });
-    return Admin.fromPrimitives({
+    return BackofficeAdmin.fromPrimitives({
       id: entity.uid,
       email: entity.email,
       displayName: entity.displayName,
@@ -53,12 +53,12 @@ export class BackOfficeSQLiteAdminRepository {
     });
   }
 
-  async findOne(criteria: Criteria): Promise<Admin> {
+  async findOne(criteria: Criteria): Promise<BackofficeAdmin> {
     const options = this.criteriaConverter.convert(criteria);
 
     const entity = await this.repository.findOne(options);
 
-    return Admin.fromPrimitives({
+    return BackofficeAdmin.fromPrimitives({
       id: entity.uid,
       email: entity.email,
       displayName: entity.displayName,
@@ -75,7 +75,7 @@ export class BackOfficeSQLiteAdminRepository {
     const entities = await this.repository.find(options);
 
     return entities.map((entity) =>
-      Admin.fromPrimitives({
+      BackofficeAdmin.fromPrimitives({
         id: entity.uid,
         email: entity.email,
         displayName: entity.displayName,
