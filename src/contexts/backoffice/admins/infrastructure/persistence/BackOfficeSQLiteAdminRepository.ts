@@ -1,12 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { AdminEntity } from 'src/contexts/backoffice/shared/infrastructure/entities/AdminEntity';
+import { Criteria } from 'src/contexts/shared/domain/criteria/Criteria';
+import { SQLiteCriteriaConverter } from 'src/contexts/shared/infrastructure/sqlite/SQLiteCriteraConverter';
 import { Repository } from 'typeorm';
 import { Admin } from '../../domain/Admin';
 import { AdminId } from '../../domain/AdminId';
 
 @Injectable()
 export class BackOfficeSQLiteAdminRepository {
-  constructor(private readonly repository: Repository<AdminEntity>) {}
+  private criteriaConverter: SQLiteCriteriaConverter;
+
+  constructor(private readonly repository: Repository<AdminEntity>) {
+    this.criteriaConverter = new SQLiteCriteriaConverter();
+  }
 
   async save(admin: Admin): Promise<void> {
     const {
@@ -47,8 +53,10 @@ export class BackOfficeSQLiteAdminRepository {
     });
   }
 
-  async findOne(): Promise<Admin> {
-    const entity = await this.repository.findOne();
+  async findOne(criteria: Criteria): Promise<Admin> {
+    const options = this.criteriaConverter.convert(criteria);
+
+    const entity = await this.repository.findOne(options);
 
     return Admin.fromPrimitives({
       id: entity.uid,
@@ -62,8 +70,9 @@ export class BackOfficeSQLiteAdminRepository {
     });
   }
 
-  async find() {
-    const entities = await this.repository.find({});
+  async find(criteria: Criteria) {
+    const options = this.criteriaConverter.convert(criteria);
+    const entities = await this.repository.find(options);
 
     return entities.map((entity) =>
       Admin.fromPrimitives({
