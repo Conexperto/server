@@ -6,4 +6,4 @@ import { Module } from '@nestjs/common';
   providers: [],
   exports: [],
 })
-export class BackOfficeAdminModule {}
+export class BackofficeAdminModule {}
