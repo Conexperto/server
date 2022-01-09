@@ -1,4 +1,4 @@
-import { AdminRoles } from 'src/contexts/backoffice/admins/domain/AdminRole';
+import { BackofficeAdminRoles } from 'src/contexts/backoffice/admins/domain/BackofficeAdminRole';
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({
@@ -35,5 +35,5 @@ export class AdminEntity {
   disabled: boolean;
 
   @Column({ type: 'simple-enum' })
-  role: AdminRoles;
+  role: BackofficeAdminRoles;
 }
