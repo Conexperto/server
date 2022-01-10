@@ -1,9 +1,11 @@
+import { Injectable } from '@nestjs/common';
 import { Criteria } from 'src/contexts/shared/domain/criteria/Criteria';
 import { Filters } from 'src/contexts/shared/domain/criteria/Filters';
 import { Order } from 'src/contexts/shared/domain/criteria/Order';
 import { BackofficeSQLiteAdminRepository } from '../../infrastructure/persistence/BackofficeSQLiteAdminRepository';
 import { BackofficeAdminsResponse } from '../BackofficeAdminsResponse';
 
+@Injectable()
 export class BackofficeAdminsByCriteriaSearcher {
   constructor(private readonly repository: BackofficeSQLiteAdminRepository) {}
 
