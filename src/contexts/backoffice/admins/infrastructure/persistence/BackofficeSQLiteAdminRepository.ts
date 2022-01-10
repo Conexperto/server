@@ -41,6 +41,7 @@ export class BackofficeSQLiteAdminRepository {
 
   async findById(id: BackofficeAdminId): Promise<BackofficeAdmin> {
     const entity = await this.repository.findOne({ uid: id.value });
+
     return BackofficeAdmin.fromPrimitives({
       id: entity.uid,
       email: entity.email,
@@ -70,9 +71,26 @@ export class BackofficeSQLiteAdminRepository {
     });
   }
 
-  async find(criteria: Criteria) {
+  async find(criteria: Criteria): Promise<BackofficeAdmin[]> {
     const options = this.criteriaConverter.convert(criteria);
     const entities = await this.repository.find(options);
+
+    return entities.map((entity) =>
+      BackofficeAdmin.fromPrimitives({
+        id: entity.uid,
+        email: entity.email,
+        displayName: entity.displayName,
+        phoneNumber: entity.phoneNumber,
+        photoURL: entity.photoURL,
+        name: entity.name,
+        lastname: entity.lastname,
+        role: entity.role,
+      }),
+    );
+  }
+
+  async findAll(): Promise<BackofficeAdmin[]> {
+    const entities = await this.repository.find();
 
     return entities.map((entity) =>
       BackofficeAdmin.fromPrimitives({
