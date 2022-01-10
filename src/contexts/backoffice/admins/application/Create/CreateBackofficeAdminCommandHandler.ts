@@ -14,7 +14,7 @@ import { CreateBackofficeAdminCommand } from './CreateBackofficeAdminCommand';
 export class CreateBackofficeAdminCommandHandler
   implements ICommandHandler<CreateBackofficeAdminCommand>
 {
-  constructor(private adminCreator: BackofficeAdminCreator) {}
+  constructor(private creator: BackofficeAdminCreator) {}
 
   async execute(command: CreateBackofficeAdminCommand) {
     const adminId = new BackofficeAdminId(command.id);
@@ -30,7 +30,7 @@ export class CreateBackofficeAdminCommandHandler
     const adminLastname = new BackofficeAdminLastname(command.lastname);
     const adminRole = new BackofficeAdminRole(command.role);
 
-    await this.adminCreator.run({
+    await this.creator.run({
       adminId,
       adminEmail,
       adminDisplayName,
