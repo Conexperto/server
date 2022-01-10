@@ -1,12 +1,12 @@
 export class CreateBackofficeAdminCommand {
-  public readonly id: string;
-  public readonly email: string;
-  public readonly displayName: string;
-  public readonly phoneNumber: string;
-  public readonly photoURL: string;
-  public readonly name: string;
-  public readonly lastname: string;
-  public readonly role: number;
+  readonly id: string;
+  readonly email: string;
+  readonly displayName: string;
+  readonly phoneNumber: string;
+  readonly photoURL: string;
+  readonly name: string;
+  readonly lastname: string;
+  readonly role: number;
 
   constructor({
     id,
