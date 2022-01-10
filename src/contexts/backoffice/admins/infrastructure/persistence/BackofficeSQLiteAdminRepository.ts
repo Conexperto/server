@@ -56,7 +56,6 @@ export class BackofficeSQLiteAdminRepository {
 
   async findOne(criteria: Criteria): Promise<BackofficeAdmin> {
     const options = this.criteriaConverter.convert(criteria);
-
     const entity = await this.repository.findOne(options);
 
     return BackofficeAdmin.fromPrimitives({
@@ -104,5 +103,33 @@ export class BackofficeSQLiteAdminRepository {
         role: entity.role,
       }),
     );
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.repository.delete({ uid: id });
+  }
+
+  async remove(ids: string[]): Promise<void> {
+    const entities = ids.map((id) => {
+      const entity = new AdminEntity();
+
+      entity.uid = id;
+      return entity;
+    });
+
+    await this.repository.remove(entities);
+  }
+
+  async disabled(ids: string[]): Promise<void> {
+    const entities = ids.map((id) => {
+      const entity = new AdminEntity();
+
+      entity.uid = id;
+      entity.disabled = false;
+
+      return entity;
+    });
+
+    await this.repository.save(entities);
   }
 }
