@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { BackofficeAdmin } from '../../domain/BackofficeAdmin';
 import { BackofficeAdminDisplayName } from '../../domain/BackofficeAdminDisplayName';
 import { BackofficeAdminEmail } from '../../domain/BackofficeAdminEmail';
@@ -9,6 +10,7 @@ import { BackofficeAdminPhotoURL } from '../../domain/BackofficeAdminPhotoURL';
 import { BackofficeAdminRole } from '../../domain/BackofficeAdminRole';
 import { BackofficeSQLiteAdminRepository } from '../../infrastructure/persistence/BackofficeSQLiteAdminRepository';
 
+@Injectable()
 export class BackofficeAdminCreator {
   constructor(private readonly repository: BackofficeSQLiteAdminRepository) {}
 
