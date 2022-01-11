@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { BackofficeAdmin } from '../../domain/BackofficeAdmin';
 import { BackofficeAdminDisplayName } from '../../domain/BackofficeAdminDisplayName';
 import { BackofficeAdminEmail } from '../../domain/BackofficeAdminEmail';
@@ -12,7 +13,10 @@ import { BackofficeSQLiteAdminRepository } from '../../infrastructure/persistenc
 
 @Injectable()
 export class BackofficeAdminCreator {
-  constructor(private readonly repository: BackofficeSQLiteAdminRepository) {}
+  constructor(
+    @InjectRepository(BackofficeSQLiteAdminRepository)
+    private readonly repository: BackofficeSQLiteAdminRepository,
+  ) {}
 
   async run({
     adminId,
