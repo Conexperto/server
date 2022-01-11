@@ -40,7 +40,7 @@ const schemas = TypeOrmModule.forFeature([
 ]);
 
 @Module({
-  imports: [database],
-  exports: [database],
+  imports: [database, schemas],
+  exports: [database, schemas],
 })
 export class SQLiteTestModule {}
