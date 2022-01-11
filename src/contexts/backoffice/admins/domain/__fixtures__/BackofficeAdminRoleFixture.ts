@@ -4,7 +4,7 @@ import {
   BackofficeAdminRoles,
 } from '../BackofficeAdminRole';
 
-class BackofficeAdminRoleMock {
+export class BackofficeAdminRoleFixture {
   static create(value: BackofficeAdminRoles): BackofficeAdminRole {
     return new BackofficeAdminRole(value);
   }
@@ -13,5 +13,3 @@ class BackofficeAdminRoleMock {
     return this.create(faker.datatype.number(3));
   }
 }
-
-export { BackofficeAdminRoleMock as BackofficeAdminRole };
