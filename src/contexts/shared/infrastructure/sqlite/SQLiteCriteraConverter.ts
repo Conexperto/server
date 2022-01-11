@@ -70,10 +70,12 @@ export class SQLiteCriteriaConverter {
     }
 
     if (criteria.order.hasOrder()) {
+      body['order'] = {};
       body = this.generateQueryOrder(body, criteria.order);
     }
 
     if (criteria.hasFilters()) {
+      body['where'] = {};
       body = this.generateQueryFilter(body, criteria.filters);
     }
 
@@ -106,83 +108,83 @@ export class SQLiteCriteriaConverter {
       throw Error(`Unexpected operator value ${filter.operator.value}`);
     }
 
-    return functionToApply(filter);
+    return functionToApply.call(this, filter);
   }
 
   private extract(filter: Filter) {
     const field = filter.field.value;
     const value = filter.value.value;
-    return [field, value];
+    return { field, value };
   }
 
   private equalQuery(filter: Filter): QueryObject {
-    const [field, value] = this.extract(filter);
+    const { field, value } = this.extract(filter);
     return { field, value: Equal(value) };
   }
 
   private noEqualQuery(filter: Filter): QueryObject {
-    const [field, value] = this.extract(filter);
+    const { field, value } = this.extract(filter);
     return { field, value: Not(Equal(value)) };
   }
 
   private greaterThanQuery(filter: Filter): QueryObject {
-    const [field, value] = this.extract(filter);
+    const { field, value } = this.extract(filter);
     return { field, value: MoreThan(value) };
   }
 
   private greaterOrEqualThanQuery(filter: Filter): QueryObject {
-    const [field, value] = this.extract(filter);
+    const { field, value } = this.extract(filter);
     return { field, value: MoreThanOrEqual(value) };
   }
 
   private lessThanQuery(filter: Filter): QueryObject {
-    const [field, value] = this.extract(filter);
+    const { field, value } = this.extract(filter);
     return { field, value: LessThan(value) };
   }
 
   private lessOrEqualThanQuery(filter: Filter): QueryObject {
-    const [field, value] = this.extract(filter);
+    const { field, value } = this.extract(filter);
     return { field, value: LessThanOrEqual(value) };
   }
 
   private containsThanQuery(filter: Filter): QueryObject {
-    const [field, value] = this.extract(filter);
+    const { field, value } = this.extract(filter);
     return { field, value: In(value.split(',')) };
   }
 
   private notContainsThanQuery(filter: Filter): QueryObject {
-    const [field, value] = this.extract(filter);
+    const { field, value } = this.extract(filter);
     return { field, value: Not(In(value.split(','))) };
   }
 
   private likeThanQuery(filter: Filter): QueryObject {
-    const [field, value] = this.extract(filter);
+    const { field, value } = this.extract(filter);
     return { field, value: Like(`%${value}%`) };
   }
 
   private notLikeThanQuery(filter: Filter): QueryObject {
-    const [field, value] = this.extract(filter);
+    const { field, value } = this.extract(filter);
     return { field, value: Not(Like(`%${value}%`)) };
   }
 
   private ilikeThanQuery(filter: Filter): QueryObject {
-    const [field, value] = this.extract(filter);
+    const { field, value } = this.extract(filter);
     return { field, value: ILike(`%${value}%`) };
   }
 
   private notIlikeThanQuery(filter: Filter): QueryObject {
-    const [field, value] = this.extract(filter);
+    const { field, value } = this.extract(filter);
     return { field, value: Not(ILike(`%${value}%`)) };
   }
 
   private betweenThanQuery(filter: Filter): QueryObject {
-    const [field, value] = this.extract(filter);
+    const { field, value } = this.extract(filter);
     const [from, to] = value.split(',');
     return { field, value: Between(from, to) };
   }
 
   private notBetweenThantQuery(filter: Filter): QueryObject {
-    const [field, value] = this.extract(filter);
+    const { field, value } = this.extract(filter);
     const [from, to] = value.split(',');
     return { field, value: Not(Between(from, to)) };
   }
