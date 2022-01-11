@@ -60,23 +60,28 @@ export class UserEntity {
   @Column()
   location: string;
 
-  @OneToOne(() => UserRatingEntity)
+  @OneToOne(() => UserRatingEntity, { onDelete: 'CASCADE' })
   @JoinColumn()
   rating: UserRatingEntity;
 
-  @OneToOne(() => UserExpertEntity)
+  @OneToOne(() => UserExpertEntity, { onDelete: 'CASCADE' })
   @JoinColumn()
   expert: UserExpertEntity;
 
   @OneToMany(
     () => AssociationUserToSpecialityEntity,
     (assocSpeciality) => assocSpeciality.speciality,
+    { onDelete: 'CASCADE' },
   )
   specialities: SpecialityEntity[];
 
-  @OneToMany(() => AssociationUserToMethodEntity, (assocMethod) => assocMethod)
+  @OneToMany(
+    () => AssociationUserToMethodEntity,
+    (assocMethod) => assocMethod,
+    { onDelete: 'CASCADE' },
+  )
   methods: AssociationUserToMethodEntity[];
 
-  @OneToMany(() => PlanEntity, (plan) => plan.id)
+  @OneToMany(() => PlanEntity, (plan) => plan.id, { onDelete: 'CASCADE' })
   plans: PlanEntity[];
 }
