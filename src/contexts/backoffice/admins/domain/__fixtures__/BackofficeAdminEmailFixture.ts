@@ -1,7 +1,7 @@
 import * as faker from 'faker';
 import { BackofficeAdminEmail } from '../BackofficeAdminEmail';
 
-class BackofficeAdminEmailMock {
+export class BackofficeAdminEmailFixture {
   static create(value: string): BackofficeAdminEmail {
     return new BackofficeAdminEmail(value);
   }
@@ -11,4 +11,3 @@ class BackofficeAdminEmailMock {
   }
 }
 
-export { BackofficeAdminEmailMock as BackofficeAdminEmail }
