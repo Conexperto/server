@@ -1,16 +1,16 @@
-import { Injectable } from '@nestjs/common';
 import { Criteria } from 'src/contexts/shared/domain/criteria/Criteria';
 import { AdminEntity } from 'src/contexts/shared/infrastructure/entities/AdminEntity';
 import { SQLiteCriteriaConverter } from 'src/contexts/shared/infrastructure/sqlite/SQLiteCriteraConverter';
-import { Repository } from 'typeorm';
+import { AbstractRepository, EntityRepository } from 'typeorm';
 import { BackofficeAdmin } from '../../domain/BackofficeAdmin';
 import { BackofficeAdminId } from '../../domain/BackofficeAdminId';
 
-@Injectable()
-export class BackofficeSQLiteAdminRepository {
+@EntityRepository(AdminEntity)
+export class BackofficeSQLiteAdminRepository extends AbstractRepository<AdminEntity> {
   private criteriaConverter: SQLiteCriteriaConverter;
 
-  constructor(private readonly repository: Repository<AdminEntity>) {
+  constructor() {
+    super();
     this.criteriaConverter = new SQLiteCriteriaConverter();
   }
 
