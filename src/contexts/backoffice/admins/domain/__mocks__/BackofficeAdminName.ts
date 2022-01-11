@@ -1,7 +1,7 @@
 import * as faker from 'faker';
 import { BackofficeAdminName } from '../BackofficeAdminName';
 
-export class BackofficeAdminNameMock {
+class BackofficeAdminNameMock {
   static create(value: string): BackofficeAdminName {
     return new BackofficeAdminName(value);
   }
@@ -10,3 +10,5 @@ export class BackofficeAdminNameMock {
     return this.create(faker.name.firstName());
   }
 }
+
+export { BackofficeAdminNameMock as BackofficeAdminName };
