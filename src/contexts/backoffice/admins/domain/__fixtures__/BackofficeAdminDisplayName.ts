@@ -1,7 +1,7 @@
 import * as faker from 'faker';
 import { BackofficeAdminDisplayName } from '../BackofficeAdminDisplayName';
 
-class BackofficeAdminDisplayNameMock {
+export class BackofficeAdminDisplayNameFixture {
   static create(value: string): BackofficeAdminDisplayName {
     return new BackofficeAdminDisplayName(value);
   }
@@ -11,4 +11,3 @@ class BackofficeAdminDisplayNameMock {
   }
 }
 
-export { BackofficeAdminDisplayNameMock as BackofficeAdminDisplayName };
