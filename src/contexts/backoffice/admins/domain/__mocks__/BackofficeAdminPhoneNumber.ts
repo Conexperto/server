@@ -1,7 +1,7 @@
 import * as faker from 'faker';
 import { BackofficeAdminPhoneNumber } from '../BackofficeAdminPhoneNumber';
 
-export class BackofficeAdminPhoneNumberMock {
+class BackofficeAdminPhoneNumberMock {
   static create(value: string): BackofficeAdminPhoneNumber {
     return new BackofficeAdminPhoneNumber(value);
   }
@@ -10,3 +10,5 @@ export class BackofficeAdminPhoneNumberMock {
     return this.create(faker.phone.phoneNumber());
   }
 }
+
+export { BackofficeAdminPhoneNumberMock as BackofficeAdminPhoneNumber }
