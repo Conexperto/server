@@ -1,12 +1,14 @@
 import * as faker from 'faker';
 import { BackofficeAdminId } from '../BackofficeAdminId';
 
-export class BackofficeAdminIdMock {
+class BackofficeAdminIdMock {
   static create(value: string): BackofficeAdminId {
     return new BackofficeAdminId(value);
   }
 
   static random(): BackofficeAdminId {
-    return this.create(faker.random.uuid());
+    return this.create(faker.datatype.uuid());
   }
 }
+
+export { BackofficeAdminIdMock as BackofficeAdminId };
