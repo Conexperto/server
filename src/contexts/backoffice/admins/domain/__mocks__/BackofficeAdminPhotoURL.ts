@@ -1,7 +1,7 @@
 import * as faker from 'faker';
 import { BackofficeAdminPhotoURL } from '../BackofficeAdminPhotoURL';
 
-export class BackofficeAdminPhotoURLMock {
+class BackofficeAdminPhotoURLMock {
   static create(value: string): BackofficeAdminPhotoURL {
     return new BackofficeAdminPhotoURL(value);
   }
@@ -10,3 +10,5 @@ export class BackofficeAdminPhotoURLMock {
     return this.create(faker.image.avatar());
   }
 }
+
+export { BackofficeAdminPhotoURLMock as BackofficeAdminPhotoURL }
