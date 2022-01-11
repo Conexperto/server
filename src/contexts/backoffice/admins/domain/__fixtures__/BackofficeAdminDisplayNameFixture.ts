@@ -10,4 +10,3 @@ export class BackofficeAdminDisplayNameFixture {
     return this.create(faker.internet.userName());
   }
 }
-
