@@ -45,7 +45,7 @@ export class UserEntity {
   @Column()
   lastname: string;
 
-  @Column()
+  @Column({ default: true })
   disabled: boolean;
 
   @Column()

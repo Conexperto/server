@@ -15,6 +15,6 @@ export class SpecialityEntity {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ default: true })
   disabled: boolean;
 }

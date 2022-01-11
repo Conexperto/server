@@ -21,6 +21,6 @@ export class PlanEntity {
   @Column()
   coin: string;
 
-  @Column()
+  @Column({ default: true })
   disabled: boolean;
 }

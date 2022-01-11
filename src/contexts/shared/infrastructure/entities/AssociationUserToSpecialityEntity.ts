@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { SpecialityEntity } from './SpecialityEntity';
 import { UserEntity } from './UserEntity';
 
@@ -15,4 +15,7 @@ export class AssociationUserToSpecialityEntity {
 
   @ManyToOne(() => SpecialityEntity, (speciality) => speciality.id)
   speciality: SpecialityEntity;
+
+	@Column({ default: false })
+	disabled: boolean;
 }

@@ -15,6 +15,6 @@ export class MethodEntity {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ default: false })
   disabled: boolean;
 }

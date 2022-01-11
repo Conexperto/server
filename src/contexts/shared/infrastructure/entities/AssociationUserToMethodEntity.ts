@@ -18,4 +18,7 @@ export class AssociationUserToMethodEntity {
 
   @Column()
   link: string;
+
+	@Column({ default: false })
+	disabled: boolean;
 }
