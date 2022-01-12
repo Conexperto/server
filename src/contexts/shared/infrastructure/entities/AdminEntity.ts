@@ -31,7 +31,7 @@ export class AdminEntity {
   @Column()
   lastname: string;
 
-  @Column()
+  @Column({ default: false })
   disabled: boolean;
 
   @Column({ type: 'simple-enum' })
