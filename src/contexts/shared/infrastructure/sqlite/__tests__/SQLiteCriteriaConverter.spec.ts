@@ -18,10 +18,34 @@ describe('SQLiteCriteriaConverter', () => {
     const filter = new Filter(
       new FilterField('email'),
       FilterOperator.fromValue('='),
-      new FilterValue('jhondeo@mail.com'),
+      new FilterValue('johndoe@mail.com'),
     );
-    const order = new Order(new OrderBy('uid'), new OrderType(OrderTypes.ASC));
     const filters = new Filters([filter]);
+    const criteria = new Criteria(filters);
+
+    const converter = new SQLiteCriteriaConverter();
+
+    const query = converter.convert(criteria);
+
+    expect(query).toMatchObject({
+      take: 100,
+      where: {
+        email: Equal('johndoe@mail.com'),
+      },
+    });
+  });
+
+  it('should generate a query with order', () => {
+    const filter = new Filter(
+      new FilterField('email'),
+      FilterOperator.fromValue('='),
+      new FilterValue('johndoe@mail.com'),
+    );
+    const filters = new Filters([filter]);
+    const order = new Order(
+      new OrderBy('uid'),
+      OrderType.fromValue(OrderTypes.ASC),
+    );
     const criteria = new Criteria(filters, order);
 
     const converter = new SQLiteCriteriaConverter();
@@ -30,9 +54,10 @@ describe('SQLiteCriteriaConverter', () => {
 
     expect(query).toMatchObject({
       take: 100,
+      skip: 0,
       order: { uid: 'asc' },
       where: {
-        email: Equal('jhondeo@mail.com'),
+        email: Equal('johndoe@mail.com'),
       },
     });
   });
@@ -41,9 +66,12 @@ describe('SQLiteCriteriaConverter', () => {
     const filter = new Filter(
       new FilterField('email'),
       FilterOperator.fromValue('='),
-      new FilterValue('jhondeo@mail.com'),
+      new FilterValue('johndoe@mail.com'),
     );
-    const order = new Order(new OrderBy('uid'), new OrderType(OrderTypes.ASC));
+    const order = new Order(
+      new OrderBy('uid'),
+      OrderType.fromValue(OrderTypes.ASC),
+    );
     const filters = new Filters([filter]);
     const criteria = new Criteria(filters, order, 200, 10);
 
@@ -56,7 +84,7 @@ describe('SQLiteCriteriaConverter', () => {
       skip: 10,
       order: { uid: 'asc' },
       where: {
-        email: Equal('jhondeo@mail.com'),
+        email: Equal('johndoe@mail.com'),
       },
     });
   });
