@@ -1,18 +1,21 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Criteria } from 'src/contexts/shared/domain/criteria/Criteria';
 import { AdminEntity } from 'src/contexts/shared/infrastructure/entities/AdminEntity';
 import { SQLiteCriteriaConverter } from 'src/contexts/shared/infrastructure/sqlite/SQLiteCriteraConverter';
-import { AbstractRepository, EntityRepository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { BackofficeAdmin } from '../../domain/BackofficeAdmin';
 import { BackofficeAdminId } from '../../domain/BackofficeAdminId';
 
-@EntityRepository(AdminEntity)
-export class BackofficeSQLiteAdminRepository extends AbstractRepository<AdminEntity> {
-  private criteriaConverter: SQLiteCriteriaConverter;
+@Injectable()
+export class BackofficeSQLiteAdminRepository {
+  private criteriaConverter: SQLiteCriteriaConverter =
+    new SQLiteCriteriaConverter();
 
-  constructor() {
-    super();
-    this.criteriaConverter = new SQLiteCriteriaConverter();
-  }
+  constructor(
+    @InjectRepository(AdminEntity)
+    private readonly repository: Repository<AdminEntity>,
+  ) {}
 
   async save(admin: BackofficeAdmin): Promise<void> {
     const {
@@ -50,7 +53,7 @@ export class BackofficeSQLiteAdminRepository extends AbstractRepository<AdminEnt
       photoURL: entity.photoURL,
       name: entity.name,
       lastname: entity.lastname,
-      role: entity.role,
+      role: +entity.role,
     });
   }
 
@@ -66,7 +69,7 @@ export class BackofficeSQLiteAdminRepository extends AbstractRepository<AdminEnt
       photoURL: entity.photoURL,
       name: entity.name,
       lastname: entity.lastname,
-      role: entity.role,
+      role: +entity.role,
     });
   }
 
@@ -83,7 +86,7 @@ export class BackofficeSQLiteAdminRepository extends AbstractRepository<AdminEnt
         photoURL: entity.photoURL,
         name: entity.name,
         lastname: entity.lastname,
-        role: entity.role,
+        role: +entity.role,
       }),
     );
   }
@@ -100,7 +103,7 @@ export class BackofficeSQLiteAdminRepository extends AbstractRepository<AdminEnt
         photoURL: entity.photoURL,
         name: entity.name,
         lastname: entity.lastname,
-        role: entity.role,
+        role: +entity.role,
       }),
     );
   }
@@ -110,26 +113,16 @@ export class BackofficeSQLiteAdminRepository extends AbstractRepository<AdminEnt
   }
 
   async remove(ids: string[]): Promise<void> {
-    const entities = ids.map((id) => {
-      const entity = new AdminEntity();
-
-      entity.uid = id;
-      return entity;
+    const entities = await this.repository.find({
+      where: ids.map((item) => ({ uid: item })),
     });
-
     await this.repository.remove(entities);
   }
 
   async disabled(ids: string[]): Promise<void> {
-    const entities = ids.map((id) => {
-      const entity = new AdminEntity();
-
-      entity.uid = id;
-      entity.disabled = false;
-
-      return entity;
+    const entities = await this.repository.find({
+      where: ids.map((item) => ({ uid: item })),
     });
-
     await this.repository.save(entities);
   }
 }
