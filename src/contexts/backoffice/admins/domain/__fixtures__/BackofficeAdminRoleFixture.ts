@@ -10,6 +10,6 @@ export class BackofficeAdminRoleFixture {
   }
 
   static random(): BackofficeAdminRole {
-    return this.create(faker.datatype.number(3));
+    return this.create(faker.random.number(3));
   }
 }
