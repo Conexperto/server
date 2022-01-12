@@ -22,6 +22,7 @@ describe('CreateBackofficeAdminCommand', () => {
     };
     const command = new CreateBackofficeAdminCommand(plainData);
 
+    expect(command instanceof CreateBackofficeAdminCommand).toBeTruthy();
     expect(command).toMatchObject(plainData);
   });
 });
