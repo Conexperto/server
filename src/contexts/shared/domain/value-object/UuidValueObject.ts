@@ -1,5 +1,5 @@
 import { v4 } from 'uuid';
-import validate from 'uuid-validate';
+import * as validate from 'uuid-validate';
 import { InvalidArgumentError } from './InvalidArgumentError';
 
 export class UuidValueObject {
@@ -7,7 +7,6 @@ export class UuidValueObject {
 
   constructor(value: string) {
     this.ensureIsValidUuid(value);
-
     this.value = value;
   }
 
