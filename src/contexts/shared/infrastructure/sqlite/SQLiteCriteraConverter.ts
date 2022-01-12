@@ -61,15 +61,10 @@ export class SQLiteCriteriaConverter {
   public convert(criteria: Criteria): QueryBuilder {
     let body = {};
 
-    if (criteria.offset) {
-      body['skip'] = criteria.offset;
-    }
+    body['skip'] = criteria.offset;
+    body['take'] = criteria.limit;
 
-    if (criteria.limit) {
-      body['take'] = criteria.limit;
-    }
-
-    if (criteria.order.hasOrder()) {
+    if (criteria.hasOrder()) {
       body['order'] = {};
       body = this.generateQueryOrder(body, criteria.order);
     }
