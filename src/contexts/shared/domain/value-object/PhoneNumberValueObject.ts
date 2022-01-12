@@ -9,7 +9,7 @@ export class PhoneNumberValueObject extends StringValueObject {
   }
 
   private ensureIsValidPhoneNumber(value: string): void {
-    if (!isPhoneNumber(value)) {
+    if (!isPhoneNumber(value, 'US')) {
       throw new InvalidArgumentError(
         `<${this.constructor.name}> doest not allow the value <${value}>`,
       );
