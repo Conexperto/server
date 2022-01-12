@@ -24,6 +24,7 @@ const database = TypeOrmModule.forRoot({
     SpecialityEntity,
     MethodEntity,
   ],
+  synchronize: true,
 });
 
 const schemas = TypeOrmModule.forFeature([
@@ -42,4 +43,6 @@ const schemas = TypeOrmModule.forFeature([
   imports: [database, schemas],
   exports: [database, schemas],
 })
-export class BackofficeSQLiteModule {}
+class BackofficeSQLiteModuleMock {}
+
+export { BackofficeSQLiteModuleMock as BackofficeSQLiteModule };
