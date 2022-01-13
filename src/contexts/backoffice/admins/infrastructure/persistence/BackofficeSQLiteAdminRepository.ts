@@ -30,7 +30,7 @@ export class BackofficeSQLiteAdminRepository {
     } = admin.toPrimitives();
     const entity = new AdminEntity();
 
-    entity.uid = id;
+    entity.id = id;
     entity.email = email;
     entity.displayName = displayName;
     entity.phoneNumber = phoneNumber;
@@ -43,10 +43,10 @@ export class BackofficeSQLiteAdminRepository {
   }
 
   async findById(id: BackofficeAdminId): Promise<BackofficeAdmin> {
-    const entity = await this.repository.findOne({ uid: id.value });
+    const entity = await this.repository.findOne({ id: id.value });
 
     return BackofficeAdmin.fromPrimitives({
-      id: entity.uid,
+      id: entity.id,
       email: entity.email,
       displayName: entity.displayName,
       phoneNumber: entity.phoneNumber,
@@ -62,7 +62,7 @@ export class BackofficeSQLiteAdminRepository {
     const entity = await this.repository.findOne(options);
 
     return BackofficeAdmin.fromPrimitives({
-      id: entity.uid,
+      id: entity.id,
       email: entity.email,
       displayName: entity.displayName,
       phoneNumber: entity.phoneNumber,
@@ -79,7 +79,7 @@ export class BackofficeSQLiteAdminRepository {
 
     return entities.map((entity) =>
       BackofficeAdmin.fromPrimitives({
-        id: entity.uid,
+        id: entity.id,
         email: entity.email,
         displayName: entity.displayName,
         phoneNumber: entity.phoneNumber,
@@ -96,7 +96,7 @@ export class BackofficeSQLiteAdminRepository {
 
     return entities.map((entity) =>
       BackofficeAdmin.fromPrimitives({
-        id: entity.uid,
+        id: entity.id,
         email: entity.email,
         displayName: entity.displayName,
         phoneNumber: entity.phoneNumber,
@@ -109,19 +109,19 @@ export class BackofficeSQLiteAdminRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.repository.delete({ uid: id });
+    await this.repository.delete({ id });
   }
 
   async remove(ids: string[]): Promise<void> {
     const entities = await this.repository.find({
-      where: ids.map((item) => ({ uid: item })),
+      where: ids.map((item) => ({ id: item })),
     });
     await this.repository.remove(entities);
   }
 
   async disabled(ids: string[]): Promise<void> {
     let entities = await this.repository.find({
-      where: ids.map((item) => ({ uid: item })),
+      where: ids.map((item) => ({ id: item })),
     });
 
     entities = entities.map((item) => {
@@ -134,7 +134,7 @@ export class BackofficeSQLiteAdminRepository {
 
   async enabled(ids: string[]): Promise<void> {
     let entities = await this.repository.find({
-      where: ids.map((item) => ({ uid: item })),
+      where: ids.map((item) => ({ id: item })),
     });
 
     entities = entities.map((item) => {

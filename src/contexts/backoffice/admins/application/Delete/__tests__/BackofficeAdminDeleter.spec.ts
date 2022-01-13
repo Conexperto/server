@@ -65,7 +65,7 @@ describe('BackofficeAdminDeleter', () => {
         role,
       } = backofficeAdminMock().toPrimitives();
 
-      admin.uid = id;
+      admin.id = id;
       admin.email = email;
       admin.displayName = displayName;
       admin.phoneNumber = phoneNumber;
@@ -78,11 +78,11 @@ describe('BackofficeAdminDeleter', () => {
     });
 
     it('should delete a admin', async () => {
-			const uid = admin.uid;
-      await deleter.run([new BackofficeAdminId(uid)]);
+      const id = admin.id;
+      await deleter.run([new BackofficeAdminId(id)]);
 
       const result = await database.manager.findOne(AdminEntity, {
-        uid: admin.uid,
+        id: admin.id,
       });
 
       expect(result).toBeUndefined();

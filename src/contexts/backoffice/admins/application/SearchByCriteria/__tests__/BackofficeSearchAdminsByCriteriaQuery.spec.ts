@@ -3,9 +3,9 @@ import { BackofficeSearchAdminsByCriteriaQuery } from '../BackofficeSearchAdmins
 describe('BackofficeSearchAdminsByCriteriaQuery', () => {
   it('should search by criteria query', () => {
     const filter = new Map();
-    filter.set('field', 'uid');
+    filter.set('field', 'id');
     filter.set('operator', '=');
-    filter.set('value', 'uid');
+    filter.set('value', 'id');
 
     const orderBy = 'id';
     const orderType = 'ASC';

@@ -67,12 +67,12 @@ describe('BackofficeSQLiteAdminRepository', () => {
       await repository.save(admin);
 
       const entity = await database.manager.findOne(AdminEntity, {
-        uid: raw.id,
+        id: raw.id,
       });
 
       expect(entity).not.toBeUndefined();
       expect(raw).toMatchObject({
-        id: entity.uid,
+        id: entity.id,
         email: entity.email,
         displayName: entity.displayName,
         phoneNumber: entity.phoneNumber,
@@ -100,7 +100,7 @@ describe('BackofficeSQLiteAdminRepository', () => {
         role,
       } = backofficeAdminMock().toPrimitives();
 
-      admin.uid = id;
+      admin.id = id;
       admin.email = email;
       admin.displayName = displayName;
       admin.phoneNumber = phoneNumber;
@@ -113,14 +113,12 @@ describe('BackofficeSQLiteAdminRepository', () => {
     });
 
     it('should find a admin by id', async () => {
-      const result = await repository.findById(
-        new BackofficeAdminId(admin.uid),
-      );
+      const result = await repository.findById(new BackofficeAdminId(admin.id));
       const raw = result.toPrimitives();
 
       expect(admin).not.toBeUndefined();
       expect(raw).toMatchObject({
-        id: admin.uid,
+        id: admin.id,
         email: admin.email,
         displayName: admin.displayName,
         phoneNumber: admin.phoneNumber,
@@ -148,7 +146,7 @@ describe('BackofficeSQLiteAdminRepository', () => {
         role,
       } = backofficeAdminMock().toPrimitives();
 
-      admin.uid = id;
+      admin.id = id;
       admin.email = email;
       admin.displayName = displayName;
       admin.phoneNumber = phoneNumber;
@@ -173,7 +171,7 @@ describe('BackofficeSQLiteAdminRepository', () => {
 
       expect(result).not.toBeUndefined();
       expect(raw).toMatchObject({
-        id: admin.uid,
+        id: admin.id,
         email: admin.email,
         displayName: admin.displayName,
         phoneNumber: admin.phoneNumber,
@@ -202,7 +200,7 @@ describe('BackofficeSQLiteAdminRepository', () => {
           role,
         } = backofficeAdminMock().toPrimitives();
 
-        item.uid = id;
+        item.id = id;
         item.email = email;
         item.displayName = displayName;
         item.phoneNumber = phoneNumber;
@@ -237,7 +235,7 @@ describe('BackofficeSQLiteAdminRepository', () => {
         role,
       } = backofficeAdminMock().toPrimitives();
 
-      admin.uid = id;
+      admin.id = id;
       admin.email = email;
       admin.displayName = displayName;
       admin.phoneNumber = phoneNumber;
@@ -250,10 +248,10 @@ describe('BackofficeSQLiteAdminRepository', () => {
     });
 
     it('should delete a admin', async () => {
-      await repository.delete(admin.uid);
+      await repository.delete(admin.id);
 
       const result = await database.manager.findOne(AdminEntity, {
-        uid: admin.uid,
+        id: admin.id,
       });
 
       expect(result).toBeUndefined();
@@ -277,7 +275,7 @@ describe('BackofficeSQLiteAdminRepository', () => {
           role,
         } = backofficeAdminMock().toPrimitives();
 
-        item.uid = id;
+        item.id = id;
         item.email = email;
         item.displayName = displayName;
         item.phoneNumber = phoneNumber;
@@ -291,7 +289,7 @@ describe('BackofficeSQLiteAdminRepository', () => {
     });
 
     it('should remove admins', async () => {
-      const ids = admins.map((item) => item.uid);
+      const ids = admins.map((item) => item.id);
       await repository.remove(ids);
 
       const results = await database.manager.findByIds(
@@ -321,7 +319,7 @@ describe('BackofficeSQLiteAdminRepository', () => {
           role,
         } = backofficeAdminMock().toPrimitives();
 
-        item.uid = id;
+        item.id = id;
         item.email = email;
         item.displayName = displayName;
         item.phoneNumber = phoneNumber;
@@ -335,7 +333,7 @@ describe('BackofficeSQLiteAdminRepository', () => {
     });
 
     it('should disabled admin', async () => {
-      const ids = admins.map((item) => item.uid);
+      const ids = admins.map((item) => item.id);
 
       await repository.disabled(ids);
 

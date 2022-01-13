@@ -68,7 +68,7 @@ describe('EnabledBackofficeAdminCommandHandler', () => {
         role,
       } = backofficeAdminMock().toPrimitives();
 
-      admin.uid = id;
+      admin.id = id;
       admin.email = email;
       admin.displayName = displayName;
       admin.phoneNumber = phoneNumber;
@@ -81,10 +81,12 @@ describe('EnabledBackofficeAdminCommandHandler', () => {
     });
 
     it('should enabled a admin', async () => {
-      const uid = admin.uid;
-      await handler.execute(new EnabledBackofficeAdminCommand(uid));
+      const id = admin.id;
+      await handler.execute(new EnabledBackofficeAdminCommand(id));
 
-      const result = await database.manager.findOne(AdminEntity, { uid });
+      const result = await database.manager.findOne(AdminEntity, {
+        id: admin.id,
+      });
 
       expect(result).not.toBeUndefined();
       expect(result.disabled).toBeFalsy();

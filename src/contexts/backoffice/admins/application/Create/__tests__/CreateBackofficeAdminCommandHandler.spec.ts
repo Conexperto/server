@@ -54,10 +54,10 @@ describe('CreateBackofficeAdminCommandHandler', () => {
     await handler.execute(new CreateBackofficeAdminCommand(plainData));
 
     const result = await database.manager.findOne(AdminEntity, {
-      uid: plainData.id,
+      id: plainData.id,
     });
 
     expect(result).not.toBeUndefined();
-    expect(result.uid).toBe(plainData.id);
+    expect(result.id).toBe(plainData.id);
   });
 });

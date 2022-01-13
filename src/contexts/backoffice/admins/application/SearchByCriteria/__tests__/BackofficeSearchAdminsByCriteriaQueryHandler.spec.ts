@@ -69,7 +69,7 @@ describe('BackofficeSearchAllAdminQueryHandler', () => {
           role,
         } = backofficeAdminMock().toPrimitives();
 
-        item.uid = id;
+        item.id = id;
         item.email = email;
         item.displayName = displayName;
         item.phoneNumber = phoneNumber;
@@ -106,7 +106,7 @@ describe('BackofficeSearchAllAdminQueryHandler', () => {
         const raw = item.toPrimitives();
 
         expect(admins).toContain({
-          uid: raw.id,
+          id: raw.id,
           email: raw.email,
           displayName: raw.displayName,
           phoneNumber: raw.phoneNumber,

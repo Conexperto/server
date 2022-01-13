@@ -51,11 +51,11 @@ describe('BackofficeAdminCreator', () => {
       await creator.run(mock);
 
       const result = await database.manager.findOne(AdminEntity, {
-        uid: mock.adminId.value,
+        id: mock.adminId.value,
       });
 
       expect(result).not.toBeUndefined();
-      expect(result.uid).toBe(mock.adminId.value);
+      expect(result.id).toBe(mock.adminId.value);
     });
   });
 });

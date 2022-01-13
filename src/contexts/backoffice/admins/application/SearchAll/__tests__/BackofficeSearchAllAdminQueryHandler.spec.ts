@@ -69,7 +69,7 @@ describe('BackofficeSearchAllAdminQueryHandler', () => {
           role,
         } = backofficeAdminMock().toPrimitives();
 
-        item.uid = id;
+        item.id = id;
         item.email = email;
         item.displayName = displayName;
         item.phoneNumber = phoneNumber;

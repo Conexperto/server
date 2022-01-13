@@ -75,7 +75,7 @@ describe('BackofficeAdminsByCriteriaSearcher', () => {
           role,
         } = backofficeAdminMock().toPrimitives();
 
-        item.uid = id;
+        item.id = id;
         item.email = email;
         item.displayName = displayName;
         item.phoneNumber = phoneNumber;
@@ -90,9 +90,9 @@ describe('BackofficeAdminsByCriteriaSearcher', () => {
 
     it('should searcher by criteria to admins', async () => {
       const filter = new Filter(
-        new FilterField('uid'),
+        new FilterField('id'),
         FilterOperator.fromValue('='),
-        new FilterValue(admins[0].uid),
+        new FilterValue(admins[0].id),
       );
       const filters = new Filters([filter]);
 
