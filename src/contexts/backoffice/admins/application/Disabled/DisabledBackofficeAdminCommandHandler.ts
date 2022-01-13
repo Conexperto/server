@@ -1,4 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { BackofficeAdminId } from '../../domain/BackofficeAdminId';
 import { BackofficeAdminDisabler } from './BackofficeAdminDisabler';
 import { DisabledBackofficeAdminCommand } from './DisabledBackofficeAdminCommand';
 
@@ -11,11 +12,13 @@ export class DisabledBackofficeAdminCommandHandler
   async execute(command: DisabledBackofficeAdminCommand) {
     let ids = [];
 
-    if (Array.isArray(ids)) {
+    if (Array.isArray(command.id)) {
       ids = [...command.id];
     } else {
       ids = [command.id];
     }
+
+    ids = ids.map((item) => new BackofficeAdminId(item));
 
     await this.disabler.run(ids);
   }
