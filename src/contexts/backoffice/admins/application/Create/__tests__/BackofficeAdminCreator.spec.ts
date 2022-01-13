@@ -36,24 +36,26 @@ describe('BackofficeAdminCreator', () => {
     await database.close();
   });
 
-  it('should create a admin', async () => {
-    const mock = {
-      adminId: BackofficeAdminIdFixture.random(),
-      adminEmail: BackofficeAdminEmailFixture.random(),
-      adminDisplayName: BackofficeAdminDisplayNameFixture.random(),
-      adminPhoneNumber: BackofficeAdminPhoneNumberFixture.random(),
-      adminPhotoURL: BackofficeAdminPhotoURLFixture.random(),
-      adminName: BackofficeAdminNameFixture.random(),
-      adminLastname: BackofficeAdminLastnameFixture.random(),
-      adminRole: BackofficeAdminRoleFixture.random(),
-    };
-    await creator.run(mock);
+  describe('#run', () => {
+    it('should create a admin', async () => {
+      const mock = {
+        adminId: BackofficeAdminIdFixture.random(),
+        adminEmail: BackofficeAdminEmailFixture.random(),
+        adminDisplayName: BackofficeAdminDisplayNameFixture.random(),
+        adminPhoneNumber: BackofficeAdminPhoneNumberFixture.random(),
+        adminPhotoURL: BackofficeAdminPhotoURLFixture.random(),
+        adminName: BackofficeAdminNameFixture.random(),
+        adminLastname: BackofficeAdminLastnameFixture.random(),
+        adminRole: BackofficeAdminRoleFixture.random(),
+      };
+      await creator.run(mock);
 
-    const result = await database.manager.findOne(AdminEntity, {
-      uid: mock.adminId.value,
+      const result = await database.manager.findOne(AdminEntity, {
+        uid: mock.adminId.value,
+      });
+
+      expect(result).not.toBeUndefined();
+      expect(result.uid).toBe(mock.adminId.value);
     });
-
-    expect(result).not.toBeUndefined();
-    expect(result.uid).toBe(mock.adminId.value);
   });
 });
