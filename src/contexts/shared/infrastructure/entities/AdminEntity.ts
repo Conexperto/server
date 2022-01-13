@@ -1,17 +1,13 @@
 import { BackofficeAdminRoles } from 'src/contexts/backoffice/admins/domain/BackofficeAdminRole';
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity({
   name: 'cxp_admins',
   synchronize: true,
 })
 export class AdminEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column('uuid')
-  @Index({ unique: true })
-  uid: string;
+  @PrimaryColumn({ type: 'uuid' })
+  id: string;
 
   @Column()
   displayName: string;

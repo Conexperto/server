@@ -1,15 +1,13 @@
 import {
   Column,
   Entity,
-  Index,
   JoinColumn,
   OneToMany,
   OneToOne,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
 } from 'typeorm';
 import { AssociationUserToMethodEntity } from './AssociationUserToMethodEntity';
 import { AssociationUserToSpecialityEntity } from './AssociationUserToSpecialityEntity';
-import { MethodEntity } from './MethodEntity';
 import { PlanEntity } from './PlanEntity';
 import { SpecialityEntity } from './SpecialityEntity';
 import { UserExpertEntity } from './UserExpertEntity';
@@ -20,12 +18,8 @@ import { UserRatingEntity } from './UserRatingEntity';
   synchronize: true,
 })
 export class UserEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column('uuid')
-  @Index({ unique: true })
-  uid: string;
+  @PrimaryColumn({ type: 'uuid' })
+  id: string;
 
   @Column()
   displayName: string;

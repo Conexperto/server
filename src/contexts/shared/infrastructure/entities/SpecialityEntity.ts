@@ -1,16 +1,12 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity({
   name: 'cxp_speciality',
   synchronize: true,
 })
 export class SpecialityEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column('uuid')
-  @Index({ unique: true })
-  uid: string;
+	@PrimaryColumn({ type: 'uuid' })
+  id: string;
 
   @Column()
   name: string;
