@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Criteria } from 'src/contexts/shared/domain/criteria/Criteria';
 import { Filters } from 'src/contexts/shared/domain/criteria/Filters';
 import { Order } from 'src/contexts/shared/domain/criteria/Order';
@@ -8,11 +7,11 @@ import { BackofficeAdminsResponse } from '../BackofficeAdminsResponse';
 
 @Injectable()
 export class BackofficeAdminsByCriteriaSearcher {
-  constructor(@InjectRepository(BackofficeSQLiteAdminRepository) private readonly repository: BackofficeSQLiteAdminRepository) {}
+  constructor(private readonly repository: BackofficeSQLiteAdminRepository) {}
 
   async run(
     filters: Filters,
-    order: Order,
+    order?: Order,
     limit?: number,
     offset?: number,
   ): Promise<BackofficeAdminsResponse> {
