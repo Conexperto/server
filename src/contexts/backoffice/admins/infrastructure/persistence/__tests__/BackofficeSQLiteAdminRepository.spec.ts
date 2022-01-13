@@ -288,7 +288,7 @@ describe('BackofficeSQLiteAdminRepository', () => {
       );
 
       expect(result).toHaveLength(entities.length);
-      result.map((item) => expect(item.disabled).toBeFalsy());
+      result.map((item) => expect(item.disabled).toBeTruthy());
     });
   });
 });
