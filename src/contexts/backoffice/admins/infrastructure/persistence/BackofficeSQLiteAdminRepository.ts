@@ -120,9 +120,28 @@ export class BackofficeSQLiteAdminRepository {
   }
 
   async disabled(ids: string[]): Promise<void> {
-    const entities = await this.repository.find({
+    let entities = await this.repository.find({
       where: ids.map((item) => ({ uid: item })),
     });
+
+    entities = entities.map((item) => {
+      item.disabled = true;
+      return item;
+    });
+
+    await this.repository.save(entities);
+  }
+
+  async enabled(ids: string[]): Promise<void> {
+    let entities = await this.repository.find({
+      where: ids.map((item) => ({ uid: item })),
+    });
+
+    entities = entities.map((item) => {
+      item.disabled = false;
+      return item;
+    });
+
     await this.repository.save(entities);
   }
 }
