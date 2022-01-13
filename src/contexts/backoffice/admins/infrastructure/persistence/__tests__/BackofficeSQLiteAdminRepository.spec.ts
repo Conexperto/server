@@ -214,8 +214,9 @@ describe('BackofficeSQLiteAdminRepository', () => {
     });
 
     it('should find all admin', async () => {
-      expect(admins).toHaveLength(admins.length);
-      admins.map((item) => expect(admins).toContain(item));
+      const result = await repository.findAll();
+
+      expect(result).toHaveLength(admins.length);
     });
   });
 
