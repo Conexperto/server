@@ -1,9 +1,15 @@
 import { Test } from '@nestjs/testing';
-import { on } from 'events';
 import { BackofficeSQLiteModule } from 'src/contexts/backoffice/shared/infrastructure/persistence/__mocks__/BackofficeSQLiteModule';
 import { AdminEntity } from 'src/contexts/shared/infrastructure/entities/AdminEntity';
 import { Connection } from 'typeorm';
+import { BackofficeAdminDisplayNameFixture } from '../../../domain/__fixtures__/BackofficeAdminDisplayNameFixture';
+import { BackofficeAdminEmailFixture } from '../../../domain/__fixtures__/BackofficeAdminEmailFixture';
 import { BackofficeAdminIdFixture } from '../../../domain/__fixtures__/BackofficeAdminIdFixture';
+import { BackofficeAdminLastnameFixture } from '../../../domain/__fixtures__/BackofficeAdminLastnameFixture';
+import { BackofficeAdminNameFixture } from '../../../domain/__fixtures__/BackofficeAdminNameFixture';
+import { BackofficeAdminPhoneNumberFixture } from '../../../domain/__fixtures__/BackofficeAdminPhoneNumberFixture';
+import { BackofficeAdminPhotoURLFixture } from '../../../domain/__fixtures__/BackofficeAdminPhotoURLFixture';
+import { BackofficeAdminRoleFixture } from '../../../domain/__fixtures__/BackofficeAdminRoleFixture';
 import { BackofficeSQLiteAdminRepository } from '../../../infrastructure/persistence/BackofficeSQLiteAdminRepository';
 import { BackofficeAdminDeleter } from '../BackofficeAdminDeleter';
 import { DeleteBackofficeAdminCommand } from '../DeleteBackofficeAdminCommand';
@@ -29,12 +35,31 @@ describe('DeleteBackofficeAdminCommandHandler', () => {
     );
   });
 
-  it('should deleter a admin', async () => {
-    const uid = BackofficeAdminIdFixture.random().value;
-    await handler.execute(new DeleteBackofficeAdminCommand(uid));
+  describe('#execute', () => {
+    let admin: AdminEntity;
 
-    const result = await database.manager.findOne(AdminEntity, { uid });
+    beforeEach(async () => {
+      admin = new AdminEntity();
 
-    expect(result).toBeUndefined();
+      admin.uid = BackofficeAdminIdFixture.random().value;
+      admin.email = BackofficeAdminEmailFixture.random().value;
+      admin.displayName = BackofficeAdminDisplayNameFixture.random().value;
+      admin.phoneNumber = BackofficeAdminPhoneNumberFixture.random().value;
+      admin.photoURL = BackofficeAdminPhotoURLFixture.random().value;
+      admin.name = BackofficeAdminNameFixture.random().value;
+      admin.lastname = BackofficeAdminLastnameFixture.random().value;
+      admin.role = BackofficeAdminRoleFixture.random().value;
+
+      await database.manager.save(admin);
+    });
+
+    it('should deleter a admin', async () => {
+      const uid = admin.uid;
+      await handler.execute(new DeleteBackofficeAdminCommand(uid));
+
+      const result = await database.manager.findOne(AdminEntity, { uid });
+
+      expect(result).toBeUndefined();
+    });
   });
 });
