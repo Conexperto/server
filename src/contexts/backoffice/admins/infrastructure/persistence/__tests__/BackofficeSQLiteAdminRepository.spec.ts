@@ -27,6 +27,18 @@ jest.mock(
   'src/contexts/backoffice/shared/infrastructure/persistence/BackofficeSQLiteModule',
 );
 
+const backofficeAdminMock = () =>
+  new BackofficeAdmin(
+    BackofficeAdminIdFixture.random(),
+    BackofficeAdminEmailFixture.random(),
+    BackofficeAdminDisplayNameFixture.random(),
+    BackofficeAdminPhoneNumberFixture.random(),
+    BackofficeAdminPhotoURLFixture.random(),
+    BackofficeAdminNameFixture.random(),
+    BackofficeAdminLastnameFixture.random(),
+    BackofficeAdminRoleFixture.random(),
+  );
+
 describe('BackofficeSQLiteAdminRepository', () => {
   let database: Connection;
   let repository: BackofficeSQLiteAdminRepository;
@@ -49,16 +61,7 @@ describe('BackofficeSQLiteAdminRepository', () => {
 
   describe('#save', () => {
     it('should create a new admin', async () => {
-      const admin = new BackofficeAdmin(
-        BackofficeAdminIdFixture.random(),
-        BackofficeAdminEmailFixture.random(),
-        BackofficeAdminDisplayNameFixture.random(),
-        BackofficeAdminPhoneNumberFixture.random(),
-        BackofficeAdminPhotoURLFixture.random(),
-        BackofficeAdminNameFixture.random(),
-        BackofficeAdminLastnameFixture.random(),
-        BackofficeAdminRoleFixture.random(),
-      );
+      const admin = backofficeAdminMock();
       const raw = admin.toPrimitives();
 
       await repository.save(admin);
@@ -83,60 +86,78 @@ describe('BackofficeSQLiteAdminRepository', () => {
 
   describe('#findById', () => {
     let admin: AdminEntity;
-    let entity: AdminEntity;
 
     beforeEach(async () => {
       admin = new AdminEntity();
+      const {
+        id,
+        email,
+        displayName,
+        phoneNumber,
+        photoURL,
+        name,
+        lastname,
+        role,
+      } = backofficeAdminMock().toPrimitives();
 
-      admin.uid = BackofficeAdminIdFixture.random().value;
-      admin.email = BackofficeAdminEmailFixture.random().value;
-      admin.displayName = BackofficeAdminDisplayNameFixture.random().value;
-      admin.phoneNumber = BackofficeAdminPhoneNumberFixture.random().value;
-      admin.photoURL = BackofficeAdminPhotoURLFixture.random().value;
-      admin.name = BackofficeAdminNameFixture.random().value;
-      admin.lastname = BackofficeAdminLastnameFixture.random().value;
-      admin.role = BackofficeAdminRoleFixture.random().value;
+      admin.uid = id;
+      admin.email = email;
+      admin.displayName = displayName;
+      admin.phoneNumber = phoneNumber;
+      admin.photoURL = photoURL;
+      admin.name = name;
+      admin.lastname = lastname;
+      admin.role = role;
 
-      entity = await database.manager.save(AdminEntity, admin);
+      await database.manager.save(AdminEntity, admin);
     });
 
     it('should find a admin by id', async () => {
       const result = await repository.findById(
-        new BackofficeAdminId(entity.uid),
+        new BackofficeAdminId(admin.uid),
       );
       const raw = result.toPrimitives();
 
-      expect(entity).not.toBeUndefined();
+      expect(admin).not.toBeUndefined();
       expect(raw).toMatchObject({
-        id: entity.uid,
-        email: entity.email,
-        displayName: entity.displayName,
-        phoneNumber: entity.phoneNumber,
-        photoURL: entity.photoURL,
-        name: entity.name,
-        lastname: entity.lastname,
-        role: +entity.role,
+        id: admin.uid,
+        email: admin.email,
+        displayName: admin.displayName,
+        phoneNumber: admin.phoneNumber,
+        photoURL: admin.photoURL,
+        name: admin.name,
+        lastname: admin.lastname,
+        role: +admin.role,
       });
     });
   });
 
   describe('#findOne', () => {
     let admin: AdminEntity;
-    let entity: AdminEntity;
 
     beforeEach(async () => {
       admin = new AdminEntity();
+      const {
+        id,
+        email,
+        displayName,
+        phoneNumber,
+        photoURL,
+        name,
+        lastname,
+        role,
+      } = backofficeAdminMock().toPrimitives();
 
-      admin.uid = BackofficeAdminIdFixture.random().value;
-      admin.email = BackofficeAdminEmailFixture.random().value;
-      admin.displayName = BackofficeAdminDisplayNameFixture.random().value;
-      admin.phoneNumber = BackofficeAdminPhoneNumberFixture.random().value;
-      admin.photoURL = BackofficeAdminPhotoURLFixture.random().value;
-      admin.name = BackofficeAdminNameFixture.random().value;
-      admin.lastname = BackofficeAdminLastnameFixture.random().value;
-      admin.role = BackofficeAdminRoleFixture.random().value;
+      admin.uid = id;
+      admin.email = email;
+      admin.displayName = displayName;
+      admin.phoneNumber = phoneNumber;
+      admin.photoURL = photoURL;
+      admin.name = name;
+      admin.lastname = lastname;
+      admin.role = role;
 
-      entity = await database.manager.save(AdminEntity, admin);
+      await database.manager.save(AdminEntity, admin);
     });
 
     it('should find a admin by criteria', async () => {
@@ -152,69 +173,87 @@ describe('BackofficeSQLiteAdminRepository', () => {
 
       expect(result).not.toBeUndefined();
       expect(raw).toMatchObject({
-        id: entity.uid,
-        email: entity.email,
-        displayName: entity.displayName,
-        phoneNumber: entity.phoneNumber,
-        photoURL: entity.photoURL,
-        name: entity.name,
-        lastname: entity.lastname,
-        role: +entity.role,
+        id: admin.uid,
+        email: admin.email,
+        displayName: admin.displayName,
+        phoneNumber: admin.phoneNumber,
+        photoURL: admin.photoURL,
+        name: admin.name,
+        lastname: admin.lastname,
+        role: +admin.role,
       });
     });
   });
 
   describe('#findAll', () => {
     let admins: AdminEntity[] = [];
-    let entities: AdminEntity[] = [];
 
     beforeEach(async () => {
       for (let i = 0; i < 3; i++) {
         const item = (admins[i] = new AdminEntity());
+        const {
+          id,
+          email,
+          displayName,
+          phoneNumber,
+          photoURL,
+          name,
+          lastname,
+          role,
+        } = backofficeAdminMock().toPrimitives();
 
-        item.uid = BackofficeAdminIdFixture.random().value;
-        item.email = BackofficeAdminEmailFixture.random().value;
-        item.displayName = BackofficeAdminDisplayNameFixture.random().value;
-        item.phoneNumber = BackofficeAdminPhoneNumberFixture.random().value;
-        item.photoURL = BackofficeAdminPhotoURLFixture.random().value;
-        item.name = BackofficeAdminNameFixture.random().value;
-        item.lastname = BackofficeAdminLastnameFixture.random().value;
-        item.role = BackofficeAdminRoleFixture.random().value;
+        item.uid = id;
+        item.email = email;
+        item.displayName = displayName;
+        item.phoneNumber = phoneNumber;
+        item.photoURL = photoURL;
+        item.name = name;
+        item.lastname = lastname;
+        item.role = role;
 
-        entities[i] = await database.manager.save(AdminEntity, item);
+        await database.manager.save(AdminEntity, item);
       }
     });
 
     it('should find all admin', async () => {
-      expect(admins).toHaveLength(3);
-      admins.map((item) => expect(entities).toContain(item));
+      expect(admins).toHaveLength(admins.length);
+      admins.map((item) => expect(admins).toContain(item));
     });
   });
 
   describe('#delete', () => {
     let admin: AdminEntity;
-    let entity: AdminEntity;
 
     beforeEach(async () => {
       admin = new AdminEntity();
+      const {
+        id,
+        email,
+        displayName,
+        phoneNumber,
+        photoURL,
+        name,
+        lastname,
+        role,
+      } = backofficeAdminMock().toPrimitives();
 
-      admin.uid = BackofficeAdminIdFixture.random().value;
-      admin.email = BackofficeAdminEmailFixture.random().value;
-      admin.displayName = BackofficeAdminDisplayNameFixture.random().value;
-      admin.phoneNumber = BackofficeAdminPhoneNumberFixture.random().value;
-      admin.photoURL = BackofficeAdminPhotoURLFixture.random().value;
-      admin.name = BackofficeAdminNameFixture.random().value;
-      admin.lastname = BackofficeAdminLastnameFixture.random().value;
-      admin.role = BackofficeAdminRoleFixture.random().value;
+      admin.uid = id;
+      admin.email = email;
+      admin.displayName = displayName;
+      admin.phoneNumber = phoneNumber;
+      admin.photoURL = photoURL;
+      admin.name = name;
+      admin.lastname = lastname;
+      admin.role = role;
 
-      entity = await database.manager.save(AdminEntity, admin);
+      await database.manager.save(AdminEntity, admin);
     });
 
     it('should delete a admin', async () => {
-      await repository.delete(entity.uid);
+      await repository.delete(admin.uid);
 
       const result = await database.manager.findOne(AdminEntity, {
-        uid: entity.uid,
+        uid: admin.uid,
       });
 
       expect(result).toBeUndefined();
@@ -223,71 +262,89 @@ describe('BackofficeSQLiteAdminRepository', () => {
 
   describe('#remove', () => {
     let admins: AdminEntity[] = [];
-    let entities: AdminEntity[] = [];
 
     beforeEach(async () => {
       for (let i = 0; i < 3; i++) {
         const item = (admins[i] = new AdminEntity());
+        const {
+          id,
+          email,
+          displayName,
+          phoneNumber,
+          photoURL,
+          name,
+          lastname,
+          role,
+        } = backofficeAdminMock().toPrimitives();
 
-        item.uid = BackofficeAdminIdFixture.random().value;
-        item.email = BackofficeAdminEmailFixture.random().value;
-        item.displayName = BackofficeAdminDisplayNameFixture.random().value;
-        item.phoneNumber = BackofficeAdminPhoneNumberFixture.random().value;
-        item.photoURL = BackofficeAdminPhotoURLFixture.random().value;
-        item.name = BackofficeAdminNameFixture.random().value;
-        item.lastname = BackofficeAdminLastnameFixture.random().value;
-        item.role = BackofficeAdminRoleFixture.random().value;
+        item.uid = id;
+        item.email = email;
+        item.displayName = displayName;
+        item.phoneNumber = phoneNumber;
+        item.photoURL = photoURL;
+        item.name = name;
+        item.lastname = lastname;
+        item.role = role;
 
-        entities[i] = await database.manager.save(AdminEntity, item);
+        await database.manager.save(AdminEntity, item);
       }
     });
 
     it('should remove admins', async () => {
-      const ids = entities.map((item) => item.uid);
+      const ids = admins.map((item) => item.uid);
       await repository.remove(ids);
 
       const results = await database.manager.findByIds(
         AdminEntity,
-        entities.map((item) => item.id),
+        admins.map((item) => item.id),
       );
 
       expect(results).toHaveLength(0);
-      results.map((item) => expect(entities).not.toContain(item));
+      results.map((item) => expect(admins).not.toContain(item));
     });
   });
 
   describe('#disabled', () => {
     let admins: AdminEntity[] = [];
-    let entities: AdminEntity[] = [];
 
     beforeEach(async () => {
       for (let i = 0; i < 3; i++) {
         const item = (admins[i] = new AdminEntity());
+        const {
+          id,
+          email,
+          displayName,
+          phoneNumber,
+          photoURL,
+          name,
+          lastname,
+          role,
+        } = backofficeAdminMock().toPrimitives();
 
-        item.uid = BackofficeAdminIdFixture.random().value;
-        item.email = BackofficeAdminEmailFixture.random().value;
-        item.displayName = BackofficeAdminDisplayNameFixture.random().value;
-        item.phoneNumber = BackofficeAdminPhoneNumberFixture.random().value;
-        item.photoURL = BackofficeAdminPhotoURLFixture.random().value;
-        item.name = BackofficeAdminNameFixture.random().value;
-        item.lastname = BackofficeAdminLastnameFixture.random().value;
-        item.role = BackofficeAdminRoleFixture.random().value;
+        item.uid = id;
+        item.email = email;
+        item.displayName = displayName;
+        item.phoneNumber = phoneNumber;
+        item.photoURL = photoURL;
+        item.name = name;
+        item.lastname = lastname;
+        item.role = role;
 
-        entities[i] = await database.manager.save(AdminEntity, item);
+        await database.manager.save(AdminEntity, item);
       }
     });
 
     it('should disabled admin', async () => {
-      const ids = entities.map((item) => item.uid);
+      const ids = admins.map((item) => item.uid);
 
       await repository.disabled(ids);
 
       const result = await database.manager.findByIds(
         AdminEntity,
-        entities.map((item) => item.id),
+        admins.map((item) => item.id),
       );
 
-      expect(result).toHaveLength(entities.length);
+      expect(result).toHaveLength(admins.length);
       result.map((item) => expect(item.disabled).toBeTruthy());
     });
   });
