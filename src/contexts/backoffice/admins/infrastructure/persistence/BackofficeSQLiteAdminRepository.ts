@@ -114,14 +114,14 @@ export class BackofficeSQLiteAdminRepository {
 
   async remove(ids: string[]): Promise<void> {
     const entities = await this.repository.find({
-      where: ids.map((item) => ({ id: item })),
+      where: ids.map((id) => ({ id })),
     });
     await this.repository.remove(entities);
   }
 
   async disabled(ids: string[]): Promise<void> {
     let entities = await this.repository.find({
-      where: ids.map((item) => ({ id: item })),
+      where: ids.map((id) => ({ id })),
     });
 
     entities = entities.map((item) => {
@@ -134,7 +134,7 @@ export class BackofficeSQLiteAdminRepository {
 
   async enabled(ids: string[]): Promise<void> {
     let entities = await this.repository.find({
-      where: ids.map((item) => ({ id: item })),
+      where: ids.map((id) => ({ id })),
     });
 
     entities = entities.map((item) => {
