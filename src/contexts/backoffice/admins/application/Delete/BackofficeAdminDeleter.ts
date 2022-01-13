@@ -4,9 +4,7 @@ import { BackofficeSQLiteAdminRepository } from '../../infrastructure/persistenc
 
 @Injectable()
 export class BackofficeAdminDeleter {
-  constructor(
-    private readonly repository: BackofficeSQLiteAdminRepository,
-  ) {}
+  constructor(private readonly repository: BackofficeSQLiteAdminRepository) {}
 
   async run(adminId: BackofficeAdminId[]): Promise<void> {
     const ids = adminId.map((obj) => obj.value);
