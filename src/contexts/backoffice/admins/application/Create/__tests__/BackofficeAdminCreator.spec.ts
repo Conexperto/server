@@ -2,6 +2,7 @@ import { Test } from '@nestjs/testing';
 import { BackofficeSQLiteModule } from 'src/contexts/backoffice/shared/infrastructure/persistence/__mocks__/BackofficeSQLiteModule';
 import { AdminEntity } from 'src/contexts/shared/infrastructure/entities/AdminEntity';
 import { Connection } from 'typeorm';
+import { BackofficeAdmin } from '../../../domain/BackofficeAdmin';
 import { BackofficeAdminDisplayNameFixture } from '../../../domain/__fixtures__/BackofficeAdminDisplayNameFixture';
 import { BackofficeAdminEmailFixture } from '../../../domain/__fixtures__/BackofficeAdminEmailFixture';
 import { BackofficeAdminIdFixture } from '../../../domain/__fixtures__/BackofficeAdminIdFixture';
@@ -36,7 +37,7 @@ describe('BackofficeAdminCreator', () => {
   });
 
   it('should create a admin', async () => {
-    const admin = {
+    const mock = {
       adminId: BackofficeAdminIdFixture.random(),
       adminEmail: BackofficeAdminEmailFixture.random(),
       adminDisplayName: BackofficeAdminDisplayNameFixture.random(),
@@ -46,13 +47,13 @@ describe('BackofficeAdminCreator', () => {
       adminLastname: BackofficeAdminLastnameFixture.random(),
       adminRole: BackofficeAdminRoleFixture.random(),
     };
-    await creator.run(admin);
+    await creator.run(mock);
 
     const result = await database.manager.findOne(AdminEntity, {
-      uid: admin.adminId.value,
+      uid: mock.adminId.value,
     });
 
     expect(result).not.toBeUndefined();
-    expect(result.uid).toBe(admin.adminId.value);
+    expect(result.uid).toBe(mock.adminId.value);
   });
 });
