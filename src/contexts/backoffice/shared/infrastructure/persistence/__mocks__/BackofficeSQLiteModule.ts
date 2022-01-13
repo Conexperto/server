@@ -24,7 +24,7 @@ const database = TypeOrmModule.forRoot({
     SpecialityEntity,
     MethodEntity,
   ],
-  synchronize: true,
+	synchronize: true
 });
 
 const schemas = TypeOrmModule.forFeature([
