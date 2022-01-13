@@ -2,6 +2,7 @@ import { Test } from '@nestjs/testing';
 import { BackofficeSQLiteModule } from 'src/contexts/backoffice/shared/infrastructure/persistence/__mocks__/BackofficeSQLiteModule';
 import { AdminEntity } from 'src/contexts/shared/infrastructure/entities/AdminEntity';
 import { Connection } from 'typeorm';
+import { BackofficeAdmin } from '../../../domain/BackofficeAdmin';
 import { BackofficeAdminDisplayNameFixture } from '../../../domain/__fixtures__/BackofficeAdminDisplayNameFixture';
 import { BackofficeAdminEmailFixture } from '../../../domain/__fixtures__/BackofficeAdminEmailFixture';
 import { BackofficeAdminIdFixture } from '../../../domain/__fixtures__/BackofficeAdminIdFixture';
@@ -14,6 +15,22 @@ import { BackofficeSQLiteAdminRepository } from '../../../infrastructure/persist
 import { BackofficeAdminEnabler } from '../BackofficeAdminEnabler';
 import { EnabledBackofficeAdminCommand } from '../EnabledBackofficeAdminCommand';
 import { EnabledBackofficeAdminCommandHandler } from '../EnabledBackofficeAdminCommandHandler';
+
+jest.mock(
+  'src/contexts/backoffice/shared/infrastructure/persistence/BackofficeSQLiteModule',
+);
+
+const backofficeAdminMock = () =>
+  new BackofficeAdmin(
+    BackofficeAdminIdFixture.random(),
+    BackofficeAdminEmailFixture.random(),
+    BackofficeAdminDisplayNameFixture.random(),
+    BackofficeAdminPhoneNumberFixture.random(),
+    BackofficeAdminPhotoURLFixture.random(),
+    BackofficeAdminNameFixture.random(),
+    BackofficeAdminLastnameFixture.random(),
+    BackofficeAdminRoleFixture.random(),
+  );
 
 describe('EnabledBackofficeAdminCommandHandler', () => {
   let database: Connection;
@@ -40,15 +57,25 @@ describe('EnabledBackofficeAdminCommandHandler', () => {
 
     beforeEach(async () => {
       admin = new AdminEntity();
+      const {
+        id,
+        email,
+        displayName,
+        phoneNumber,
+        photoURL,
+        name,
+        lastname,
+        role,
+      } = backofficeAdminMock().toPrimitives();
 
-      admin.uid = BackofficeAdminIdFixture.random().value;
-      admin.email = BackofficeAdminEmailFixture.random().value;
-      admin.displayName = BackofficeAdminDisplayNameFixture.random().value;
-      admin.phoneNumber = BackofficeAdminPhoneNumberFixture.random().value;
-      admin.photoURL = BackofficeAdminPhotoURLFixture.random().value;
-      admin.name = BackofficeAdminNameFixture.random().value;
-      admin.lastname = BackofficeAdminLastnameFixture.random().value;
-      admin.role = BackofficeAdminRoleFixture.random().value;
+      admin.uid = id;
+      admin.email = email;
+      admin.displayName = displayName;
+      admin.phoneNumber = phoneNumber;
+      admin.photoURL = photoURL;
+      admin.name = name;
+      admin.lastname = lastname;
+      admin.role = role;
 
       await database.manager.save(admin);
     });
