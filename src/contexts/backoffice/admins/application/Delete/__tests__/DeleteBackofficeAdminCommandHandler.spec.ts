@@ -52,6 +52,10 @@ describe('DeleteBackofficeAdminCommandHandler', () => {
     );
   });
 
+  afterEach(async () => {
+    await database.close();
+  });
+
   describe('#execute', () => {
     let admin: AdminEntity;
 
