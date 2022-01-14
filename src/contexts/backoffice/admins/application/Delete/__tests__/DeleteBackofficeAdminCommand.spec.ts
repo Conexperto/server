@@ -3,10 +3,10 @@ import { DeleteBackofficeAdminCommand } from '../DeleteBackofficeAdminCommand';
 
 describe('DeleteBackofficeAdminCommand', () => {
   it('should deleter command', async () => {
-    const uid = BackofficeAdminIdFixture.random().value;
-    const command = new DeleteBackofficeAdminCommand(uid);
+    const id = BackofficeAdminIdFixture.random().value;
+    const command = new DeleteBackofficeAdminCommand(id);
 
-    expect(command instanceof DeleteBackofficeAdminCommand).toBeTruthy();
-    expect(command).toMatchObject({ id: uid });
+    expect(command).toBeInstanceOf(DeleteBackofficeAdminCommand);
+    expect(command).toMatchObject({ id });
   });
 });
