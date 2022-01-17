@@ -52,6 +52,10 @@ describe('EnabledBackofficeAdminCommandHandler', () => {
     );
   });
 
+  afterEach(async () => {
+    await database.close();
+  });
+
   describe('#execute', () => {
     let admin: AdminEntity;
 
