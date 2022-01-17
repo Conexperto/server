@@ -3,10 +3,10 @@ import { DisabledBackofficeAdminCommand } from '../DisabledBackofficeAdminComman
 
 describe('DisabledBackofficeAdminCommand', () => {
   it('should disabler command', async () => {
-    const uid = BackofficeAdminIdFixture.random().value;
-    const command = new DisabledBackofficeAdminCommand(uid);
+    const id = BackofficeAdminIdFixture.random().value;
+    const command = new DisabledBackofficeAdminCommand(id);
 
-    expect(command instanceof DisabledBackofficeAdminCommand).toBeTruthy();
-    expect(command).toMatchObject({ id: uid });
+    expect(command).toBeInstanceOf(DisabledBackofficeAdminCommand);
+    expect(command).toMatchObject({ id });
   });
 });
