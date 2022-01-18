@@ -33,7 +33,7 @@ describe('CreateBackofficeMethodCommandHandler', () => {
     );
   });
 
-  it('should create a admin', async () => {
+  it('should create a method', async () => {
     const plainData = {
       id: BackofficeMethodIdFixture.random().value,
       name: BackofficeMethodNameFixture.random().value,
