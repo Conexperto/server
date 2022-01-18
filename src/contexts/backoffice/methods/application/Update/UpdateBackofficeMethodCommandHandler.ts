@@ -5,7 +5,7 @@ import { BackofficeMethodUpdater } from './BackofficeMethodUpdater';
 import { UpdateBackofficeMethodCommand } from './UpdateBackofficeMethodCommand';
 
 @CommandHandler(UpdateBackofficeMethodCommand)
-export class UpdateBackofficeAdminCommandHandler
+export class UpdateBackofficeMethodCommandHandler
   implements ICommandHandler<UpdateBackofficeMethodCommand>
 {
   constructor(private updater: BackofficeMethodUpdater) {}
