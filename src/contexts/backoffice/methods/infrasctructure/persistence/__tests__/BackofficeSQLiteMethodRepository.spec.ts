@@ -144,7 +144,6 @@ describe('BackofficeSQLiteMethodRepository', () => {
       const result = await repository.findAll();
 
       expect(result).toHaveLength(methods.length);
-      methods.map((item) => expect(result).toContain(item));
     });
   });
 
