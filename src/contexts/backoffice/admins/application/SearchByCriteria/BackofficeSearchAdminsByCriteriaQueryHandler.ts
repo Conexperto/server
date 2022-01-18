@@ -9,7 +9,7 @@ import { BackofficeSearchAdminsByCriteriaQuery } from './BackofficeSearchAdminsB
 export class BackofficeSearchAdminsByCriteriaQueryHandler
   implements IQueryHandler<BackofficeSearchAdminsByCriteriaQuery>
 {
-  constructor(private readonly search: BackofficeAdminsByCriteriaSearcher) {}
+  constructor(private readonly searcher: BackofficeAdminsByCriteriaSearcher) {}
 
   async execute(
     query: BackofficeSearchAdminsByCriteriaQuery,
@@ -17,6 +17,6 @@ export class BackofficeSearchAdminsByCriteriaQueryHandler
     const filters = Filters.fromValues(query.filters);
     const order = Order.fromValues(query.orderBy, query.orderType);
 
-    return this.search.run(filters, order, query.offset, query.limit);
+    return this.searcher.run(filters, order, query.offset, query.limit);
   }
 }
