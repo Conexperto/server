@@ -1,5 +1,5 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { BackofficeMethodResponse } from '../BackofficeMethodResponse';
+import { BackofficeMethodsResponse } from '../BackofficeMethodsResponse';
 import { BackofficeMethodFinder } from './BackofficeMethodFinder';
 import { BackofficeSearchAllMethodQuery } from './BackofficeSearchAllMethodQuery';
 
@@ -11,7 +11,7 @@ export class BackofficeSearchAllMethodQueryHandler
 
   async execute(
     command: BackofficeSearchAllMethodQuery,
-  ): Promise<BackofficeMethodResponse> {
+  ): Promise<BackofficeMethodsResponse> {
     return this.finder.run();
   }
 }
