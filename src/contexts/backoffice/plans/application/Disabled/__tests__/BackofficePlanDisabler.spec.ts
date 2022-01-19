@@ -57,7 +57,7 @@ describe('BackofficeMethodDisabler', () => {
       await database.manager.save(plan);
     });
 
-    it('should disabled a method', async () => {
+    it('should disabled a plan', async () => {
       const id = plan.id;
       await disabler.run([new BackofficePlanId(id)]);
 
