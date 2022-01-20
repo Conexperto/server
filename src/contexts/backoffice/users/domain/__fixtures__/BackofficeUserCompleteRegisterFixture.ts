@@ -1,3 +1,12 @@
-import { BooleanValueObject } from 'src/contexts/shared/domain/value-object/BooleanValueObject';
+import * as faker from 'faker';
+import { BackofficeUserCompleteRegister } from '../BackofficeUserCompleteRegister';
 
-export class BackofficeUserCompleteRegissterFixture extends BooleanValueObject {}
+export class BackofficeUserCompleRegisterFixture {
+  static create(value: boolean): BackofficeUserCompleteRegister {
+    return new BackofficeUserCompleteRegister(value);
+  }
+
+  static random(): BackofficeUserCompleteRegister {
+    return this.create(faker.random.boolean());
+  }
+}
