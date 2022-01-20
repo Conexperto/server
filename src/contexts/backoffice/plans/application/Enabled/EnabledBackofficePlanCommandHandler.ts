@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BackofficePlanId } from '../../domain/BackofficePlanId';
 import { BackofficePlanEnabler } from './BackofficePlanEnabler';
-import { EnabledBackofficePlanCommand } from './EnabledBackofficePlanCommand.spec';
+import { EnabledBackofficePlanCommand } from './EnabledBackofficePlanCommand';
 
 @CommandHandler(EnabledBackofficePlanCommand)
 export class EnabledBackofficePlanCommandHandler
