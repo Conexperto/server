@@ -5,7 +5,6 @@ import { FilterField } from 'src/contexts/shared/domain/criteria/FilterField';
 import { FilterOperator } from 'src/contexts/shared/domain/criteria/FilterOperator';
 import { Filters } from 'src/contexts/shared/domain/criteria/Filters';
 import { FilterValue } from 'src/contexts/shared/domain/criteria/FilterValue';
-import { MethodEntity } from 'src/contexts/shared/infrastructure/entities/MethodEntity';
 import { PlanEntity } from 'src/contexts/shared/infrastructure/entities/PlanEntity';
 import { Connection } from 'typeorm';
 import { BackofficePlan } from '../../../domain/BackofficePlan';
@@ -28,7 +27,7 @@ const backofficePlanMock = () =>
     BackofficePlanCoinFixture.random(),
   );
 
-describe('BackofficeMethodssByCriteriaSearcher', () => {
+describe('BackofficePlansByCriteriaSearcher', () => {
   let database: Connection;
   let searcher: BackofficePlansByCriteriaSearcher;
 
