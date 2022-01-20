@@ -1,4 +1,3 @@
-import { BooleanValueObject } from "src/contexts/shared/domain/value-object/BooleanValueObject";
+import { BooleanValueObject } from 'src/contexts/shared/domain/value-object/BooleanValueObject';
 
-
-export class BackofficeAdminDisabled extends BooleanValueObject {};
+export class BackofficeAdminDisabled extends BooleanValueObject {}
