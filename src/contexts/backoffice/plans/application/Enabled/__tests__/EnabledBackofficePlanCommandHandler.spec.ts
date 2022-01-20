@@ -24,7 +24,7 @@ const backofficePlanMock = () =>
     BackofficePlanCoinFixture.random(),
   );
 
-describe('EnabledBackofficeAdminCommandHandler', () => {
+describe('EnabledBackofficePlanCommandHandler', () => {
   let database: Connection;
   let handler: EnabledBackofficePlanCommandHandler;
 
