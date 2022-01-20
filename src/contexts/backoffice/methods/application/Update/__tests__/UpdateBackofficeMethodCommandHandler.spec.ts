@@ -53,7 +53,7 @@ describe('UpdateBackofficeMethodCommandHandler', () => {
       await database.manager.save(method);
     });
 
-    it('should update a admin', async () => {
+    it('should update a method', async () => {
       const name = BackofficeMethodNameFixture.random();
       const plainData = {
         id: method.id,
