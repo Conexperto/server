@@ -1,11 +1,8 @@
 import { Test } from '@nestjs/testing';
 import { BackofficeSQLiteModule } from 'src/contexts/backoffice/shared/infrastructure/persistence/__mocks__/BackofficeSQLiteModule';
-import { MethodEntity } from 'src/contexts/shared/infrastructure/entities/MethodEntity';
 import { PlanEntity } from 'src/contexts/shared/infrastructure/entities/PlanEntity';
 import { Connection } from 'typeorm';
 import { BackofficePlan } from '../../../domain/BackofficePlan';
-import { BackofficePlanCoin } from '../../../domain/BackofficePlanCoin';
-import { BackofficePlanDuration } from '../../../domain/BackofficePlanDuration';
 import { BackofficePlanCoinFixture } from '../../../domain/__fixtures__/BackofficePlanCoinFixture';
 import { BackofficePlanDurationFixture } from '../../../domain/__fixtures__/BackofficePlanDurationFixture';
 import { BackofficePlanIdFixture } from '../../../domain/__fixtures__/BackofficePlanIdFixture';
