@@ -9,8 +9,8 @@ import { BackofficePlanIdFixture } from '../../../domain/__fixtures__/Backoffice
 import { BackofficePlanPriceFixture } from '../../../domain/__fixtures__/BackofficePlanPriceFixture';
 import { BackofficeSQLitePlanRepository } from '../../../infrastructure/persistence/BackofficeSQLitePlanRepository';
 import { BackofficePlanEnabler } from '../BackofficePlanEnabler';
-import { EnabledBackofficePlanCommand } from '../EnabledBackofficePlanCommand.spec';
-import { EnabledBackofficePlanCommandHandler } from '../EnabledBackofficePlanCommandHandler.spec';
+import { EnabledBackofficePlanCommand } from '../EnabledBackofficePlanCommand';
+import { EnabledBackofficePlanCommandHandler } from '../EnabledBackofficePlanCommandHandler';
 
 jest.mock(
   'src/contexts/backoffice/shared/infrastructure/persistence/BackofficeSQLiteModule',

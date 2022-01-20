@@ -1,5 +1,5 @@
-import { BackofficePlanId } from "../../../domain/BackofficePlanId";
-import { EnabledBackofficePlanCommand } from "../EnabledBackofficePlanCommand.spec";
+import { BackofficePlanId } from '../../../domain/BackofficePlanId';
+import { EnabledBackofficePlanCommand } from '../EnabledBackofficePlanCommand';
 
 describe('EnabledBackofficePlanCommand', () => {
   it('should enabler command', () => {
