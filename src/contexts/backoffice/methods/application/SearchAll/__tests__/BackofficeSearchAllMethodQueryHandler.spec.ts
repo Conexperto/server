@@ -55,7 +55,7 @@ describe('BackofficeSearchAllMethodQueryHandler', () => {
       }
     });
 
-    it('should finder all admins', async () => {
+    it('should finder all methods', async () => {
       const result = await handler.execute(
         new BackofficeSearchAllMethodQuery(),
       );
