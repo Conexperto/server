@@ -1,7 +1,0 @@
-.git/
-.gitlab/
-.pytest_cache/
-.venv/
-.dockerignore
-Dockerfile
-docker-compose.yml
