@@ -1,0 +1,26 @@
+name: Continuous Delivery
+
+on:
+  pull_request:
+    branches: staging
+
+jobs:
+  delivery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "cxp-server-staging"
+          heroku_email: "conexpertoteam@gmail.com"
+          usedocker: true
+          docker_build_args: |
+            SECRET_PASSPHRASE
+            FIREBASE_SDK_ADMIN
+            FIREBASE_SDK_WEB
+          branch: "staging"
+        env:
+          SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE_STAGING }}
+          FIREBASE_SDK_ADMIN: cxp-staging-admin-adminsdk.json
+          FIREBASE_SDK_WEB: cxp-staging-adminsdk.json
