@@ -1,6 +1,5 @@
 import { Test } from '@nestjs/testing';
 import { BackofficeSQLiteModule } from 'src/contexts/backoffice/shared/infrastructure/persistence/__mocks__/BackofficeSQLiteModule';
-import { MethodEntity } from 'src/contexts/shared/infrastructure/entities/MethodEntity';
 import { PlanEntity } from 'src/contexts/shared/infrastructure/entities/PlanEntity';
 import { Connection } from 'typeorm';
 import { BackofficePlan } from '../../../domain/BackofficePlan';
@@ -24,7 +23,7 @@ const backofficePlanMock = () =>
     BackofficePlanCoinFixture.random(),
   );
 
-describe('BackofficeMethodDisabler', () => {
+describe('BackofficePlanDisabler', () => {
   let database: Connection;
   let disabler: BackofficePlanDisabler;
 
