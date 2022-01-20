@@ -23,7 +23,7 @@ const backofficePlanMock = () =>
     BackofficePlanCoinFixture.random(),
   );
 
-describe('BackofficeMethodDisabler', () => {
+describe('BackofficePlanDisabler', () => {
   let database: Connection;
   let enabler: BackofficePlanEnabler;
 
