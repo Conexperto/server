@@ -1,7 +1,7 @@
 import * as faker from 'faker';
 import { BackofficeUserCompleteRegister } from '../BackofficeUserCompleteRegister';
 
-export class BackofficeUserCompleRegisterFixture {
+export class BackofficeUserCompleteRegisterFixture {
   static create(value: boolean): BackofficeUserCompleteRegister {
     return new BackofficeUserCompleteRegister(value);
   }
