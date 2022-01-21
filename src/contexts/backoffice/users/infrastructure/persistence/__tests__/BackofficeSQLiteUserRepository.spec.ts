@@ -14,7 +14,7 @@ import { UserEntity } from 'src/contexts/shared/infrastructure/entities/UserEnti
 import { Connection } from 'typeorm';
 import { BackofficeUser } from '../../../domain/BackofficeUser';
 import { BackofficeUserId } from '../../../domain/BackofficeUserId';
-import { BackofficeUserCompleRegisterFixture } from '../../../domain/__fixtures__/BackofficeUserCompleteRegisterFixture';
+import { BackofficeUserCompleteRegisterFixture } from '../../../domain/__fixtures__/BackofficeUserCompleteRegisterFixture';
 import { BackofficeUserDisplayNameFixture } from '../../../domain/__fixtures__/BackofficeUserDisplayNameFixture';
 import { BackofficeUserEmailFixture } from '../../../domain/__fixtures__/BackofficeUserEmailFixture';
 import { BackofficeUserIdFixture } from '../../../domain/__fixtures__/BackofficeUserIdFixture';
@@ -40,7 +40,7 @@ const backofficeUserMock = () =>
     BackofficeUserPhotoURLFixture.random(),
     BackofficeUserNameFixture.random(),
     BackofficeUserLastnameFixture.random(),
-    BackofficeUserCompleRegisterFixture.random(),
+    BackofficeUserCompleteRegisterFixture.random(),
     BackofficeUserLocationFixture.random(),
     BackofficeUserSessionTakenFixture.random(),
     BackofficeUserTimezoneFixture.random(),
