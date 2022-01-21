@@ -89,7 +89,7 @@ describe('BackofficeUserDisabler', () => {
       await database.manager.save(user);
     });
 
-    it('should disabled a admin', async () => {
+    it('should disabled a user', async () => {
       const id = user.id;
       await disabler.run([new BackofficeUserId(id)]);
 
