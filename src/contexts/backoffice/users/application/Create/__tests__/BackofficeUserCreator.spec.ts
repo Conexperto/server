@@ -2,7 +2,6 @@ import { Test } from '@nestjs/testing';
 import { BackofficeSQLiteModule } from 'src/contexts/backoffice/shared/infrastructure/persistence/__mocks__/BackofficeSQLiteModule';
 import { UserEntity } from 'src/contexts/shared/infrastructure/entities/UserEntity';
 import { Connection } from 'typeorm';
-import { BackofficeUser } from '../../../domain/BackofficeUser';
 import { BackofficeUserCompleRegisterFixture } from '../../../domain/__fixtures__/BackofficeUserCompleteRegisterFixture';
 import { BackofficeUserDisplayNameFixture } from '../../../domain/__fixtures__/BackofficeUserDisplayNameFixture';
 import { BackofficeUserEmailFixture } from '../../../domain/__fixtures__/BackofficeUserEmailFixture';
